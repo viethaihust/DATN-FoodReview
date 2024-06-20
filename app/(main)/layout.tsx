@@ -5,7 +5,7 @@ import HomeSidebar from "./(home)/components/HomeSidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function RootLayout({
+export default function HomeLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

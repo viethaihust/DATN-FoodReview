@@ -10,7 +10,7 @@ export default function MonNgonVietNam() {
       <HomeCarousel />
 
       <div className="mt-10">
-        <div className="text-4xl font-semibold">Món ngon miền Bắc</div>
+        <div className="text-4xl font-semibold">Món ngon Việt Nam</div>
         <div className="mt-6 italic opacity-80">
           Miền Bắc Việt Nam nổi tiếng với nhiều món ăn đặc trưng, phong phú và
           hấp dẫn. Dưới đây là một số món ngon miền Bắc bạn không nên bỏ qua.
