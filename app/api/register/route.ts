@@ -1,12 +1,12 @@
 import User from "../../models/User";
-import connect from "@/utils/db";
+import connectMongoDB from "@/utils/db";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
-  const { email, password } = await req.json();
+  const { email, name, password } = await req.json();
 
-  await connect();
+  await connectMongoDB();
 
   const existingUser = await User.findOne({ email });
 
@@ -18,6 +18,7 @@ export async function POST(req: Request) {
 
   const newUser = new User({
     email,
+    name,
     password: hashedPassword,
   });
 

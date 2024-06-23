@@ -1,8 +1,10 @@
 "use client";
 import { Button, Form, Input } from "antd";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 export default function Register() {
+  const router = useRouter();
   const onFinish = async (values: any) => {
     console.log("Success:", values);
     try {
@@ -14,6 +16,7 @@ export default function Register() {
         body: JSON.stringify(values),
       });
       if (res.ok) {
+        router.push("/login");
         console.log("Register success");
       } else {
         console.log("Register failed");
@@ -36,9 +39,19 @@ export default function Register() {
           layout="vertical"
         >
           <Form.Item
+            label="Họ và tên"
+            name="name"
+            rules={[{ required: true, message: "Vui lòng nhập tên của bạn!" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
             label="Email"
             name="email"
-            rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập email của bạn!" },
+            ]}
           >
             <Input />
           </Form.Item>
