@@ -1,9 +1,11 @@
 "use client";
-import { Button, Form, Input } from "antd";
+import { Button, Divider, Form, Input } from "antd";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { use } from "react";
+import React from "react";
+import { toast } from "react-toastify";
 
 export default function Login() {
   const router = useRouter();
@@ -17,11 +19,14 @@ export default function Login() {
         redirect: false,
       });
       if (res && res.ok) {
-        console.log("Login success");
         router.push("/");
       }
-    } catch (error) {
-      console.log("Login failed");
+      if (res && res.error) {
+        toast.error("Email hoặc mật khẩu không chính xác");
+        return;
+      }
+    } catch (error: any) {
+      console.log(error);
     }
   };
 
@@ -41,15 +46,26 @@ export default function Login() {
           layout="vertical"
         >
           <Form.Item
-            label={<label style={{ color: "white" }}>Email</label>}
+            label={
+              <label style={{ color: "white", fontWeight: "bold" }}>
+                Email
+              </label>
+            }
             name="email"
-            rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+            rules={[
+                { required: true , message: 'Vui lòng nhập email!' },
+                { type: "email", message: 'Email không hợp lệ!' }
+            ]}
           >
             <Input />
           </Form.Item>
 
           <Form.Item
-            label={<label style={{ color: "white" }}>Mật khẩu</label>}
+            label={
+              <label style={{ color: "white", fontWeight: "bold" }}>
+                Mật khẩu
+              </label>
+            }
             name="password"
             rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
           >
@@ -57,11 +73,19 @@ export default function Login() {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" className="w-full">
-              Đăng nhập
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="w-full h-[3rem] p-[2px] bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-lg"
+            >
+              <div className="bg-gray-700 flex h-full w-full items-center justify-center rounded-md">
+                Đăng nhập
+              </div>
             </Button>
           </Form.Item>
         </Form>
+
+        <Divider style={{ color: "white", borderColor: "white" }}>hoặc</Divider>
 
         <div className="flex justify-center">
           <button
@@ -75,9 +99,15 @@ export default function Login() {
               alt="google-logo"
             />
             <span className="bg-blue-500 text-white px-4 py-3 rounded-r-lg">
-              Sign in with Google
+              Đăng nhập bằng Google
             </span>
           </button>
+        </div>
+
+        <div className="mt-6 -mb-2 text-right">
+          <Link className="text-sm" href={"/register"}>
+            Bạn chưa có tài khoản? <span className="underline">Đăng ký</span>
+          </Link>
         </div>
       </div>
     </div>

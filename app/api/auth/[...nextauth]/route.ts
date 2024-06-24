@@ -1,16 +1,17 @@
 import User from "@/models/User";
 import connectMongoDB from "@/utils/db";
 import NextAuth from "next-auth/next";
-import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
+import { JWT } from "next-auth/jwt";
+import { Session } from "next-auth";
 
 const authOptions = {
   providers: [
-    Credentials({
+    CredentialsProvider({
       name: "credentials",
       credentials: {},
-
       async authorize(credentials: any) {
         const { email, password } = credentials;
 
@@ -28,11 +29,12 @@ const authOptions = {
           }
           return user;
         } catch (error) {
-          console.error("Error:", error);
+          console.error("Error in authorization:", error);
+          throw new Error("Authorization failed");
         }
       },
     }),
-    Google({
+    GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
@@ -46,24 +48,36 @@ const authOptions = {
           const userExists = await User.findOne({ email });
 
           if (!userExists) {
-            const res = await fetch("http://localhost:3000/api/register", {
-              method: "POST",
-              body: JSON.stringify({
-                name,
-                email,
-                password: "",
-              }),
+            const newUser = new User({
+              name: name,
+              email: email,
             });
-            console.log("res", res);
-            if (res.ok) {
+            const res = await newUser.save();
+            if (res.status === 200 || res.status === 201) {
+              console.log(res)
               return user;
             }
           }
         } catch (error) {
           console.error("Error calling Google API", error);
+          throw new Error("Sign in failed");
         }
       }
       return user;
+    },
+    async jwt({ token, user }: { token: JWT; user: any }) {
+      if (user) {
+        token.email = user.email;
+        token.name = user.name;
+      }
+      return token;
+    },
+    async session({ session, token }: { session: Session; token: JWT }) {
+      if (session.user) {
+        session.user.email = token.email;
+        session.user.name = token.name;
+      }
+      return session;
     },
   },
 };

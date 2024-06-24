@@ -10,13 +10,11 @@ export default function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html>
-      <body className={inter.className}>
-        <Layout className="flex items-center justify-center">
-          <AuthBackground />
-          <Layout className="absolute rounded-[10px] w-[25rem] bg-white">{children}</Layout>
-        </Layout>
-      </body>
-    </html>
+    <Layout className="flex items-center justify-center">
+      <AuthBackground />
+      <Layout className="absolute rounded-[10px] w-[25rem] bg-white">
+        {children}
+      </Layout>
+    </Layout>
   );
 }

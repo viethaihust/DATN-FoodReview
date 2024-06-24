@@ -11,16 +11,12 @@ export default function HomeLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html>
-      <body className={inter.className}>
-        <Layout>
-          <HomeHeader />
-          <Layout>
-            <HomeSidebar />
-            <Layout className="ml-[250px] p-5">{children}</Layout>
-          </Layout>
-        </Layout>
-      </body>
-    </html>
+    <Layout>
+      <HomeHeader />
+      <Layout>
+        <HomeSidebar />
+        <Layout className="ml-[250px] p-5">{children}</Layout>
+      </Layout>
+    </Layout>
   );
 }

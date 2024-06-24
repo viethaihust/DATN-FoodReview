@@ -1,10 +1,12 @@
 "use client";
-import { Button, Dropdown, Layout, MenuProps, Space } from "antd";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { Button, Dropdown, Layout, MenuProps, Spin } from "antd";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 import { VscSignOut } from "react-icons/vsc";
+import { toast } from "react-toastify";
 
 const { Header } = Layout;
 
@@ -23,7 +25,10 @@ const items: MenuProps["items"] = [
   {
     label: (
       <button
-        onClick={() => signOut()}
+        onClick={() => {
+          signOut();
+          localStorage.setItem("toastShown", "false");
+        }}
         className="flex flex-row items-center gap-6 hover:text-red-600"
       >
         <span>Đăng xuất</span> <VscSignOut />
@@ -35,10 +40,24 @@ const items: MenuProps["items"] = [
 
 export default function HomeHeader() {
   const { status, data: session } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated" && session) {
+      const isToastShown = localStorage.getItem("toastShown");
+      if (!isToastShown || isToastShown === "false") {
+        toast.success("Đăng nhập thành công");
+        localStorage.setItem("toastShown", "true");
+      }
+    }
+  }, [status, session]);
+
   return (
     <Header className="flex items-center justify-between border-b-[1px] bg-white top-0 sticky z-10">
       <Button>Home</Button>
-      {status === "authenticated" ? (
+      {status && status === "loading" ? (
+        <Spin />
+      ) : status === "authenticated" ? (
         <Dropdown
           menu={{ items }}
           trigger={["click"]}
@@ -48,7 +67,7 @@ export default function HomeHeader() {
         >
           <button className="rounded-full" onClick={(e) => e.preventDefault()}>
             <Image
-              src={session?.user?.image!}
+              src={session?.user?.image || "/profile.jpg"}
               width={40}
               height={40}
               alt="user-profile"
@@ -57,7 +76,7 @@ export default function HomeHeader() {
           </button>
         </Dropdown>
       ) : (
-        <Button onClick={() => signIn("google")}>Login</Button>
+        <Button onClick={() => router.push("/login")}>Login</Button>
       )}
     </Header>
   );

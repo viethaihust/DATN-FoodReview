@@ -11,7 +11,10 @@ export async function POST(req: Request) {
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
-    return new NextResponse("Email is already in use", { status: 400 });
+    return NextResponse.json(
+      { error: "Email này đã được sử dụng" },
+      { status: 400 }
+    );
   }
 
   const hashedPassword = await bcrypt.hash(password, 5);
@@ -24,7 +27,10 @@ export async function POST(req: Request) {
 
   try {
     await newUser.save();
-    return new NextResponse("User Created", { status: 201 });
+    return NextResponse.json(
+      { success: "Tạo tài khoản thành công" },
+      { status: 201 }
+    );
   } catch (error: any) {
     return new NextResponse(error, { status: 500 });
   }
