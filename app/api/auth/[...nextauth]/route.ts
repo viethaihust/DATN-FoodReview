@@ -54,7 +54,7 @@ const authOptions = {
             });
             const res = await newUser.save();
             if (res.status === 200 || res.status === 201) {
-              console.log(res)
+              console.log(res);
               return user;
             }
           }
@@ -79,6 +79,10 @@ const authOptions = {
       }
       return session;
     },
+  },
+  secret: process.env.NEXTAUTH_SECRET!,
+  pages: {
+    signIn: "/",
   },
 };
 
