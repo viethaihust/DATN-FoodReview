@@ -54,10 +54,10 @@ export default function HomeHeader() {
 
   return (
     <Header className="flex items-center justify-between border-b-[1px] bg-white top-0 sticky z-10">
-      <Button>Home</Button>
-      {status && status === "loading" ? (
-        <Spin />
-      ) : status === "authenticated" ? (
+      <Link href={"/"}>
+        <Button>Home</Button>
+      </Link>
+      {session ? (
         <Dropdown
           menu={{ items }}
           trigger={["click"]}

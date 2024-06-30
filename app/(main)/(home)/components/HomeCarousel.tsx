@@ -17,7 +17,7 @@ const contentStyle: React.CSSProperties = {
 export default function HomeCarousel() {
   return (
     <div>
-      <Carousel autoplay>
+      <Carousel autoplay arrows>
         <div className="group cursor-pointer">
           <h3 style={contentStyle}>
             <Image

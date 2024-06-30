@@ -1,7 +1,7 @@
 import { ClockCircleOutlined, UserOutlined } from "@ant-design/icons";
 import React from "react";
 
-export default function CongThuc({ params }: { params: { id: string } }) {
+export default function BaiViet({ params }: { params: { id: string } }) {
   const data = '<div style="transform: none;">Example Content</div>';
   return (
     <div>

@@ -1,8 +1,13 @@
 import React from "react";
 import Image from "next/image";
 import HomeCarousel from "../components/HomeCarousel";
-import { ClockCircleOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  ClockCircleOutlined,
+  RightOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { Button } from "antd";
+import Link from "next/link";
 
 export default function MonNgonVietNam() {
   return (
@@ -10,20 +15,26 @@ export default function MonNgonVietNam() {
       <HomeCarousel />
 
       <div className="mt-10">
-        <div className="text-4xl font-semibold">Món ngon Việt Nam</div>
+        <div className="flex gap-2 text-sm opacity-80">
+          <Link href={"/"}>Review Ẩm Thực</Link>
+          <RightOutlined />
+          <Link href={"/mon-ngon-viet-nam"} className="font-semibold">
+            Món ngon Việt Nam
+          </Link>
+        </div>
+        <div className="mt-4 text-4xl font-semibold">Món ngon Việt Nam</div>
         <div className="mt-6 italic opacity-80">
-          Miền Bắc Việt Nam nổi tiếng với nhiều món ăn đặc trưng, phong phú và
-          hấp dẫn. Dưới đây là một số món ngon miền Bắc bạn không nên bỏ qua.
-          Phở Hà Nội là món ăn quốc hồn quốc túy của Việt Nam với nước dùng thơm
-          ngon từ xương bò hoặc gà, kèm bánh phở mềm, thịt bò hoặc gà thái mỏng,
-          hành lá và các loại gia vị. Bún chả là món ăn gồm bún, thịt heo nướng,
-          rau sống, và nước chấm đặc biệt làm từ nước mắm, đường, giấm, và tỏi
-          ớt. Chả cá Lã Vọng là món cá chiên được ướp với nghệ và thì là, ăn kèm
-          với bún, bánh đa nem, lạc rang, và các loại rau thơm. Bún thang là món
-          bún gồm thịt gà xé, trứng gà thái sợi, giò lụa, tôm khô, nấm hương và
-          nước dùng trong vắt, thơm ngon. Nem rán còn gọi là chả giò, là món ăn
-          gồm nhân thịt heo, tôm, miến, mộc nhĩ, cà rốt, hành, và được cuốn
-          trong bánh đa nem rồi rán giòn.
+          Việt Nam có nền ẩm thực đa dạng và phong phú, mỗi miền lại có những
+          món ăn đặc trưng riêng. Ẩm thực miền Bắc thường thanh đạm, nhẹ nhàng
+          với hương vị tinh tế. Các món nổi tiếng bao gồm phở Hà Nội, bún chả,
+          bún thang, bánh cuốn Thanh Trì, chả cá Lã Vọng và cốm làng Vòng. Miền
+          Trung với hương vị đậm đà, cay nồng, nổi bật với các món như bún bò
+          Huế, mì Quảng, bánh bèo, bánh nậm, bánh bột lọc và cao lầu Hội An. Ẩm
+          thực miền Nam lại phong phú với sự hòa quyện của nhiều hương vị, ngọt,
+          mặn, chua và cay. Các món ăn nổi bật gồm có hủ tiếu Nam Vang, cơm tấm,
+          bánh xèo, lẩu mắm, gỏi cuốn và bún mắm. Mỗi miền có cách chế biến và
+          gia vị riêng biệt, tạo nên sự đa dạng và hấp dẫn trong ẩm thực Việt
+          Nam.
         </div>
         <div className="mt-10 flex flex-col gap-10 w-[60rem]">
           <div className="flex w-full">
