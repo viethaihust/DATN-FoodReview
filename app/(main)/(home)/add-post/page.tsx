@@ -1,19 +1,11 @@
 "use client";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, Select } from "antd";
 import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-type FieldType = {
-  title?: string;
-  summary?: string;
-  content?: string;
-  image?: string;
-  category?: string;
-};
-
-const onFinish: (values: FieldType) => void = async (values) => {
+const onFinish: (values: IPost) => void = async (values) => {
   const { title, summary, content, image, category } = values;
 
   try {
@@ -38,6 +30,26 @@ const onFinish: (values: FieldType) => void = async (values) => {
 
 export default function AddPost() {
   const [imageUrl, setImageUrl] = useState<string | undefined>();
+  const [categories, setCategories] = useState<ICategory[]>([]);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await fetch("/api/category", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Lỗi khi fetch category:", error);
+      }
+    }
+
+    fetchCategories();
+  }, []);
 
   return (
     <div className="p-4">
@@ -97,9 +109,15 @@ export default function AddPost() {
         <Form.Item
           name="category"
           label="Category"
-          rules={[{ required: true, message: "Please input the category!" }]}
+          rules={[{ required: true, message: "Please select a category!" }]}
         >
-          <Input />
+          <Select
+            style={{ width: 200 }}
+            options={categories.map((category: ICategory) => ({
+              value: category._id,
+              label: category.name,
+            }))}
+          />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">

@@ -1,15 +1,16 @@
 "use client";
 import React from "react";
-import { RightOutlined } from "@ant-design/icons";
 import HomeCarousel from "../../components/HomeCarousel";
 import Link from "next/link";
+import { RightOutlined } from "@ant-design/icons";
 import PostList from "../../components/PostList";
 import { usePathname } from "next/navigation";
 
-export default function MonNgonMienBac() {
+export default function MonNgonMienNam() {
   const pathname = usePathname();
   const path = pathname.split("/").filter(Boolean).pop();
-  
+  console.log(path);
+
   return (
     <div>
       <HomeCarousel params={path!}/>
@@ -24,10 +25,10 @@ export default function MonNgonMienBac() {
             href={"/mon-ngon-viet-nam/mon-ngon-mien-bac"}
             className="font-semibold"
           >
-            Món ngon miền Bắc
+            Món ngon miền Nam
           </Link>
         </div>
-        <div className="mt-4 text-4xl font-semibold">Món ngon miền Bắc</div>
+        <div className="mt-4 text-4xl font-semibold">Món ngon miền Nam</div>
         <div className="mt-6 italic opacity-80">
           Miền Bắc Việt Nam nổi tiếng với nhiều món ăn đặc trưng, phong phú và
           hấp dẫn. Dưới đây là một số món ngon miền Bắc bạn không nên bỏ qua.

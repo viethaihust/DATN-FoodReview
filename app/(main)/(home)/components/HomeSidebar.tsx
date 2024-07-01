@@ -80,6 +80,7 @@ export default function HomeSidebar() {
         defaultSelectedKeys={[pathname]}
         items={sideItems}
         className="p-2"
+        style={{ minWidth: 0, flex: "auto" }}
       />
     </Sider>
   );

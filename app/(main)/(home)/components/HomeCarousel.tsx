@@ -1,54 +1,78 @@
 import { Carousel } from "antd";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { ClockCircleOutlined } from "@ant-design/icons";
+import { formatDate } from "@/utils/formatDate";
+import Link from "next/link";
 
-const contentStyle: React.CSSProperties = {
-  height: "400px",
-  color: "#fff",
-  lineHeight: "400px",
-  backgroundColor: "black",
-  backdropFilter: "blur(5px)",
-  display: "flex",
-  justifyContent: "center",
-  position: "relative",
-};
+export default function HomeCarousel({ params }: { params: string }) {
+  const [posts, setPosts] = useState<IPost[]>([]);
 
-export default function HomeCarousel() {
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        let url = "/api/post?random=true";
+        if (params !== "mon-ngon-viet-nam") {
+          url = `/api/post?categoryName=${params}&random=true`;
+        }
+
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setPosts(data.randomPosts);
+      } catch (error) {
+        console.error("Lỗi khi fetch category:", error);
+      }
+    }
+
+    fetchPosts();
+  }, [params]);
+
   return (
     <div>
       <Carousel autoplay arrows>
-        <div className="group cursor-pointer">
-          <h3 style={contentStyle}>
-            <Image
-              src="/thit-trau-gac-bep.jpg"
-              width={0}
-              height={0}
-              sizes="100vw"
-              style={{ width: "auto", height: "100%", opacity: "0.6" }}
-              alt="thit-trau-gac-bep"
-              className="group-hover:scale-110 transition ease-in-out duration-300"
-            />
-            <div className="flex flex-col bottom-12 absolute leading-3">
-              <div className="group-hover:-translate-y-5 transition ease-in-out duration-300 text-xl font-semibold">
-                Nguồn gốc và cách ăn thịt trâu gác bếp đúng điệu
-              </div>
-              <div className="-mt-2 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
-                <ClockCircleOutlined className="mr-2"/>
-                15 Tháng Năm, 2024
-              </div>
+        {posts && posts.length > 0 ? (
+          posts.map((post) => (
+            <div className="group overflow-hidden" key={post._id}>
+              <h3 className="h-[500px] text-white leading-[400px] bg-black backdrop-blur-sm flex justify-center relative">
+                <Image
+                  src={post.image}
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  style={{ opacity: "0.6" }}
+                  alt="thit-trau-gac-bep"
+                  className="group-hover:scale-105 transition ease-in-out duration-300 object-cover w-full mx-28"
+                />
+                <div className="flex flex-col bottom-12 absolute leading-3">
+                  <Link
+                    href={`/mon-ngon-viet-nam/bai-viet/${post._id}`}
+                    className="hover:text-[#fbc747]"
+                  >
+                    <div className="group-hover:-translate-y-5 transition ease-in-out duration-300 text-xl font-semibold">
+                      {post.title}
+                    </div>
+                  </Link>
+                  <div className="-mt-2 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                    <ClockCircleOutlined className="mr-2" />
+                    {formatDate(post.createdAt)}
+                  </div>
+                </div>
+              </h3>
             </div>
-          </h3>
-        </div>
-        <div>
-          <h3 style={contentStyle}>2</h3>
-        </div>
-        <div>
-          <h3 style={contentStyle}>3</h3>
-        </div>
-        <div>
-          <h3 style={contentStyle}>4</h3>
-        </div>
+          ))
+        ) : (
+          <div>Không có bài viết nào</div>
+        )}
       </Carousel>
     </div>
   );

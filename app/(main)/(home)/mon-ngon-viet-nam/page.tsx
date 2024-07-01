@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 import HomeCarousel from "../components/HomeCarousel";
@@ -8,11 +9,16 @@ import {
 } from "@ant-design/icons";
 import { Button } from "antd";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function MonNgonVietNam() {
+  const pathname = usePathname();
+  const path = pathname.split("/").filter(Boolean).pop();
+  console.log(path);
+  
   return (
     <div>
-      <HomeCarousel />
+      <HomeCarousel params={path!} />
 
       <div className="mt-10">
         <div className="flex gap-2 text-sm opacity-80">

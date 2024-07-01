@@ -6,7 +6,7 @@ import Link from "next/link";
 import PostList from "../../components/PostList";
 import { usePathname } from "next/navigation";
 
-export default function MonNgonMienBac() {
+export default function MonNgonMienTrung() {
   const pathname = usePathname();
   const path = pathname.split("/").filter(Boolean).pop();
   
@@ -24,10 +24,10 @@ export default function MonNgonMienBac() {
             href={"/mon-ngon-viet-nam/mon-ngon-mien-bac"}
             className="font-semibold"
           >
-            Món ngon miền Bắc
+            Món ngon miền Trung
           </Link>
         </div>
-        <div className="mt-4 text-4xl font-semibold">Món ngon miền Bắc</div>
+        <div className="mt-4 text-4xl font-semibold">Món ngon miền Trung</div>
         <div className="mt-6 italic opacity-80">
           Miền Bắc Việt Nam nổi tiếng với nhiều món ăn đặc trưng, phong phú và
           hấp dẫn. Dưới đây là một số món ngon miền Bắc bạn không nên bỏ qua.

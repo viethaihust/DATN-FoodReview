@@ -1,13 +1,44 @@
+"use client";
+import { formatDate } from "@/utils/formatDate";
 import { ClockCircleOutlined, UserOutlined } from "@ant-design/icons";
-import React from "react";
+import { Spin } from "antd";
+import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
-export default function BaiViet({ params }: { params: { id: string } }) {
-  const data = '<div style="transform: none;">Example Content</div>';
+export default function BaiViet() {
+  const params = useParams();
+  const [post, setPost] = useState<IPost>();
+
+  useEffect(() => {
+    async function fetchPost() {
+      try {
+        const response = await fetch(`/api/post?id=${params.id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        setPost(data);
+      } catch (error) {
+        console.error("Lỗi khi fetch category:", error);
+      }
+    }
+
+    fetchPost();
+  }, [params.id]);
+
+  if (!post) {
+    return <Spin />;
+  }
+
+  const data = post.content;
+
+  console.log(post);
+
   return (
     <div>
-      <div className="text-4xl font-semibold">
-        Hướng dẫn cách làm gà nướng muối ớt thơm ngon, đơn giản tại nhà
-      </div>
+      <div className="text-4xl font-semibold">{post.title}</div>
       <div className="mt-5 flex opacity-80 gap-6 text-gray-800">
         <span>
           <UserOutlined className="mr-2" />
@@ -15,9 +46,9 @@ export default function BaiViet({ params }: { params: { id: string } }) {
         </span>
         <span>
           <ClockCircleOutlined className="mr-2" />
-          29 Tháng Năm
+          {formatDate(post.createdAt)}
         </span>
-        <span>Món ăn miền Bắc</span>
+        <span>{post.category.name}</span>
       </div>
       <div
         dangerouslySetInnerHTML={{
