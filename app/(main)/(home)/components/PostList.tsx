@@ -45,10 +45,10 @@ const PostList = ({ params }: { params: string }) => {
   };
 
   return (
-    <div className="mt-10 flex flex-col gap-10 w-[60rem] items-center">
+    <div className="mt-10 flex flex-col gap-10 max-w-[60rem] items-center">
       {posts && posts.length > 0 ? (
         posts.map((post) => (
-          <div className="flex w-full" key={post._id}>
+          <div className="flex w-full md:flex-row flex-col gap-10" key={post._id}>
             <div className="flex justify-center items-center">
               <Image
                 src={post.image}
@@ -59,7 +59,7 @@ const PostList = ({ params }: { params: string }) => {
               />
             </div>
 
-            <div className="flex ml-10 flex-col gap-2">
+            <div className="flex flex-col gap-2">
               <div className="text-xl font-semibold">{post.title}</div>
               <div className="flex opacity-80 gap-6 text-gray-800">
                 <span>

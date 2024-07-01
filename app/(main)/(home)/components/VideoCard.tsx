@@ -42,7 +42,7 @@ export default function VideoCard() {
               loop
               className="lg:w-96 lg:h-96 md:w-80 md:h-80 w-60 h-60 rounded-2xl cursor-pointer bg-gray-100"
             >
-              <source src="/tiktok.mp4" type="video/mp4" />
+              <source src="https://res.cloudinary.com/dllxrab3l/video/upload/v1719818448/dvgcmupnojcus6aqm4jf.mp4" type="video/mp4" />
             </video>
           </div>
           <VideoCardLikes />
