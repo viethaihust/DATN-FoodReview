@@ -17,7 +17,7 @@ export default function HomeLayout({
       <Layout>
         <HomeSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
         <Layout
-          className={`transition-margin-left duration-200 ml-10 p-5 ${collapsed ? 'md:ml-10' : 'md:ml-[216px]'}`}
+          className={`transition-margin-left duration-200 ml-[50px] p-5 ${collapsed ? 'md:ml-[50px]' : 'md:ml-[226px]'}`}
         >
           {children}
         </Layout>

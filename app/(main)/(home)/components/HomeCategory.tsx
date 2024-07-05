@@ -4,59 +4,121 @@ import React from "react";
 
 export default function HomeCategory() {
   return (
-    <div className="mt-10">
-      <div>Món ăn Việt Nam</div>
-      <div className="mt-6 flex flex-row gap-10 px-10">
-        <div className="group relative overflow-hidden rounded-md">
-          <Link href="/mon-ngon-viet-nam/mon-ngon-mien-bac">
-            <Image
-              src="/mon-an-mien-bac.jpg"
-              alt="mon-an-mien-bac"
-              width={500}
-              height={500}
-              className="group-hover:scale-105 transition ease-in-out duration-300"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-stone-500 to-stone-700 opacity-0 group-hover:opacity-60 transition duration-300"></div>
-            <div className="absolute inset-0 flex justify-center items-center">
-              <div className="mb-4 group-hover:translate-y-4 group-hover:opacity-100 opacity-0 transition ease-in-out duration-300 text-xl font-semibold text-white">
-                Món ăn miền Bắc
-              </div>
-            </div>
-          </Link>
+    <div>
+      <div className="mt-10">
+        <div className="text-3xl text-orange-500 font-semibold">
+          Món ăn Việt Nam
         </div>
-        <div className="group relative overflow-hidden rounded-md">
-          <Link href="/mon-ngon-viet-nam/mon-ngon-mien-trung">
-            <Image
-              src="/mon-an-mien-trung.jpg"
-              alt="mon-an-mien-trung"
-              width={500}
-              height={500}
-              className="group-hover:scale-105 transition ease-in-out duration-300"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-stone-500 to-stone-700 opacity-0 group-hover:opacity-60 transition duration-300"></div>
-            <div className="absolute inset-0 flex justify-center items-center">
-              <div className="mb-4 group-hover:translate-y-4 group-hover:opacity-100 opacity-0 transition ease-in-out duration-300 text-xl font-semibold text-white">
-                Món ăn miền Trung
+        <div className="mt-6 flex flex-row gap-4 md:gap-10 md:px-10">
+          <div className="group relative overflow-hidden rounded-md">
+            <Link href="/mon-ngon-viet-nam/mon-ngon-mien-bac">
+              <Image
+                src="/mon-an-mien-bac.jpg"
+                alt="mon-an-mien-bac"
+                width={500}
+                height={500}
+                className="group-hover:scale-105 transition ease-in-out duration-300"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-stone-500 to-stone-700 opacity-0 group-hover:opacity-60 transition duration-300"></div>
+              <div className="absolute inset-0 flex justify-center items-center">
+                <div className="mb-4 group-hover:translate-y-4 group-hover:opacity-100 opacity-0 transition ease-in-out duration-300 text-xl font-semibold text-white">
+                  Món ăn miền Bắc
+                </div>
               </div>
-            </div>
-          </Link>
+            </Link>
+          </div>
+          <div className="group relative overflow-hidden rounded-md">
+            <Link href="/mon-ngon-viet-nam/mon-ngon-mien-trung">
+              <Image
+                src="/mon-an-mien-trung.jpg"
+                alt="mon-an-mien-trung"
+                width={500}
+                height={500}
+                className="group-hover:scale-105 transition ease-in-out duration-300"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-stone-500 to-stone-700 opacity-0 group-hover:opacity-60 transition duration-300"></div>
+              <div className="absolute inset-0 flex justify-center items-center">
+                <div className="mb-4 group-hover:translate-y-4 group-hover:opacity-100 opacity-0 transition ease-in-out duration-300 text-xl font-semibold text-white">
+                  Món ăn miền Trung
+                </div>
+              </div>
+            </Link>
+          </div>
+          <div className="group relative overflow-hidden rounded-md">
+            <Link href="/mon-ngon-viet-nam/mon-ngon-mien-nam">
+              <Image
+                src="/mon-an-mien-nam.jpg"
+                alt="mon-an-mien-nam"
+                width={500}
+                height={500}
+                className="group-hover:scale-105 transition ease-in-out duration-300"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-stone-500 to-stone-700 opacity-0 group-hover:opacity-60 transition duration-300"></div>
+              <div className="absolute inset-0 flex justify-center items-center">
+                <div className="mb-4 group-hover:translate-y-4 group-hover:opacity-100 opacity-0 transition ease-in-out duration-300 text-xl font-semibold text-white">
+                  Món ăn miền Nam
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
-        <div className="group relative overflow-hidden rounded-md">
-          <Link href="/mon-ngon-viet-nam/mon-ngon-mien-nam">
-            <Image
-              src="/mon-an-mien-nam.jpg"
-              alt="mon-an-mien-nam"
-              width={500}
-              height={500}
-              className="group-hover:scale-105 transition ease-in-out duration-300"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-stone-500 to-stone-700 opacity-0 group-hover:opacity-60 transition duration-300"></div>
-            <div className="absolute inset-0 flex justify-center items-center">
-              <div className="mb-4 group-hover:translate-y-4 group-hover:opacity-100 opacity-0 transition ease-in-out duration-300 text-xl font-semibold text-white">
-                Món ăn miền Nam
+      </div>
+      <div className="mt-10">
+        <div className="text-3xl text-orange-500 font-semibold">
+          Món ăn thế giới
+        </div>
+        <div className="mt-6 flex flex-row gap-4 md:gap-10 md:px-10">
+          <div className="group relative overflow-hidden rounded-md">
+            <Link href="/mon-ngon-the-gioi/mon-ngon-han-quoc">
+              <Image
+                src="/mon-an-han-quoc.jpg"
+                alt="mon-an-han-quoc"
+                width={500}
+                height={500}
+                className="group-hover:scale-105 transition ease-in-out duration-300"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-stone-500 to-stone-700 opacity-0 group-hover:opacity-60 transition duration-300"></div>
+              <div className="absolute inset-0 flex justify-center items-center">
+                <div className="mb-4 group-hover:translate-y-4 group-hover:opacity-100 opacity-0 transition ease-in-out duration-300 text-xl font-semibold text-white">
+                  Món ăn Hàn Quốc
+                </div>
               </div>
-            </div>
-          </Link>
+            </Link>
+          </div>
+          <div className="group relative overflow-hidden rounded-md">
+            <Link href="/mon-ngon-the-gioi/mon-ngon-trung-quoc">
+              <Image
+                src="/mon-an-trung-quoc.jpg"
+                alt="mon-an-trung-quoc"
+                width={500}
+                height={500}
+                className="group-hover:scale-105 transition ease-in-out duration-300"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-stone-500 to-stone-700 opacity-0 group-hover:opacity-60 transition duration-300"></div>
+              <div className="absolute inset-0 flex justify-center items-center">
+                <div className="mb-4 group-hover:translate-y-4 group-hover:opacity-100 opacity-0 transition ease-in-out duration-300 text-xl font-semibold text-white">
+                  Món ăn Trung Quốc
+                </div>
+              </div>
+            </Link>
+          </div>
+          <div className="group relative overflow-hidden rounded-md">
+            <Link href="/mon-ngon-the-gioi/mon-ngon-nhat-ban">
+              <Image
+                src="/mon-an-nhat-ban.jpg"
+                alt="mon-an-nhat-ban"
+                width={500}
+                height={500}
+                className="group-hover:scale-105 transition ease-in-out duration-300"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-stone-500 to-stone-700 opacity-0 group-hover:opacity-60 transition duration-300"></div>
+              <div className="absolute inset-0 flex justify-center items-center">
+                <div className="mb-4 group-hover:translate-y-4 group-hover:opacity-100 opacity-0 transition ease-in-out duration-300 text-xl font-semibold text-white">
+                  Món ăn Nhật Bản
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

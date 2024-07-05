@@ -53,7 +53,7 @@ export default function HomeCarousel({ params }: { params: string }) {
                   alt="thit-trau-gac-bep"
                   className="group-hover:scale-105 transition ease-in-out duration-300 object-cover w-full mx-28"
                 />
-                <div className="flex flex-col bottom-12 absolute leading-3">
+                <div className="flex flex-col bottom-12 absolute leading-3 px-10">
                   <Link
                     href={`/mon-ngon-viet-nam/bai-viet/${post._id}`}
                     className="hover:text-[#fbc747]"

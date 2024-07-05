@@ -2,9 +2,11 @@
 import { Layout, Menu, MenuProps } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React from "react";
 import { SolutionOutlined, VideoCameraOutlined } from "@ant-design/icons";
 import { IoFastFoodOutline } from "react-icons/io5";
+import { IoMdStar } from "react-icons/io";
+import { TbWorld } from "react-icons/tb";
 
 const { Sider } = Layout;
 export default function HomeSidebar({
@@ -20,7 +22,7 @@ export default function HomeSidebar({
     {
       key: "/mon-ngon-viet-nam",
       label: "Món ngon Việt Nam",
-      icon: <IoFastFoodOutline />,
+      icon: <IoMdStar />,
       children: [
         {
           key: "mon-ngon-mien-bac",
@@ -51,19 +53,19 @@ export default function HomeSidebar({
     {
       key: "/mon-ngon-the-gioi",
       label: "Món ngon thế giới",
-      icon: <SolutionOutlined />,
+      icon: <TbWorld />,
       children: [
         {
           key: "mon-ngon-han-quoc",
-          label: <Link href="/mon-ngon-han-quoc">Món ngon Hàn Quốc</Link>,
+          label: <Link href="/mon-ngon-the-gioi/mon-ngon-han-quoc">Món ngon Hàn Quốc</Link>,
         },
         {
           key: "mon-ngon-nhat-ban",
-          label: <Link href="/mon-ngon-nhat-ban">Món ngon Nhật Bản</Link>,
+          label: <Link href="/mon-ngon-the-gioi/mon-ngon-nhat-ban">Món ngon Nhật Bản</Link>,
         },
         {
           key: "mon-ngon-trung-quoc",
-          label: <Link href="/mon-ngon-trung-quoc">Món ngon Trung Quốc</Link>,
+          label: <Link href="/mon-ngon-the-gioi/mon-ngon-trung-quoc">Món ngon Trung Quốc</Link>,
         },
       ],
     },
@@ -87,7 +89,7 @@ export default function HomeSidebar({
         onCollapse={(value) => setCollapsed(value)}
         width={220}
         breakpoint="sm"
-        collapsedWidth={40}
+        collapsedWidth={50}
         style={{
           backgroundColor: "white",
           position: "fixed",
