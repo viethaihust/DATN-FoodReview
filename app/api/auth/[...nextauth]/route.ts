@@ -1,11 +1,10 @@
 import User from "@/models/User";
 import connectMongoDB from "@/utils/db";
-import NextAuth from "next-auth/next";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { JWT } from "next-auth/jwt";
-import { Session } from "next-auth";
 
 const authOptions = {
   providers: [
@@ -27,7 +26,8 @@ const authOptions = {
           if (!passwordsMatch) {
             throw new Error("Password does not match");
           }
-          return user;
+
+          return { id: user._id, email: user.email, name: user.name };
         } catch (error) {
           console.error("Error in authorization:", error);
           throw new Error("Authorization failed");
@@ -52,18 +52,14 @@ const authOptions = {
               name: name,
               email: email,
             });
-            const res = await newUser.save();
-            if (res.status === 200 || res.status === 201) {
-              console.log(res);
-              return user;
-            }
+            await newUser.save();
           }
         } catch (error) {
           console.error("Error calling Google API", error);
           throw new Error("Sign in failed");
         }
       }
-      return user;
+      return true;
     },
     async jwt({ token, user }: { token: JWT; user: any }) {
       if (user) {
@@ -72,10 +68,13 @@ const authOptions = {
       }
       return token;
     },
-    async session({ session, token }: { session: Session; token: JWT }) {
-      if (session.user) {
-        session.user.email = token.email;
-        session.user.name = token.name;
+    async session({ session, token }: { session: any; token: JWT }) {
+      session.user.email = token.email as string;
+      session.user.name = token.name as string;
+
+      const sessionUser = await User.findOne({ email: session.user.email });
+      if (sessionUser) {
+        session.user._id = sessionUser._id.toString();
       }
       return session;
     },

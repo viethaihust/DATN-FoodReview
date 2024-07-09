@@ -6,14 +6,15 @@ import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
 
 export default function HomeCarousel({ params }: { params: string }) {
+  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const [posts, setPosts] = useState<IPost[]>([]);
 
   useEffect(() => {
     async function fetchPosts() {
       try {
-        let url = "/api/post?random=true";
-        if (params !== "mon-ngon-viet-nam") {
-          url = `/api/post?categoryName=${params}&random=true`;
+        let url = `${BACKEND_URL}/posts?random=true`;
+        if (params !== "mon-ngon-viet-nam" && params !== "mon-ngon-the-gioi") {
+          url = `${BACKEND_URL}/posts?categoryName=${params}&random=true`;
         }
 
         const response = await fetch(url, {
@@ -28,7 +29,7 @@ export default function HomeCarousel({ params }: { params: string }) {
         }
 
         const data = await response.json();
-        setPosts(data.randomPosts);
+        setPosts(data.result.randomPosts);
       } catch (error) {
         console.error("Lỗi khi fetch category:", error);
       }
@@ -55,7 +56,7 @@ export default function HomeCarousel({ params }: { params: string }) {
                 />
                 <div className="flex flex-col bottom-12 absolute leading-3 px-10">
                   <Link
-                    href={`/mon-ngon-viet-nam/bai-viet/${post._id}`}
+                    href={`/bai-viet/${post._id}`}
                     className="hover:text-[#fbc747]"
                   >
                     <div className="group-hover:-translate-y-5 transition ease-in-out duration-300 text-xl font-semibold">

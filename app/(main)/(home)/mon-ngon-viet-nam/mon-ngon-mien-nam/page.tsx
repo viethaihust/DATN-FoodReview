@@ -9,7 +9,6 @@ import { usePathname } from "next/navigation";
 export default function MonNgonMienNam() {
   const pathname = usePathname();
   const path = pathname.split("/").filter(Boolean).pop();
-  console.log(path);
 
   return (
     <div>

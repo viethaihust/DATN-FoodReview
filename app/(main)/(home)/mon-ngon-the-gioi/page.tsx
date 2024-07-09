@@ -14,7 +14,6 @@ import { usePathname } from "next/navigation";
 export default function MonNgonTheGioi() {
   const pathname = usePathname();
   const path = pathname.split("/").filter(Boolean).pop();
-  console.log(path);
   
   return (
     <div>

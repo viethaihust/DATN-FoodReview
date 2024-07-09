@@ -5,11 +5,13 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 const onFinish: (values: IPost) => void = async (values) => {
   const { title, summary, content, image, category } = values;
 
   try {
-    const res = await fetch("/api/post", {
+    const res = await fetch(`${BACKEND_URL}/posts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -35,14 +37,14 @@ export default function AddPost() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const response = await fetch("/api/category", {
+        const response = await fetch(`${BACKEND_URL}/categories`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
         });
         const data = await response.json();
-        setCategories(data);
+        setCategories(data.categories);
       } catch (error) {
         console.error("Lỗi khi fetch category:", error);
       }
@@ -85,7 +87,6 @@ export default function AddPost() {
             options={{ sources: ["local", "url"] }}
             signatureEndpoint="/api/sign-image"
             onSuccess={(result) => {
-              console.log(result);
               if (result?.info && typeof result.info === "object") {
                 setImageUrl(
                   (result.info as CloudinaryUploadWidgetInfo)?.secure_url
@@ -113,9 +114,9 @@ export default function AddPost() {
         >
           <Select
             style={{ width: 200 }}
-            options={categories.map((category: ICategory) => ({
+            options={categories?.map((category: ICategory) => ({
               value: category._id,
-              label: category.name,
+              label: category.desc,
             }))}
           />
         </Form.Item>

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { formatDate } from "@/utils/formatDate";
 
 const PostList = ({ params }: { params: string }) => {
+  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const [posts, setPosts] = useState<IPost[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -15,7 +16,7 @@ const PostList = ({ params }: { params: string }) => {
     async function fetchPosts() {
       try {
         const response = await fetch(
-          `/api/post?categoryName=${params}&page=${currentPage}&pageSize=${pageSize}`,
+          `${BACKEND_URL}/posts?categoryName=${params}&page=${currentPage}&pageSize=${pageSize}`,
           {
             method: "GET",
             headers: {
@@ -27,8 +28,8 @@ const PostList = ({ params }: { params: string }) => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setPosts(data.posts);
-        setTotalPosts(data.totalPosts);
+        setPosts(data.result.posts);
+        setTotalPosts(data.result.totalPosts);
       } catch (error) {
         console.error("Lỗi khi fetch category:", error);
       }
@@ -48,13 +49,16 @@ const PostList = ({ params }: { params: string }) => {
     <div className="mt-10 flex flex-col gap-10 max-w-[60rem] items-center">
       {posts && posts.length > 0 ? (
         posts.map((post) => (
-          <div className="flex w-full md:flex-row flex-col gap-10" key={post._id}>
+          <div
+            className="flex w-full md:flex-row flex-col gap-10"
+            key={post._id}
+          >
             <div className="flex justify-center items-center">
               <Image
                 src={post.image}
                 alt={post.title}
                 width={350}
-                height={0}
+                height={350}
                 className="max-w-[350px]"
               />
             </div>
@@ -73,7 +77,7 @@ const PostList = ({ params }: { params: string }) => {
               </div>
               <div>{post.summary}</div>
               <div>
-                <Link href={`/mon-ngon-viet-nam/bai-viet/${post._id}`}>
+                <Link href={`/bai-viet/${post._id}`}>
                   <Button className="bg-gray-500 text-white font-semibold rounded">
                     ĐỌC THÊM
                   </Button>
