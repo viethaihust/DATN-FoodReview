@@ -4,17 +4,17 @@ import Image from "next/image";
 import { ClockCircleOutlined } from "@ant-design/icons";
 import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
+import { BACKEND_URL } from "@/lib/constants";
 
 export default function HomeCarousel({ params }: { params: string }) {
-  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const [posts, setPosts] = useState<IPost[]>([]);
 
   useEffect(() => {
     async function fetchPosts() {
       try {
-        let url = `${BACKEND_URL}/posts?random=true`;
+        let url = BACKEND_URL + `/posts?random=true`;
         if (params !== "mon-ngon-viet-nam" && params !== "mon-ngon-the-gioi") {
-          url = `${BACKEND_URL}/posts?categoryName=${params}&random=true`;
+          url = BACKEND_URL + `/posts?categoryName=${params}&random=true`;
         }
 
         const response = await fetch(url, {

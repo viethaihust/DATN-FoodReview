@@ -12,6 +12,7 @@ export default function VideoCard() {
             className="rounded-full max-h-[60px]"
             width="60"
             src="/profile.jpg"
+            alt="profile-pic"
           />
         </div>
         <div className="pl-3 px-4">
@@ -59,6 +60,7 @@ export default function VideoCard() {
             className="rounded-full max-h-[60px]"
             width="60"
             src="/profile.jpg"
+            alt="profile-pic"
           />
         </div>
         <div className="pl-3 px-4">

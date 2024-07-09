@@ -1,3 +1,4 @@
+import { BACKEND_URL } from "@/lib/constants";
 import { formatDate } from "@/utils/formatDate";
 import { Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -105,16 +106,14 @@ const CommentSection: React.FC = () => {
   const [comments, setComments] = useState<IComment[]>([]);
   const [loadingComments, setLoadingComments] = useState(true);
   const [commentText, setCommentText] = useState("");
-  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const params = useParams();
   const { data: session } = useSession();
-  console.log("session", session);
 
   useEffect(() => {
     async function fetchComments() {
       try {
         const response = await fetch(
-          `${BACKEND_URL}/comments?postId=${params.id}`,
+          BACKEND_URL + `/comments?postId=${params.id}`,
           {
             method: "GET",
             headers: {
@@ -135,11 +134,11 @@ const CommentSection: React.FC = () => {
     }
 
     fetchComments();
-  }, [params.id, BACKEND_URL]);
+  }, [params.id]);
 
   const handleLike = async (id: string) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/comments/${id}/like`, {
+      const response = await fetch(BACKEND_URL + `/comments/${id}/like`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -177,7 +176,7 @@ const CommentSection: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/comments/${id}`, {
+      const response = await fetch(BACKEND_URL + `/comments/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -200,7 +199,7 @@ const CommentSection: React.FC = () => {
     if (!commentText.trim()) return;
 
     try {
-      const response = await fetch(`${BACKEND_URL}/comments`, {
+      const response = await fetch(BACKEND_URL + "/comments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

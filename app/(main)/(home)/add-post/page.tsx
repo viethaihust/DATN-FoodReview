@@ -1,17 +1,16 @@
 "use client";
+import { BACKEND_URL } from "@/lib/constants";
 import { Button, Form, Input, Select } from "antd";
 import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-
 const onFinish: (values: IPost) => void = async (values) => {
   const { title, summary, content, image, category } = values;
 
   try {
-    const res = await fetch(`${BACKEND_URL}/posts`, {
+    const res = await fetch(BACKEND_URL + "/posts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -37,7 +36,7 @@ export default function AddPost() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const response = await fetch(`${BACKEND_URL}/categories`, {
+        const response = await fetch(BACKEND_URL + "/categories", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

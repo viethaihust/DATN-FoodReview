@@ -18,12 +18,13 @@ export default function Login() {
         password,
         redirect: false,
       });
+
+      console.log(res);
+
       if (res && res.ok) {
         router.push("/");
-      }
-      if (res && res.error) {
-        toast.error("Email hoặc mật khẩu không chính xác");
-        return;
+      } else if (res && res.error) {
+        toast.error(res.error);
       }
     } catch (error: any) {
       console.log(error);
@@ -53,8 +54,8 @@ export default function Login() {
             }
             name="email"
             rules={[
-                { required: true , message: 'Vui lòng nhập email!' },
-                { type: "email", message: 'Email không hợp lệ!' }
+              { required: true, message: "Vui lòng nhập email!" },
+              { type: "email", message: "Email không hợp lệ!" },
             ]}
           >
             <Input />

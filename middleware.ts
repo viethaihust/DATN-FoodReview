@@ -6,7 +6,7 @@ export async function middleware(req: NextRequest) {
     req,
     secret: process.env.NEXTAUTH_SECRET,
   });
-  
+
   if (token && ["/login", "/register"].includes(req.nextUrl.pathname)) {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }

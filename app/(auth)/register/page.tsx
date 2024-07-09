@@ -1,4 +1,5 @@
 "use client";
+import { BACKEND_URL } from "@/lib/constants";
 import { Button, Divider, Form, Input } from "antd";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
@@ -11,7 +12,7 @@ export default function Register() {
   const router = useRouter();
   const onFinish = async (values: any) => {
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch(BACKEND_URL + "/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -21,7 +22,7 @@ export default function Register() {
       const data = await res.json();
       if (res.ok) {
         router.push("/login");
-        toast.success(data.success);
+        toast.success("Tạo tài khoản thành công");
       } else {
         toast.error(data.error);
         return;
@@ -49,18 +50,6 @@ export default function Register() {
           <Form.Item
             label={
               <label style={{ color: "white", fontWeight: "bold" }}>
-                Email
-              </label>
-            }
-            name="email"
-            rules={[{ required: true, message: "Vui lòng nhập email!" }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label={
-              <label style={{ color: "white", fontWeight: "bold" }}>
                 Họ và tên
               </label>
             }
@@ -73,11 +62,42 @@ export default function Register() {
           <Form.Item
             label={
               <label style={{ color: "white", fontWeight: "bold" }}>
+                Email
+              </label>
+            }
+            name="email"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập email!",
+              },
+              {
+                type: "email",
+                message: "Email không hợp lệ!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label={
+              <label style={{ color: "white", fontWeight: "bold" }}>
                 Mật khẩu
               </label>
             }
             name="password"
-            rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập mật khẩu!",
+              },
+              {
+                min: 6,
+                message: "Mật khẩu ít nhất 6 ký tự!",
+              },
+            ]}
+            hasFeedback
           >
             <Input.Password />
           </Form.Item>

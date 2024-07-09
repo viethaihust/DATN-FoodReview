@@ -12,7 +12,7 @@ export default function AuthLayout({
   return (
     <Layout className="flex items-center justify-center">
       <AuthBackground />
-      <Layout className="absolute rounded-[10px] w-[25rem] bg-white">
+      <Layout className="absolute rounded-[10px] md:w-[25rem] bg-white">
         {children}
       </Layout>
     </Layout>

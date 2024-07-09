@@ -1,5 +1,6 @@
 "use client";
 import CommentSection from "@/(main)/(home)/components/CommentSection";
+import { BACKEND_URL } from "@/lib/constants";
 import { formatDate } from "@/utils/formatDate";
 import { ClockCircleOutlined, UserOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
@@ -7,14 +8,13 @@ import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 export default function BaiViet() {
-  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const params = useParams();
   const [post, setPost] = useState<IPost>();
 
   useEffect(() => {
     async function fetchPost() {
       try {
-        const response = await fetch(`${BACKEND_URL}/posts/${params.id}`, {
+        const response = await fetch(BACKEND_URL + `/posts/${params.id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

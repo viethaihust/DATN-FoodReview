@@ -4,9 +4,9 @@ import { ClockCircleOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Pagination } from "antd";
 import Link from "next/link";
 import { formatDate } from "@/utils/formatDate";
+import { BACKEND_URL } from "@/lib/constants";
 
 const PostList = ({ params }: { params: string }) => {
-  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const [posts, setPosts] = useState<IPost[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -16,7 +16,8 @@ const PostList = ({ params }: { params: string }) => {
     async function fetchPosts() {
       try {
         const response = await fetch(
-          `${BACKEND_URL}/posts?categoryName=${params}&page=${currentPage}&pageSize=${pageSize}`,
+          BACKEND_URL +
+            `/posts?categoryName=${params}&page=${currentPage}&pageSize=${pageSize}`,
           {
             method: "GET",
             headers: {
@@ -36,7 +37,7 @@ const PostList = ({ params }: { params: string }) => {
     }
 
     fetchPosts();
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, params]);
 
   const handlePageChange = (page: number, pageSize?: number) => {
     setCurrentPage(page);

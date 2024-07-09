@@ -10,37 +10,39 @@ import { toast } from "react-toastify";
 
 const { Header } = Layout;
 
-const items: MenuProps["items"] = [
-  {
-    label: <Link href="/">Trang chủ</Link>,
-    key: "0",
-  },
-  {
-    label: <Link href="/profile">Thông tin</Link>,
-    key: "1",
-  },
-  {
-    type: "divider",
-  },
-  {
-    label: (
-      <button
-        onClick={() => {
-          signOut();
-          localStorage.setItem("toastShown", "false");
-        }}
-        className="flex flex-row items-center gap-6 hover:text-red-600"
-      >
-        <span>Đăng xuất</span> <VscSignOut />
-      </button>
-    ),
-    key: "3",
-  },
-];
-
 export default function HomeHeader() {
   const { status, data: session } = useSession();
   const router = useRouter();
+
+  console.log("session:", session);
+
+  const items: MenuProps["items"] = [
+    {
+      label: <Link href="/">Trang chủ</Link>,
+      key: "0",
+    },
+    {
+      label: <Link href={`/profile/${session?.user?._id}`}>Thông tin</Link>,
+      key: "1",
+    },
+    {
+      type: "divider",
+    },
+    {
+      label: (
+        <button
+          onClick={() => {
+            signOut();
+            localStorage.setItem("toastShown", "false");
+          }}
+          className="flex flex-row items-center gap-6 hover:text-red-600"
+        >
+          <span>Đăng xuất</span> <VscSignOut />
+        </button>
+      ),
+      key: "3",
+    },
+  ];
 
   useEffect(() => {
     if (status === "authenticated" && session) {
