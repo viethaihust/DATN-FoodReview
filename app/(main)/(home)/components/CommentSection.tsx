@@ -5,28 +5,7 @@ import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-interface User {
-  _id: string;
-  name: string;
-}
-
-interface Comment {
-  _id: string;
-  user: User;
-  content: string;
-  likes: number;
-  replies: Comment[];
-  createdAt: string;
-}
-
-interface CommentComponentProps {
-  comment: Comment;
-  onLike: (id: string) => void;
-  onReply: (id: string, content: string) => void;
-  onDelete: (id: string) => void;
-}
-
-const CommentComponent: React.FC<CommentComponentProps> = ({
+const CommentComponent: React.FC<ICommentComponentProps> = ({
   comment,
   onLike,
   onReply,
@@ -36,6 +15,9 @@ const CommentComponent: React.FC<CommentComponentProps> = ({
   const [replyContent, setReplyContent] = useState("");
   const [showFullContent, setShowFullContent] = useState(false);
   const contentPreviewLength = 100;
+  const { data: session } = useSession();
+
+  const isLiked = comment.likedBy.includes(session?.user?._id);
 
   const handleReply = () => {
     onReply(comment._id, replyContent);
@@ -45,7 +27,7 @@ const CommentComponent: React.FC<CommentComponentProps> = ({
 
   return (
     <div className="border rounded-lg mb-4">
-      <div className="flex justify-between items-center gap-10">
+      <div className="flex justify-between items-center">
         <div className="p-6">
           <h4 className="font-bold">{comment.user?.name}</h4>
           <p>
@@ -65,9 +47,14 @@ const CommentComponent: React.FC<CommentComponentProps> = ({
             {formatDate(comment.createdAt)}
           </p>
         </div>
-        <div className="flex gap-2 p-6 min-w-fit">
-          <button onClick={() => onLike(comment._id)} className="text-blue-500">
-            Thích ({comment.likes})
+        <div className="flex gap-2 p-6 w-32 md:min-w-max">
+          <button
+            onClick={() => onLike(comment._id)}
+            className={`text-blue-500 ${isLiked ? "font-bold" : ""}`} // Highlight if liked
+          >
+            {isLiked
+              ? `Đã thích (${comment.likes})`
+              : `Thích (${comment.likes})`}
           </button>
           <button
             onClick={() => setReplying(!replying)}
@@ -115,7 +102,7 @@ const CommentComponent: React.FC<CommentComponentProps> = ({
 };
 
 const CommentSection: React.FC = () => {
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<IComment[]>([]);
   const [loadingComments, setLoadingComments] = useState(true);
   const [commentText, setCommentText] = useState("");
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -150,8 +137,38 @@ const CommentSection: React.FC = () => {
     fetchComments();
   }, [params.id, BACKEND_URL]);
 
-  const handleLike = (id: string) => {
-    // Implement like functionality here
+  const handleLike = async (id: string) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/comments/${id}/like`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: session?.user?._id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const updatedComment = await response.json();
+
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment._id === id
+            ? {
+                ...comment,
+                likes: updatedComment.likes,
+                likedBy: updatedComment.likedBy,
+              }
+            : comment
+        )
+      );
+    } catch (error) {
+      console.error("Error liking/unliking comment:", error);
+    }
   };
 
   const handleReply = (id: string, content: string) => {

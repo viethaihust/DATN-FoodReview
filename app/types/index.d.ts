@@ -14,10 +14,24 @@ interface ICategory {
   desc: string;
 }
 
-interface IPostComment {
+interface IComment {
   _id: string;
-  user: string;
+  user: User;
   content: string;
   likes: number;
-  replies: IPostComment[];
+  likedBy: User[];
+  replies: IComment[];
+  createdAt: string;
+}
+
+interface IUser {
+  _id: string;
+  name: string;
+}
+
+interface ICommentComponentProps {
+  comment: IComment;
+  onLike: (id: string) => void;
+  onReply: (id: string, content: string) => void;
+  onDelete: (id: string) => void;
 }
