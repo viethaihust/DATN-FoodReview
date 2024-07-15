@@ -1,48 +1,34 @@
 import { Carousel } from "antd";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { ClockCircleOutlined } from "@ant-design/icons";
 import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
 import { BACKEND_URL } from "@/lib/constants";
 
-export default function HomeCarousel({ params }: { params: string }) {
-  const [posts, setPosts] = useState<IPost[]>([]);
+export default async function HomeCarousel({
+  params,
+  pageType,
+}: {
+  params: string;
+  pageType: string;
+}) {
+  let url = `${BACKEND_URL}/posts?random=true`;
+  if (pageType === "category") {
+    url += `&categorySlug=${params}`;
+  } else if (pageType === "sub-category") {
+    url += `&subCategorySlug=${params}`;
+  }
 
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        let url = BACKEND_URL + `/posts?random=true`;
-        if (params !== "mon-ngon-viet-nam" && params !== "mon-ngon-the-gioi") {
-          url = BACKEND_URL + `/posts?categoryName=${params}&random=true`;
-        }
-
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setPosts(data.result.randomPosts);
-      } catch (error) {
-        console.error("Lỗi khi fetch category:", error);
-      }
-    }
-
-    fetchPosts();
-  }, [params]);
+  const posts = await fetch(url)
+    .then((res) => res.json())
+    .then((data) => data.result?.randomPosts as IPost[]);
 
   return (
     <div>
-      <Carousel autoplay arrows>
-        {posts && posts.length > 0 ? (
-          posts.map((post) => (
+      {posts && (
+        <Carousel autoplay arrows>
+          {posts.map((post) => (
             <div className="group overflow-hidden" key={post._id}>
               <h3 className="h-[500px] text-white leading-[400px] bg-black backdrop-blur-sm flex justify-center relative">
                 <Image
@@ -70,11 +56,9 @@ export default function HomeCarousel({ params }: { params: string }) {
                 </div>
               </h3>
             </div>
-          ))
-        ) : (
-          <div>Không có bài viết nào</div>
-        )}
-      </Carousel>
+          ))}
+        </Carousel>
+      )}
     </div>
   );
 }

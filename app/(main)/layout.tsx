@@ -1,5 +1,4 @@
 "use client";
-import { Inter } from "next/font/google";
 import { Layout } from "antd";
 import HomeHeader from "./(home)/components/HomeHeader";
 import HomeSidebar from "./(home)/components/HomeSidebar";
@@ -14,10 +13,10 @@ export default function HomeLayout({
   return (
     <Layout className="min-h-screen">
       <HomeHeader />
-      <Layout>
+      <Layout className="py-[6px] pr-[6px]">
         <HomeSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
         <Layout
-          className={`bg-white my-[6px] mr-[6px] min-h-full rounded-md transition-margin-left duration-200 ml-[50px] p-5 ${
+          className={`bg-white min-h-full rounded-md transition-margin-left duration-200 ml-[50px] p-5 ${
             collapsed ? "md:ml-[50px]" : "md:ml-[226px]"
           }`}
         >

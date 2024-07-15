@@ -1,40 +1,13 @@
-"use client";
 import CommentSection from "@/(main)/(home)/components/CommentSection";
 import { BACKEND_URL } from "@/lib/constants";
 import { formatDate } from "@/utils/formatDate";
 import { ClockCircleOutlined, UserOutlined } from "@ant-design/icons";
-import { Spin } from "antd";
-import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
 
-export default function BaiViet() {
-  const params = useParams();
-  const [post, setPost] = useState<IPost>();
-
-  useEffect(() => {
-    async function fetchPost() {
-      try {
-        const response = await fetch(BACKEND_URL + `/posts/${params.id}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response.json();
-        setPost(data.result);
-      } catch (error) {
-        console.error("Lỗi khi fetch post:", error);
-      }
-    }
-
-    fetchPost();
-  }, [params.id]);
-
-  if (!post) {
-    return <Spin />;
-  }
-
-  const data = post.content;
+export default async function BaiViet({ params }: { params: { id: string } }) {
+  const post = await fetch(BACKEND_URL + `/posts/${params.id}`)
+    .then((res) => res.json())
+    .then((data) => data.result as IPost);
+  const postContent = post.content;
 
   return (
     <div>
@@ -49,11 +22,11 @@ export default function BaiViet() {
             <ClockCircleOutlined className="mr-2" />
             {formatDate(post.createdAt)}
           </span>
-          <span>{post.category?.desc}</span>
+          <span>{post.category?.name}</span>
         </div>
         <div
           dangerouslySetInnerHTML={{
-            __html: data,
+            __html: postContent,
           }}
           className="mt-6"
         />

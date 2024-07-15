@@ -1,54 +1,41 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { ClockCircleOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Pagination } from "antd";
+import { Button } from "antd";
 import Link from "next/link";
 import { formatDate } from "@/utils/formatDate";
 import { BACKEND_URL } from "@/lib/constants";
+import PostPagination from "./PostPagination";
 
-const PostList = ({ params }: { params: string }) => {
-  const [posts, setPosts] = useState<IPost[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
-  const [totalPosts, setTotalPosts] = useState(0);
+export default async function PostList({
+  params,
+  pageType,
+  searchParams,
+}: {
+  params: string;
+  pageType: string;
+  searchParams?: { page: string };
+}) {
+  const page = Number(searchParams?.page) || 1;
+  const pageSize = 5;
 
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const response = await fetch(
-          BACKEND_URL +
-            `/posts?categoryName=${params}&page=${currentPage}&pageSize=${pageSize}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setPosts(data.result.posts);
-        setTotalPosts(data.result.totalPosts);
-      } catch (error) {
-        console.error("Lỗi khi fetch category:", error);
-      }
-    }
+  let url = `${BACKEND_URL}/posts?page=${page}&pageSize=${pageSize}`;
+  if (pageType === "category") {
+    url += `&categorySlug=${params}`;
+  } else if (pageType === "sub-category") {
+    url += `&subCategorySlug=${params}`;
+  }
 
-    fetchPosts();
-  }, [currentPage, pageSize, params]);
+  const response = await fetch(url)
+    .then((res) => res.json())
+    .then((data) => data.result);
 
-  const handlePageChange = (page: number, pageSize?: number) => {
-    setCurrentPage(page);
-    if (pageSize) {
-      setPageSize(pageSize);
-    }
-  };
+  const posts = response?.posts as IPost[];
+  const totalPosts = response?.totalPosts;
 
   return (
     <div className="mt-10 flex flex-col gap-10 max-w-[60rem] items-center">
-      {posts && posts.length > 0 ? (
+      {posts ? (
         posts.map((post) => (
           <div
             className="flex w-full md:flex-row flex-col gap-10"
@@ -90,16 +77,7 @@ const PostList = ({ params }: { params: string }) => {
       ) : (
         <div>Không có bài viết nào</div>
       )}
-      {posts && posts.length > 0 && (
-        <Pagination
-          current={currentPage}
-          pageSize={pageSize}
-          total={totalPosts}
-          onChange={handlePageChange}
-        />
-      )}
+      {posts && posts.length > 0 && <PostPagination total={totalPosts} />}
     </div>
   );
-};
-
-export default PostList;
+}

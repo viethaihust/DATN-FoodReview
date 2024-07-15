@@ -1,7 +1,10 @@
+"use client";
+import { authOptions } from "@/lib/auth";
 import { BACKEND_URL } from "@/lib/constants";
 import { formatDate } from "@/utils/formatDate";
 import { Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -141,6 +144,7 @@ const CommentSection: React.FC = () => {
       const response = await fetch(BACKEND_URL + `/comments/${id}/like`, {
         method: "PATCH",
         headers: {
+          authorization: `Bearer ${session?.backendTokens.accessToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -202,12 +206,14 @@ const CommentSection: React.FC = () => {
       const response = await fetch(BACKEND_URL + "/comments", {
         method: "POST",
         headers: {
+          authorization: `Bearer ${session?.backendTokens.accessToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           content: commentText,
           postId: params.id,
           user: session?.user?._id,
+          likes: 0,
         }),
       });
 

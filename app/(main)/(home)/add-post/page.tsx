@@ -115,7 +115,7 @@ export default function AddPost() {
             style={{ width: 200 }}
             options={categories?.map((category: ICategory) => ({
               value: category._id,
-              label: category.desc,
+              label: category.name,
             }))}
           />
         </Form.Item>

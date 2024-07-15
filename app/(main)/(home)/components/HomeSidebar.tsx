@@ -1,10 +1,7 @@
-"use client";
 import { Layout, Menu, MenuProps } from "antd";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import React from "react";
 import { SolutionOutlined, VideoCameraOutlined } from "@ant-design/icons";
-import { IoFastFoodOutline } from "react-icons/io5";
 import { IoMdStar } from "react-icons/io";
 import { TbWorld } from "react-icons/tb";
 
@@ -16,8 +13,6 @@ export default function HomeSidebar({
   collapsed: boolean;
   setCollapsed: (value: boolean) => void;
 }) {
-  const pathname = usePathname();
-
   const sideItems: MenuProps["items"] = [
     {
       key: "/mon-ngon-viet-nam",
@@ -25,7 +20,7 @@ export default function HomeSidebar({
       icon: <IoMdStar />,
       children: [
         {
-          key: "mon-ngon-mien-bac",
+          key: "/mon-ngon-viet-nam/mon-ngon-mien-bac",
           label: (
             <Link href="/mon-ngon-viet-nam/mon-ngon-mien-bac">
               Món ngon miền Bắc
@@ -57,15 +52,27 @@ export default function HomeSidebar({
       children: [
         {
           key: "mon-ngon-han-quoc",
-          label: <Link href="/mon-ngon-the-gioi/mon-ngon-han-quoc">Món ngon Hàn Quốc</Link>,
+          label: (
+            <Link href="/mon-ngon-the-gioi/mon-ngon-han-quoc">
+              Món ngon Hàn Quốc
+            </Link>
+          ),
         },
         {
           key: "mon-ngon-nhat-ban",
-          label: <Link href="/mon-ngon-the-gioi/mon-ngon-nhat-ban">Món ngon Nhật Bản</Link>,
+          label: (
+            <Link href="/mon-ngon-the-gioi/mon-ngon-nhat-ban">
+              Món ngon Nhật Bản
+            </Link>
+          ),
         },
         {
           key: "mon-ngon-trung-quoc",
-          label: <Link href="/mon-ngon-the-gioi/mon-ngon-trung-quoc">Món ngon Trung Quốc</Link>,
+          label: (
+            <Link href="/mon-ngon-the-gioi/mon-ngon-trung-quoc">
+              Món ngon Trung Quốc
+            </Link>
+          ),
         },
       ],
     },
@@ -99,7 +106,6 @@ export default function HomeSidebar({
       >
         <Menu
           mode="inline"
-          defaultSelectedKeys={[pathname]}
           items={sideItems}
           className="p-2"
           style={{ flex: "auto", padding: 0, margin: 0 }}

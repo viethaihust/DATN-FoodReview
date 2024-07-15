@@ -14,15 +14,13 @@ export default function HomeHeader() {
   const { status, data: session } = useSession();
   const router = useRouter();
 
-  console.log("session:", session);
-
   const items: MenuProps["items"] = [
     {
       label: <Link href="/">Trang chủ</Link>,
       key: "0",
     },
     {
-      label: <Link href={`/profile/${session?.user?._id}`}>Thông tin</Link>,
+      label: <Link href="/profile">Thông tin</Link>,
       key: "1",
     },
     {

@@ -4,14 +4,28 @@ interface IPost {
   summary: string;
   content: string;
   image: string;
-  category: { _id: string; name: string; desc: string };
+  category: { _id: string; name: string; slug: string; description: string };
   createdAt: string;
 }
 
 interface ICategory {
   _id: string;
+  slug: string;
   name: string;
-  desc: string;
+  description: string;
+  subCategories: {
+    _id: string;
+    slug: string;
+    name: string;
+    description: string;
+  };
+}
+
+interface ISubCategory {
+  _id: string;
+  slug: string;
+  name: string;
+  description: string;
 }
 
 interface IComment {

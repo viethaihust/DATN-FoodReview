@@ -53,27 +53,27 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account }: { user: any; account: any }) {
-      if (account.provider === "google") {
-        const { name, email } = user;
-        try {
-          await connectMongoDB();
-          const userExists = await User.findOne({ email });
+    // async signIn({ user, account }: { user: any; account: any }) {
+    //   if (account.provider === "google") {
+    //     const { name, email } = user;
+    //     try {
+    //       await connectMongoDB();
+    //       const userExists = await User.findOne({ email });
 
-          if (!userExists) {
-            const newUser = new User({
-              name: name,
-              email: email,
-            });
-            await newUser.save();
-          }
-        } catch (error) {
-          console.error("Error calling Google API", error);
-          throw new Error("Sign in failed");
-        }
-      }
-      return true;
-    },
+    //       if (!userExists) {
+    //         const newUser = new User({
+    //           name: name,
+    //           email: email,
+    //         });
+    //         await newUser.save();
+    //       }
+    //     } catch (error) {
+    //       console.error("Error calling Google API", error);
+    //       throw new Error("Sign in failed");
+    //     }
+    //   }
+    //   return true;
+    // },
     async jwt({ token, user }) {
       if (user) return { ...token, ...user };
       if (new Date().getTime() < token.backendTokens?.expiresIn) return token;
@@ -81,10 +81,11 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ token, session }) {
-      session.user = token.user;
-      session.backendTokens = token.backendTokens;
-
+      if (token) {
+        session.user = token.user;
+        session.backendTokens = token.backendTokens;
+      }
       return session;
     },
-  }
+  },
 };

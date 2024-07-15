@@ -1,7 +1,7 @@
 import HomeBanner from "./components/HomeBanner";
 import HomeCategory from "./components/HomeCategory";
 
-export default function IndexPage() {
+export default function HomePage() {
   return (
     <div>
       <main>
