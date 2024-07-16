@@ -4,6 +4,7 @@ import { formatDate } from "@/utils/formatDate";
 import { ClockCircleOutlined, UserOutlined } from "@ant-design/icons";
 
 export default async function BaiViet({ params }: { params: { id: string } }) {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   const post = await fetch(BACKEND_URL + `/posts/${params.id}`)
     .then((res) => res.json())
     .then((data) => data.result as IPost);

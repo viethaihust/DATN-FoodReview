@@ -10,7 +10,7 @@ export default function HomeBanner() {
   useEffect(() => {
     if (target.current) {
       gsap.set(target.current, { visibility: "visible" });
-      const text = new SplitType(target.current);
+      const text = new SplitType(target.current, { types: "words,chars" });
       gsap.from(text.chars, {
         yPercent: -50,
         opacity: 0,

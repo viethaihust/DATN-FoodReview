@@ -13,7 +13,7 @@ export default async function MonNgon({
   params: { slug: string };
   searchParams: { page: string };
 }) {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   const category = await fetch(BACKEND_URL + `/categories/${params.slug}`)
     .then((res) => res.json())
     .then((data) => data.result as ICategory);

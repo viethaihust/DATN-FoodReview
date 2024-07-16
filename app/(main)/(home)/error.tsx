@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export default function ErrorPage({ error }: { error: Error }) {
   useEffect(() => {
-    console.log(`${error}`);
+    toast.error(error.message);
   }, [error]);
   return <div>Error fetching data :(</div>;
 }

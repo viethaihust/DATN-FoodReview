@@ -77,7 +77,7 @@ export default async function PostList({
       ) : (
         <div>Không có bài viết nào</div>
       )}
-      {posts && posts.length > 0 && <PostPagination total={totalPosts} />}
+      {posts && posts?.length > 0 && <PostPagination total={totalPosts} />}
     </div>
   );
 }

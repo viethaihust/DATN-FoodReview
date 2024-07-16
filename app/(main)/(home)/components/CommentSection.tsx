@@ -1,10 +1,7 @@
 "use client";
-import { authOptions } from "@/lib/auth";
 import { BACKEND_URL } from "@/lib/constants";
 import { formatDate } from "@/utils/formatDate";
-import { Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -107,7 +104,6 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
 
 const CommentSection: React.FC = () => {
   const [comments, setComments] = useState<IComment[]>([]);
-  const [loadingComments, setLoadingComments] = useState(true);
   const [commentText, setCommentText] = useState("");
   const params = useParams();
   const { data: session } = useSession();
@@ -131,8 +127,6 @@ const CommentSection: React.FC = () => {
         setComments(data);
       } catch (error) {
         console.error("Error fetching comments:", error);
-      } finally {
-        setLoadingComments(false);
       }
     }
 
@@ -229,10 +223,6 @@ const CommentSection: React.FC = () => {
       console.error("Error adding comment:", error);
     }
   };
-
-  if (loadingComments) {
-    return <Spin />;
-  }
 
   return (
     <div>

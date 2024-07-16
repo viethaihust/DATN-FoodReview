@@ -19,8 +19,6 @@ export default function Login() {
         redirect: false,
       });
 
-      console.log(res);
-
       if (res && res.ok) {
         router.push("/");
       } else if (res && res.error) {

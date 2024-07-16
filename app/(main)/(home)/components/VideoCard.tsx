@@ -2,13 +2,14 @@ import React from "react";
 import { AiFillHeart } from "react-icons/ai";
 import { ImMusic } from "react-icons/im";
 import VideoCardLikes from "./VideoCardLikes";
+import Image from "next/image";
 
 export default function VideoCard() {
   return (
     <div>
       <div className="flex border-b py-6 justify-center">
         <div className="cursor-pointer">
-          <img
+          <Image
             className="rounded-full max-h-[60px]"
             width="60"
             src="/profile.jpg"
@@ -56,7 +57,7 @@ export default function VideoCard() {
       </div>
       <div className="flex border-b py-6 justify-center">
         <div className="cursor-pointer">
-          <img
+          <Image
             className="rounded-full max-h-[60px]"
             width="60"
             src="/profile.jpg"

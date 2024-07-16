@@ -1,18 +1,11 @@
-import { Layout, Menu, MenuProps } from "antd";
+import { Menu, MenuProps } from "antd";
 import Link from "next/link";
 import React from "react";
 import { SolutionOutlined, VideoCameraOutlined } from "@ant-design/icons";
 import { IoMdStar } from "react-icons/io";
 import { TbWorld } from "react-icons/tb";
 
-const { Sider } = Layout;
-export default function HomeSidebar({
-  collapsed,
-  setCollapsed,
-}: {
-  collapsed: boolean;
-  setCollapsed: (value: boolean) => void;
-}) {
+export default function HomeMenu({ onClose }: { onClose?: () => void }) {
   const sideItems: MenuProps["items"] = [
     {
       key: "/mon-ngon-viet-nam",
@@ -22,7 +15,7 @@ export default function HomeSidebar({
         {
           key: "/mon-ngon-viet-nam/mon-ngon-mien-bac",
           label: (
-            <Link href="/mon-ngon-viet-nam/mon-ngon-mien-bac">
+            <Link href="/mon-ngon-viet-nam/mon-ngon-mien-bac" onClick={onClose}>
               Món ngon miền Bắc
             </Link>
           ),
@@ -30,7 +23,7 @@ export default function HomeSidebar({
         {
           key: "mon-ngon-mien-nam",
           label: (
-            <Link href="/mon-ngon-viet-nam/mon-ngon-mien-nam">
+            <Link href="/mon-ngon-viet-nam/mon-ngon-mien-nam" onClick={onClose}>
               Món ngon miền Nam
             </Link>
           ),
@@ -38,7 +31,10 @@ export default function HomeSidebar({
         {
           key: "mon-ngon-mien-trung",
           label: (
-            <Link href="/mon-ngon-viet-nam/mon-ngon-mien-trung">
+            <Link
+              href="/mon-ngon-viet-nam/mon-ngon-mien-trung"
+              onClick={onClose}
+            >
               Món ngon miền Trung
             </Link>
           ),
@@ -53,7 +49,7 @@ export default function HomeSidebar({
         {
           key: "mon-ngon-han-quoc",
           label: (
-            <Link href="/mon-ngon-the-gioi/mon-ngon-han-quoc">
+            <Link href="/mon-ngon-the-gioi/mon-ngon-han-quoc" onClick={onClose}>
               Món ngon Hàn Quốc
             </Link>
           ),
@@ -61,7 +57,7 @@ export default function HomeSidebar({
         {
           key: "mon-ngon-nhat-ban",
           label: (
-            <Link href="/mon-ngon-the-gioi/mon-ngon-nhat-ban">
+            <Link href="/mon-ngon-the-gioi/mon-ngon-nhat-ban" onClick={onClose}>
               Món ngon Nhật Bản
             </Link>
           ),
@@ -69,7 +65,10 @@ export default function HomeSidebar({
         {
           key: "mon-ngon-trung-quoc",
           label: (
-            <Link href="/mon-ngon-the-gioi/mon-ngon-trung-quoc">
+            <Link
+              href="/mon-ngon-the-gioi/mon-ngon-trung-quoc"
+              onClick={onClose}
+            >
               Món ngon Trung Quốc
             </Link>
           ),
@@ -78,39 +77,30 @@ export default function HomeSidebar({
     },
     {
       key: "/video-do-an",
-      label: <Link href="/video-do-an">Video đồ ăn</Link>,
+      label: (
+        <Link href="/video-do-an" onClick={onClose}>
+          Video đồ ăn
+        </Link>
+      ),
       icon: <VideoCameraOutlined />,
     },
     {
       key: "/nau-an",
-      label: <Link href="/nau-an">Nấu ăn</Link>,
+      label: (
+        <Link href="/nau-an" onClick={onClose}>
+          Nấu ăn
+        </Link>
+      ),
       icon: <SolutionOutlined />,
     },
   ];
 
   return (
-    <div className="relative z-10">
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
-        width={220}
-        breakpoint="sm"
-        collapsedWidth={50}
-        style={{
-          backgroundColor: "white",
-          position: "fixed",
-          overflow: "auto",
-          minHeight: "100vh",
-        }}
-      >
-        <Menu
-          mode="inline"
-          items={sideItems}
-          className="p-2"
-          style={{ flex: "auto", padding: 0, margin: 0 }}
-        />
-      </Sider>
-    </div>
+    <Menu
+      mode="inline"
+      items={sideItems}
+      className="p-2"
+      style={{ flex: "auto", padding: 0, margin: 0 }}
+    />
   );
 }
