@@ -27,34 +27,34 @@ export default async function HomeCarousel({
   return (
     <div>
       {posts && (
-        <Carousel autoplay arrows>
+        <Carousel arrows>
           {posts.map((post) => (
-            <div className="group overflow-hidden" key={post._id}>
-              <h3 className="h-[500px] text-white leading-[400px] bg-black backdrop-blur-sm flex justify-center relative">
-                <Image
-                  src={post.image}
-                  width={0}
-                  height={0}
-                  sizes="100vw"
-                  style={{ opacity: "0.6" }}
-                  alt="thit-trau-gac-bep"
-                  className="group-hover:scale-105 transition ease-in-out duration-300 object-cover w-full mx-28"
-                />
-                <div className="flex flex-col bottom-12 absolute leading-3 px-10">
-                  <Link
-                    href={`/bai-viet/${post._id}`}
-                    className="hover:text-[#fbc747]"
-                  >
-                    <div className="group-hover:-translate-y-5 transition ease-in-out duration-300 text-xl font-semibold">
+            <div key={post._id}>
+              <div className="h-[250px] md:h-[450px] text-white leading-[400px] bg-black backdrop-blur-sm relative px-28">
+                <Link
+                  href={`/bai-viet/${post._id}`}
+                  className="w-full flex justify-center"
+                >
+                  <Image
+                    src={post.image}
+                    width={350}
+                    height={350}
+                    style={{ opacity: "0.6" }}
+                    alt="thit-trau-gac-bep"
+                    className="w-full"
+                    quality={75}
+                  />
+                  <div className="group text-white flex flex-col bottom-8 md:bottom-12 absolute leading-3 px-10">
+                    <div className="group-hover:-translate-y-5 group-hover:text-[#fbc747] transition ease-in-out duration-300 text-xl font-semibold">
                       {post.title}
                     </div>
-                  </Link>
-                  <div className="-mt-2 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
-                    <ClockCircleOutlined className="mr-2" />
-                    {formatDate(post.createdAt)}
+                    <div className="hidden md:block -mt-2 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                      <ClockCircleOutlined className="mr-2" />
+                      {formatDate(post.createdAt)}
+                    </div>
                   </div>
-                </div>
-              </h3>
+                </Link>
+              </div>
             </div>
           ))}
         </Carousel>

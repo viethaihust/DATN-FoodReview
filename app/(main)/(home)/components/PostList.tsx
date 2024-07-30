@@ -48,6 +48,7 @@ export default async function PostList({
                 width={350}
                 height={350}
                 className="max-w-[350px]"
+                quality={75}
               />
             </div>
 

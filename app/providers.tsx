@@ -15,8 +15,8 @@ export const NextAuthProvider = ({
         theme={{
           components: {
             Carousel: {
-              arrowOffset: 20,
-              arrowSize: 50,
+              arrowOffset: 15,
+              arrowSize: 30,
               dotWidth: 30,
               dotActiveWidth: 40,
             },

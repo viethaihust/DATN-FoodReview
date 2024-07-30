@@ -1,12 +1,34 @@
 import { Menu, MenuProps } from "antd";
 import Link from "next/link";
 import React from "react";
-import { SolutionOutlined, VideoCameraOutlined } from "@ant-design/icons";
+import {
+  HomeOutlined,
+  SolutionOutlined,
+  VideoCameraOutlined,
+} from "@ant-design/icons";
 import { IoMdStar } from "react-icons/io";
 import { TbWorld } from "react-icons/tb";
 
 export default function HomeMenu({ onClose }: { onClose?: () => void }) {
   const sideItems: MenuProps["items"] = [
+    {
+      key: "/",
+      label: (
+        <Link href="/" onClick={onClose}>
+          Trang chủ
+        </Link>
+      ),
+      icon: <HomeOutlined />,
+    },
+    {
+      key: "/dia-diem-review",
+      label: (
+        <Link href="/dia-diem-review" onClick={onClose}>
+          Địa điểm review
+        </Link>
+      ),
+      icon: <SolutionOutlined />,
+    },
     {
       key: "/mon-ngon-viet-nam",
       label: "Món ngon Việt Nam",
@@ -83,15 +105,6 @@ export default function HomeMenu({ onClose }: { onClose?: () => void }) {
         </Link>
       ),
       icon: <VideoCameraOutlined />,
-    },
-    {
-      key: "/nau-an",
-      label: (
-        <Link href="/nau-an" onClick={onClose}>
-          Nấu ăn
-        </Link>
-      ),
-      icon: <SolutionOutlined />,
     },
   ];
 

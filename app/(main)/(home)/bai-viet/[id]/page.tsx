@@ -1,7 +1,7 @@
-import CommentSection from "@/(main)/(home)/components/CommentSection";
 import { BACKEND_URL } from "@/lib/constants";
 import { formatDate } from "@/utils/formatDate";
 import { ClockCircleOutlined, UserOutlined } from "@ant-design/icons";
+import ServerCommentSection from "../../components/ServerCommentSection";
 
 export default async function BaiViet({ params }: { params: { id: string } }) {
   await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -34,7 +34,7 @@ export default async function BaiViet({ params }: { params: { id: string } }) {
       </div>
       <div>
         <h1 className="text-2xl mb-4">Nested Comments Section</h1>
-        <CommentSection />
+        <ServerCommentSection postId={post._id} />
       </div>
     </div>
   );

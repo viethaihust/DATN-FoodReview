@@ -10,8 +10,9 @@ export default function VideoCard() {
       <div className="flex border-b py-6 justify-center">
         <div className="cursor-pointer">
           <Image
-            className="rounded-full max-h-[60px]"
-            width="60"
+            className="rounded-full"
+            height={60}
+            width={60}
             src="/profile.jpg"
             alt="profile-pic"
           />
@@ -58,8 +59,9 @@ export default function VideoCard() {
       <div className="flex border-b py-6 justify-center">
         <div className="cursor-pointer">
           <Image
-            className="rounded-full max-h-[60px]"
-            width="60"
+            className="rounded-full"
+            height={60}
+            width={60}
             src="/profile.jpg"
             alt="profile-pic"
           />

@@ -1,0 +1,9 @@
+.ant-carousel .slick-arrow {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .ant-carousel .slick-arrow {
+    display: block !important;
+  }
+}
