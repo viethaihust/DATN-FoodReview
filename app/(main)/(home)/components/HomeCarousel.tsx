@@ -42,7 +42,6 @@ export default async function HomeCarousel({
                     style={{ opacity: "0.6" }}
                     alt="thit-trau-gac-bep"
                     className="w-full"
-                    quality={75}
                   />
                   <div className="group text-white flex flex-col bottom-8 md:bottom-12 absolute leading-3 px-10">
                     <div className="group-hover:-translate-y-5 group-hover:text-[#fbc747] transition ease-in-out duration-300 text-xl font-semibold">
