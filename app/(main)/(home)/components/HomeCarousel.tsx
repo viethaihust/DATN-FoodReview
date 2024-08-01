@@ -13,7 +13,7 @@ export default async function HomeCarousel({
   params: string;
   pageType: string;
 }) {
-  let url = `${BACKEND_URL}/posts?random=true`;
+  let url = `${BACKEND_URL}/api/posts?random=true`;
   if (pageType === "category") {
     url += `&categorySlug=${params}`;
   } else if (pageType === "sub-category") {

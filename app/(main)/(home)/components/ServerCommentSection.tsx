@@ -6,7 +6,7 @@ export default async function ServerCommentSection({
 }: {
   postId: string;
 }) {
-  const comments = await fetch(`${BACKEND_URL}/comments?postId=${postId}`, {
+  const comments = await fetch(`${BACKEND_URL}/api/comments?postId=${postId}`, {
     cache: "no-store",
   }).then((res) => res.json());
 

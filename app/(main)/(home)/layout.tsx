@@ -135,7 +135,7 @@ export default function HomeLayout({
             )}
           </div>
         </Header>
-        <Content className="bg-white mt-2 md:ml-2 md:p-5 rounded-lg">
+        <Content className="bg-white mt-2 md:ml-2 p-5 rounded-lg">
           {children}
         </Content>
         <Footer>Footer</Footer>

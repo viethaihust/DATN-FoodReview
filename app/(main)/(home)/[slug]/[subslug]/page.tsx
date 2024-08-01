@@ -15,7 +15,7 @@ export default async function MonNgon({
 }) {
   await new Promise((resolve) => setTimeout(resolve, 2000));
   const subCategory = await fetch(
-    BACKEND_URL + `/sub-categories/${params.subslug}`
+    BACKEND_URL + `/api/sub-categories/${params.subslug}`
   )
     .then((res) => res.json())
     .then((data) => data.result as ICategory);

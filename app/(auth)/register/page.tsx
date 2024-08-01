@@ -12,7 +12,7 @@ export default function Register() {
   const router = useRouter();
   const onFinish = async (values: any) => {
     try {
-      const res = await fetch(BACKEND_URL + "/auth/register", {
+      const res = await fetch(BACKEND_URL + "/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

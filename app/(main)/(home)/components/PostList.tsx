@@ -19,7 +19,7 @@ export default async function PostList({
   const page = Number(searchParams?.page) || 1;
   const pageSize = 5;
 
-  let url = `${BACKEND_URL}/posts?page=${page}&pageSize=${pageSize}`;
+  let url = `${BACKEND_URL}/api/posts?page=${page}&pageSize=${pageSize}`;
   if (pageType === "category") {
     url += `&categorySlug=${params}`;
   } else if (pageType === "sub-category") {

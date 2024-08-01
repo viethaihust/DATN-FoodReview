@@ -2,13 +2,14 @@ import { Carousel, Rate } from "antd";
 import Image from "next/image";
 import React from "react";
 import "./Carousel.css";
-import { HeartOutlined } from "@ant-design/icons";
+import { HeartOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { FaRegBookmark } from "react-icons/fa";
+import ServerCommentSection from "../components/ServerCommentSection";
 export default function DiaDiemReview() {
   return (
     <div className="flex flex-wrap justify-between md:gap-10">
       <div className="flex-grow w-full md:w-1/2 md:px-5">
-        <div className="p-5 flex flex-row justify-between">
+        <div className="flex flex-row justify-between">
           <div className="flex items-center gap-6">
             <Image
               className="cursor-pointer hover:shadow-sm hover:shadow-slate-400 rounded-full"
@@ -27,56 +28,56 @@ export default function DiaDiemReview() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-5">
-            <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-400 transition-colors">
-              <HeartOutlined className="text-white text-2xl" />
+          <div className="flex items-center gap-2 md:gap-5">
+            <div className="w-10 h-10 md:w-16 md:h-16 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-400 transition-colors">
+              <HeartOutlined className="text-white text-xl md:text-2xl" />
             </div>
-            <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-400 transition-colors">
-              <FaRegBookmark className="text-white text-2xl" />
+            <div className="w-10 h-10 md:w-16 md:h-16 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-400 transition-colors">
+              <FaRegBookmark className="text-white text-xl md:text-2xl" />
             </div>
           </div>
         </div>
-        <div>
-          <Carousel arrows dots={false}>
-            <div>
+        <div className="pt-5 -mx-5">
+          <Carousel arrows>
+            <div className="h-[20rem] md:h-[35rem]">
               <Image
                 height={200}
                 width={200}
                 src="/mon-an-han-quoc.jpg"
                 alt="profile-pic"
-                className="w-full"
+                className="h-full w-auto object-contain m-auto"
               />
             </div>
-            <div>
+            <div className="h-[20rem] md:h-[35rem]">
               <Image
                 height={200}
                 width={200}
                 src="/mon-an-trung-quoc.jpg"
                 alt="profile-pic"
-                className="w-full"
+                className="h-full w-auto object-contain m-auto"
               />
             </div>
-            <div>
+            <div className="h-[20rem] md:h-[35rem]">
               <Image
                 height={200}
                 width={200}
                 src="/mon-an-nhat-ban.jpg"
                 alt="profile-pic"
-                className="w-full"
+                className="h-full w-auto object-contain m-auto"
               />
             </div>
-            <div>
+            <div className="h-[20rem] md:h-[35rem]">
               <Image
                 height={200}
                 width={200}
                 src="/mon-an-mien-bac.jpg"
                 alt="profile-pic"
-                className="w-full"
+                className="h-full w-auto object-contain m-auto"
               />
             </div>
           </Carousel>
         </div>
-        <div className="px-2">
+        <div className="pt-5 px-2">
           <div>
             <Rate disabled value={5} style={{ color: "orange" }} />
             <span className="ml-5">
@@ -91,7 +92,7 @@ export default function DiaDiemReview() {
             <div>Phục vụ: 8</div>
           </div>
         </div>
-        <div className="p-5">
+        <div>
           <div className="text-3xl font-semibold">Gà tắm mắm nhà Popeyes</div>
           <div className="text-gray-800 text-xl font-sans mt-5">
             📍Với mấy đứa thích ăn gà rán như mình thì gà tắm mắm của Popeyes
@@ -105,8 +106,11 @@ export default function DiaDiemReview() {
             hơn 160k cũng no nê lắm.
           </div>
         </div>
+        <div className="pt-5">
+          <ServerCommentSection postId="66816b7e53fb66017848c5cb" />
+        </div>
       </div>
-      <div className="max-w-[28rem] p-5">
+      <div className="md:max-w-[20rem]">
         <div className="text-xl font-semibold underline decoration-orange-500 underline-offset-8">
           Bài viết tương tự
         </div>

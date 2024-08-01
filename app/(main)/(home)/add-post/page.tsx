@@ -10,7 +10,7 @@ const onFinish: (values: IPost) => void = async (values) => {
   const { title, summary, content, image, category } = values;
 
   try {
-    const res = await fetch(BACKEND_URL + "/posts", {
+    const res = await fetch(BACKEND_URL + "/api/posts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -36,7 +36,7 @@ export default function AddPost() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const response = await fetch(BACKEND_URL + "/categories", {
+        const response = await fetch(BACKEND_URL + "/api/categories", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

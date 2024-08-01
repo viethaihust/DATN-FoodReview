@@ -19,7 +19,7 @@ export default function ClientCommentSection({
 
   const handleLike = async (id: string) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/comments/${id}/like`, {
+      const response = await fetch(`${BACKEND_URL}/api/comments/${id}/like`, {
         method: "PATCH",
         headers: {
           authorization: `Bearer ${session?.backendTokens.accessToken}`,
@@ -36,16 +36,18 @@ export default function ClientCommentSection({
 
       const updatedComment = await response.json();
 
-      setCommentList((prevComments) => 
-        Array.isArray(prevComments) ? prevComments.map((comment) =>
-          comment._id === id
-            ? {
-                ...comment,
-                likes: updatedComment.likes,
-                likedBy: updatedComment.likedBy,
-              }
-            : comment
-        ) : prevComments
+      setCommentList((prevComments) =>
+        Array.isArray(prevComments)
+          ? prevComments.map((comment) =>
+              comment._id === id
+                ? {
+                    ...comment,
+                    likes: updatedComment.likes,
+                    likedBy: updatedComment.likedBy,
+                  }
+                : comment
+            )
+          : prevComments
       );
     } catch (error) {
       console.error("Error liking/unliking comment:", error);
@@ -58,7 +60,7 @@ export default function ClientCommentSection({
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/comments/${id}`, {
+      const response = await fetch(`${BACKEND_URL}/api/comments/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +72,9 @@ export default function ClientCommentSection({
       }
 
       setCommentList((prevComments) =>
-        Array.isArray(prevComments) ? prevComments.filter((comment) => comment._id !== id) : prevComments
+        Array.isArray(prevComments)
+          ? prevComments.filter((comment) => comment._id !== id)
+          : prevComments
       );
     } catch (error) {
       console.error("Error deleting comment:", error);
@@ -82,7 +86,7 @@ export default function ClientCommentSection({
 
     try {
       console.log(postId);
-      const response = await fetch(`${BACKEND_URL}/comments`, {
+      const response = await fetch(`${BACKEND_URL}/api/comments`, {
         method: "POST",
         headers: {
           authorization: `Bearer ${session?.backendTokens.accessToken}`,
@@ -102,7 +106,11 @@ export default function ClientCommentSection({
 
       const newComment = await response.json();
 
-      setCommentList((prevComments) => Array.isArray(prevComments) ? [...prevComments, newComment] : [newComment]);
+      setCommentList((prevComments) =>
+        Array.isArray(prevComments)
+          ? [...prevComments, newComment]
+          : [newComment]
+      );
       setCommentText("");
     } catch (error) {
       console.error("Error adding comment:", error);
@@ -125,7 +133,7 @@ export default function ClientCommentSection({
           Bình luận
         </button>
       </div>
-      {commentList &&
+      {Array.isArray(commentList) &&
         commentList.map((comment) => (
           <CommentComponent
             key={comment._id}
