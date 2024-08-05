@@ -43,7 +43,8 @@ export const authOptions: NextAuthOptions = {
         if (res.status == 401) {
           throw new Error("Email hoặc mật khẩu không chính xác");
         }
-        const user = await res.json();
+        const result = await res.json();
+        const user = result.data;
         return user;
       },
     }),
