@@ -30,7 +30,7 @@ export default async function HomeCarousel({
         <Carousel arrows>
           {posts.map((post) => (
             <div key={post._id}>
-              <div className="h-[250px] md:h-[450px] text-white leading-[400px] bg-black backdrop-blur-sm relative px-28">
+              <div className="h-[250px] md:h-[450px] text-white bg-black backdrop-blur-sm relative px-28">
                 <Link
                   href={`/bai-viet/${post._id}`}
                   className="w-full flex justify-center"

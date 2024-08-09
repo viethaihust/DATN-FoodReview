@@ -10,7 +10,13 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { VscSignOut } from "react-icons/vsc";
-import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import {
+  FacebookOutlined,
+  InstagramOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  TwitterOutlined,
+} from "@ant-design/icons";
 
 export default function HomeLayout({
   children,
@@ -138,7 +144,23 @@ export default function HomeLayout({
         <Content className="bg-white mt-2 md:ml-2 p-5 rounded-lg">
           {children}
         </Content>
-        <Footer>Footer</Footer>
+        <Footer>
+          <div className="flex flex-col gap-2 md:flex-row justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold">FoodReview</h2>
+            </div>
+            <div>
+              <div className="flex gap-5">
+                <FacebookOutlined style={{ fontSize: "30px" }} />
+                <TwitterOutlined style={{ fontSize: "30px" }} />
+                <InstagramOutlined style={{ fontSize: "30px" }} />
+              </div>
+            </div>
+          </div>
+          <div className="mt-5 text-center text-gray-500">
+            © 2024 VuVietHai. All rights reserved.
+          </div>
+        </Footer>
       </Layout>
     </Layout>
   );
