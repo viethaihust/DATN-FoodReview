@@ -14,7 +14,7 @@ export default async function MonNgon({
   searchParams: { page: string };
 }) {
   await new Promise((resolve) => setTimeout(resolve, 2000));
-  const category = await fetch(BACKEND_URL + `/api/categories/${params.slug}`)
+  const category = await fetch(`${BACKEND_URL}/api/categories/${params.slug}`)
     .then((res) => res.json())
     .then((data) => data.result as ICategory);
 
