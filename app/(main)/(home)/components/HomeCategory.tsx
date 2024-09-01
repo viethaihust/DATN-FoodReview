@@ -9,7 +9,7 @@ export default function HomeCategory() {
         <div className="text-3xl text-orange-500 font-semibold">
           Món ăn Việt Nam
         </div>
-        <div className="mt-6 flex flex-row gap-4 md:gap-10 md:px-10">
+        <div className="mt-6 flex flex-row gap-10 md:gap-10 md:px-10">
           <div className="group relative overflow-hidden rounded-md">
             <Link href="/mon-ngon-viet-nam/mon-ngon-mien-bac">
               <Image
@@ -67,7 +67,7 @@ export default function HomeCategory() {
         <div className="text-3xl text-orange-500 font-semibold">
           Món ăn thế giới
         </div>
-        <div className="mt-6 flex flex-row gap-4 md:gap-10 md:px-10">
+        <div className="mt-6 flex flex-row gap-10 md:gap-10 md:px-10">
           <div className="group relative overflow-hidden rounded-md">
             <Link href="/mon-ngon-the-gioi/mon-ngon-han-quoc">
               <Image

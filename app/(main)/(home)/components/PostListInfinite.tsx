@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getPosts } from "@/actions/getPosts";
 import { useInView } from "react-intersection-observer";
 import { POSTS_PER_PAGE } from "@/lib/constants";
@@ -10,12 +10,12 @@ export default function PostListInfinite({
 }: {
   initialPosts: IPost[];
 }) {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(2);
   const [posts, setPosts] = useState<IPost[]>(initialPosts);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [scrollTrigger, isInView] = useInView();
 
-  const loadMorePosts = async () => {
+  const loadMorePosts = useCallback(async () => {
     if (hasMoreData) {
       const apiPosts = await getPosts(page, POSTS_PER_PAGE);
 
@@ -26,17 +26,17 @@ export default function PostListInfinite({
       setPosts((prevPosts) => [...prevPosts, ...apiPosts]);
       setPage((prevPage) => prevPage + 1);
     }
-  };
+  }, [hasMoreData, page]);
 
   useEffect(() => {
     if (isInView && hasMoreData) {
       loadMorePosts();
     }
-  }, [isInView, hasMoreData]);
+  }, [isInView, hasMoreData, loadMorePosts]);
 
   return (
     <>
-      <div className="post-list [counter-reset: post-index]">
+      <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 p-4">
         {Array.isArray(posts) ? (
           posts.map((post) => <PostCardInfinite key={post._id} post={post} />)
         ) : (

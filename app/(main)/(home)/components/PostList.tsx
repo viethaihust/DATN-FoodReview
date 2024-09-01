@@ -26,9 +26,11 @@ export default async function PostList({
     url += `&subCategorySlug=${params}`;
   }
 
-  const response = await fetch(url)
+  const response = await fetch(url, {
+    cache: "no-store",
+  })
     .then((res) => res.json())
-    .then((data) => data.result);
+    .then((data) => data.data);
 
   const posts = response?.posts as IPost[];
   const totalPosts = response?.totalPosts;

@@ -64,7 +64,11 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
               isLiked ? "font-bold" : ""
             }`}
           >
-            {isLiked ? <HeartFilled className="text-pink-600" /> : <HeartOutlined />}
+            {isLiked ? (
+              <HeartFilled className="text-pink-600" />
+            ) : (
+              <HeartOutlined />
+            )}
             {` ${comment.likes}`}
           </button>
           <button
@@ -92,15 +96,16 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
         </div>
       )}
       <div className="ml-4">
-        {comment.replies.map((reply) => (
-          <CommentComponent
-            key={reply._id}
-            comment={reply}
-            onLike={onLike}
-            onReply={onReply}
-            onDelete={onDelete}
-          />
-        ))}
+        {Array.isArray(comment) &&
+          comment.replies.map((reply) => (
+            <CommentComponent
+              key={reply._id}
+              comment={reply}
+              onLike={onLike}
+              onReply={onReply}
+              onDelete={onDelete}
+            />
+          ))}
       </div>
     </div>
   );

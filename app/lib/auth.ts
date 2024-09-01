@@ -1,8 +1,6 @@
-import connectMongoDB from "@/utils/db";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { NextAuthOptions } from "next-auth";
-import User from "@/models/User";
 import { JWT } from "next-auth/jwt";
 import { BACKEND_URL } from "./constants";
 
@@ -25,9 +23,11 @@ async function refreshToken(token: JWT): Promise<JWT> {
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "credentials",
-      credentials: {},
-      async authorize(credentials: any) {
+      credentials: {
+        email: {},
+        password: {},
+      },
+      async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
         const { email, password } = credentials;
         const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
@@ -75,9 +75,10 @@ export const authOptions: NextAuthOptions = {
     //   }
     //   return true;
     // },
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT; user: any }) {
       if (user) return { ...token, ...user };
-      if (new Date().getTime() < token.backendTokens?.expiresIn) return token;
+      console.log(Date.now() / 1000, token.backendTokens?.expiresIn);
+      if (Date.now() / 1000 < token.backendTokens?.expiresIn) return token;
       return await refreshToken(token);
     },
 

@@ -20,9 +20,11 @@ export default async function HomeCarousel({
     url += `&subCategorySlug=${params}`;
   }
 
-  const posts = await fetch(url)
+  const posts = await fetch(url, {
+    cache: "no-store",
+  })
     .then((res) => res.json())
-    .then((data) => data.result?.randomPosts as IPost[]);
+    .then((data) => data.data?.randomPosts as IPost[]);
 
   return (
     <div>
