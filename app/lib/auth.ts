@@ -77,7 +77,6 @@ export const authOptions: NextAuthOptions = {
     // },
     async jwt({ token, user }: { token: JWT; user: any }) {
       if (user) return { ...token, ...user };
-      console.log(Date.now() / 1000, token.backendTokens?.expiresIn);
       if (Date.now() / 1000 < token.backendTokens?.expiresIn) return token;
       return await refreshToken(token);
     },

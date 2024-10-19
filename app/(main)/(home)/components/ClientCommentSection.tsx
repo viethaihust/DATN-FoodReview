@@ -85,7 +85,6 @@ export default function ClientCommentSection({
     if (!commentText.trim()) return;
 
     try {
-      console.log(postId);
       const response = await fetch(`${BACKEND_URL}/api/comments`, {
         method: "POST",
         headers: {

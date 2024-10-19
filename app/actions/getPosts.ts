@@ -7,7 +7,6 @@ export const getPosts = async (
   pageSize: number
 ): Promise<IPost[]> => {
   const url = `${BACKEND_URL}/api/posts?page=${page}&pageSize=${pageSize}`;
-  console.log(url);
   try {
     const response = await fetch(url);
 
@@ -18,7 +17,6 @@ export const getPosts = async (
     const data = (await response.json()).data.posts as IPost[];
     return data;
   } catch (error: unknown) {
-    console.error(error);
     return [];
   }
 };

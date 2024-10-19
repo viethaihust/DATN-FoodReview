@@ -12,10 +12,7 @@ export default async function HomePage() {
       <main>
         <HomeBanner />
         <HomeCategory />
-        <div className="p-5">
-          <h1 className="text-center text-2xl mb-2">Loading posts on scroll</h1>
-          <PostListInfinite initialPosts={initialPosts} />
-        </div>
+        <PostListInfinite initialPosts={initialPosts} />
       </main>
     </div>
   );

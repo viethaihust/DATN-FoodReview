@@ -5,9 +5,13 @@ import ServerCommentSection from "../../components/ServerCommentSection";
 
 export default async function BaiViet({ params }: { params: { id: string } }) {
   await new Promise((resolve) => setTimeout(resolve, 2000));
-  const post = await fetch(`${BACKEND_URL}/api/posts/${params.id}`)
+  const post = await fetch(`${BACKEND_URL}/api/posts/${params.id}`, {
+    cache: "no-store",
+  })
     .then((res) => res.json())
-    .then((data) => data.result as IPost);
+    .then((result) => result.data as IPost);
+
+  console.log(post);
   const postContent = post.content;
 
   return (
