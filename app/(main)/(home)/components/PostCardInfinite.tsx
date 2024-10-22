@@ -3,16 +3,12 @@ import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-toastify";
-import { ok } from "assert";
-import { error } from "console";
-import { headers } from "next/headers";
-import { stringify } from "querystring";
 
 export default function PostCardInfinite({
   post,
   userId,
 }: {
-  post: IPost;
+  post: IReviewPost;
   userId: string | undefined;
 }) {
   const [liked, setLiked] = useState(false);
@@ -70,16 +66,19 @@ export default function PostCardInfinite({
 
   const handleUnlikePost = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/like-posts/unlike", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: userId,
-          postId: post._id,
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:8000/api/like-posts/unlike",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userId,
+            postId: post._id,
+          }),
+        }
+      );
 
       if (response.ok) {
         setLiked(false);
@@ -96,7 +95,7 @@ export default function PostCardInfinite({
     <div className="mb-4 h-min break-inside-avoid relative bg-white rounded-lg shadow-md hover:shadow-lg border border-gray-100 overflow-hidden">
       <Link href={`/bai-viet/${post._id}`}>
         <Image
-          src={post.image}
+          src={post.images[0]}
           alt={post.title}
           width={350}
           height={350}

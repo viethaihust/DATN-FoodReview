@@ -4,16 +4,16 @@ import { getPosts } from "@/actions/getPosts";
 import { useInView } from "react-intersection-observer";
 import { POSTS_PER_PAGE } from "@/lib/constants";
 import PostCardInfinite from "./PostCardInfinite";
-import { Spin } from "antd";
+import { Spin, Row, Col } from "antd";
 import { useSession } from "next-auth/react";
 
 export default function PostListInfinite({
   initialPosts,
 }: {
-  initialPosts: IPost[];
+  initialPosts: IReviewPost[];
 }) {
   const [page, setPage] = useState(2);
-  const [posts, setPosts] = useState<IPost[]>(initialPosts);
+  const [posts, setPosts] = useState<IReviewPost[]>(initialPosts);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [scrollTrigger, isInView] = useInView();
   const { data: session } = useSession();
@@ -39,14 +39,18 @@ export default function PostListInfinite({
 
   return (
     <>
-      <div className="pt-5 md:p-5 columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4">
-        {Array.isArray(posts) ? (
-          posts.map((post) => (
-            <PostCardInfinite key={post._id} post={post} userId={session?.user._id} />
-          ))
-        ) : (
-          <p>Không có bài viết nào</p>
-        )}
+      <div className="pt-5 md:p-5">
+        <Row gutter={[16, 16]}>
+          {Array.isArray(posts) ? (
+            posts.map((post) => (
+              <Col key={post._id} xs={24} sm={12} md={8} lg={6}>
+                <PostCardInfinite post={post} userId={session?.user._id} />
+              </Col>
+            ))
+          ) : (
+            <p>Không có bài viết nào</p>
+          )}
+        </Row>
       </div>
 
       <div className="text-center text-slate-600 mt-5">

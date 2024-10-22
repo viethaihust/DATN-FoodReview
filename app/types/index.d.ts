@@ -8,6 +8,22 @@ interface IPost {
   createdAt: string;
 }
 
+interface IReviewPost {
+  _id: string;
+  userId: string;
+  title: string;
+  content: string;
+  images: string[];
+  categoryId: string;
+  address: string;
+  overall: number;
+  flavor: number;
+  space: number;
+  hygiene: number;
+  price: number;
+  serves: number;
+}
+
 interface ICategory {
   _id: string;
   slug: string;

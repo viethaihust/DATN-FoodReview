@@ -5,16 +5,16 @@ import { handleError } from "@/utils/handleError";
 export const getPosts = async (
   page: number,
   pageSize: number
-): Promise<IPost[]> => {
-  const url = `${BACKEND_URL}/api/posts?page=${page}&pageSize=${pageSize}`;
+): Promise<IReviewPost[]> => {
+  const url = `${BACKEND_URL}/api/review-posts?page=${page}&pageSize=${pageSize}`;
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { cache: "no-store" });
 
     if (!response.ok) {
       throw await handleError(response);
     }
 
-    const data = (await response.json()).data.posts as IPost[];
+    const data = (await response.json()).data.posts as IReviewPost[];
     return data;
   } catch (error: unknown) {
     return [];
