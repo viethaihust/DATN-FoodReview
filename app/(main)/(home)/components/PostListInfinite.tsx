@@ -5,7 +5,6 @@ import { useInView } from "react-intersection-observer";
 import { POSTS_PER_PAGE } from "@/lib/constants";
 import PostCardInfinite from "./PostCardInfinite";
 import { Spin, Row, Col } from "antd";
-import { useSession } from "next-auth/react";
 
 export default function PostListInfinite({
   initialPosts,
@@ -16,7 +15,6 @@ export default function PostListInfinite({
   const [posts, setPosts] = useState<IReviewPost[]>(initialPosts);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [scrollTrigger, isInView] = useInView();
-  const { data: session } = useSession();
 
   const loadMorePosts = useCallback(async () => {
     if (hasMoreData) {
@@ -44,7 +42,7 @@ export default function PostListInfinite({
           {Array.isArray(posts) ? (
             posts.map((post) => (
               <Col key={post._id} xs={24} sm={12} md={8} lg={6}>
-                <PostCardInfinite post={post} userId={session?.user._id} />
+                <PostCardInfinite post={post} />
               </Col>
             ))
           ) : (

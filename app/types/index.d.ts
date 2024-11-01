@@ -10,18 +10,22 @@ interface IPost {
 
 interface IReviewPost {
   _id: string;
-  userId: string;
+  userId: { _id: string; name: string };
   title: string;
   content: string;
   images: string[];
   categoryId: string;
   address: string;
-  overall: number;
-  flavor: number;
-  space: number;
-  hygiene: number;
-  price: number;
-  serves: number;
+  likesCount: number;
+  ratings: {
+    overall: number;
+    flavor: number;
+    space: number;
+    hygiene: number;
+    price: number;
+    serves: number;
+  };
+  createdAt: string;
 }
 
 interface ICategory {

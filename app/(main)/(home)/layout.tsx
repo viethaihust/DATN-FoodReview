@@ -17,6 +17,7 @@ import {
   MenuUnfoldOutlined,
   TwitterOutlined,
 } from "@ant-design/icons";
+import NotificationComponent from "./components/NotificationComponent";
 
 export default function HomeLayout({
   children,
@@ -116,28 +117,31 @@ export default function HomeLayout({
           </Button>
           <div className="flex items-center ml-auto">
             {session ? (
-              <Dropdown
-                menu={{ items }}
-                trigger={["click"]}
-                arrow={{ pointAtCenter: true }}
-                autoAdjustOverflow
-                placement="bottomRight"
-              >
-                <button
-                  className="rounded-full"
-                  onClick={(e) => e.preventDefault()}
+              <div className="flex gap-10">
+                <NotificationComponent userId={session.user._id} />
+                <Dropdown
+                  menu={{ items }}
+                  trigger={["click"]}
+                  arrow={{ pointAtCenter: true }}
+                  autoAdjustOverflow
+                  placement="bottomRight"
                 >
-                  <Image
-                    src={session?.user?.image || "/profile.jpg"}
-                    width={40}
-                    height={40}
-                    alt="user-profile"
-                    style={{ borderRadius: "50%" }}
-                  />
-                </button>
-              </Dropdown>
+                  <button
+                    className="rounded-full"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <Image
+                      src={session?.user?.image || "/profile.jpg"}
+                      width={40}
+                      height={40}
+                      alt="user-profile"
+                      style={{ borderRadius: "50%" }}
+                    />
+                  </button>
+                </Dropdown>
+              </div>
             ) : (
-              <Button onClick={() => router.push("/login")}>Login</Button>
+              <Button onClick={() => router.push("/login")}>Đăng nhập</Button>
             )}
           </div>
         </Header>

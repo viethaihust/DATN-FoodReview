@@ -26,6 +26,7 @@
     "react-intersection-observer": "^9.13.0",
     "react-toastify": "^10.0.5",
     "sharp": "^0.33.4",
+    "socket.io-client": "^4.8.1",
     "split-type": "^0.3.4"
   },
   "devDependencies": {

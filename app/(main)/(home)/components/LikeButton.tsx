@@ -1,0 +1,109 @@
+"use client";
+import { useEffect, useState } from "react";
+import { HeartOutlined, HeartFilled } from "@ant-design/icons";
+import { toast } from "react-toastify";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+export default function LikeButton({ postId }: { postId: string }) {
+  const { data: session } = useSession();
+  const userId = session?.user._id;
+  const [liked, setLiked] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkIfLiked = async () => {
+      if (userId) {
+        try {
+          const response = await fetch(
+            `http://localhost:8000/api/like-posts/status?userId=${userId}&postId=${postId}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch like status");
+          }
+          const data = await response.json();
+          setLiked(data.liked);
+        } catch (error) {
+          console.error("Error checking if post is liked:", error);
+        }
+      }
+    };
+    checkIfLiked();
+  }, [userId, postId]);
+
+  const handleLikePost = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/api/like-posts", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${session?.backendTokens.accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId,
+          postId: postId,
+        }),
+      });
+
+      if (response.ok) {
+        setLiked(true);
+        router.refresh();
+        toast.success("Đã thích!");
+      } else {
+        toast.error("Thích bài viết thất bại.");
+      }
+    } catch (error) {
+      toast.error("Có lỗi xảy ra.");
+    }
+  };
+
+  const handleUnlikePost = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8000/api/like-posts/unlike",
+        {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${session?.backendTokens.accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userId,
+            postId: postId,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        setLiked(false);
+        router.refresh();
+        toast.success("Bỏ thích bài viết!");
+      } else {
+        toast.error("Bỏ thích bài viết thất bại.");
+      }
+    } catch (error) {
+      toast.error("Có lỗi xảy ra.");
+    }
+  };
+
+  return (
+    <div>
+      <span
+        onClick={liked ? handleUnlikePost : handleLikePost}
+        className="cursor-pointer"
+      >
+        {liked ? (
+          <HeartFilled className="text-2xl text-red-500" />
+        ) : (
+          <HeartOutlined className="text-2xl" />
+        )}
+      </span>
+    </div>
+  );
+}

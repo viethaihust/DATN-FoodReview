@@ -3,7 +3,6 @@ import Link from "next/link";
 import React from "react";
 import {
   HomeOutlined,
-  SolutionOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import { IoMdStar } from "react-icons/io";
@@ -19,15 +18,6 @@ export default function HomeMenu({ onClose }: { onClose?: () => void }) {
         </Link>
       ),
       icon: <HomeOutlined />,
-    },
-    {
-      key: "/dia-diem-review",
-      label: (
-        <Link href="/dia-diem-review" onClick={onClose}>
-          Địa điểm review
-        </Link>
-      ),
-      icon: <SolutionOutlined />,
     },
     {
       key: "/mon-ngon-viet-nam",

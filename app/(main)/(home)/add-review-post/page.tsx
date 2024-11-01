@@ -43,12 +43,7 @@ export default function AddPost() {
       content,
       categoryId,
       address,
-      overall,
-      flavor,
-      space,
-      hygiene,
-      price,
-      serves,
+      ratings: { overall, flavor, space, hygiene, price, serves },
     } = values;
 
     const formData = new FormData();
