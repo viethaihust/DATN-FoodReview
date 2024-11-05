@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { VscSignOut } from "react-icons/vsc";
 import {
+  EditOutlined,
   FacebookOutlined,
   InstagramOutlined,
   MenuFoldOutlined,
@@ -18,6 +19,7 @@ import {
   TwitterOutlined,
 } from "@ant-design/icons";
 import NotificationComponent from "./components/NotificationComponent";
+import SearchBar from "./components/SearchBar";
 
 export default function HomeLayout({
   children,
@@ -111,10 +113,24 @@ export default function HomeLayout({
           collapsed ? "md:ml-[50px]" : "md:ml-[220px]"
         }`}
       >
-        <Header className="flex items-center justify-between border-b-[1px] bg-white top-0 sticky z-10 px-5 md:px-12">
+        <Header
+          id="sticky-header"
+          className="flex items-center justify-between border-b-[1px] bg-white top-0 sticky z-10 px-5 md:px-12"
+        >
           <Button onClick={showDrawer} className="md:hidden">
             {open ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
           </Button>
+          <div className="flex items-center gap-6">
+            <SearchBar />
+            <Link href="/viet-bai-review">
+              <Button
+                className="rounded-md bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold px-4 py-5 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center"
+                icon={<EditOutlined className="text-lg" />}
+              >
+                Viết bài review
+              </Button>
+            </Link>
+          </div>
           <div className="flex items-center ml-auto">
             {session ? (
               <div className="flex gap-10">

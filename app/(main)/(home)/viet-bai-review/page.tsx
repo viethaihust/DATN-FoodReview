@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { BACKEND_URL } from "@/lib/constants";
 import { useSession } from "next-auth/react";
 
-export default function AddPost() {
+export default function VietBaiReview() {
   const [selectedImages, setSelectedImages] = useState<RcFile[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const { data: session } = useSession();
@@ -95,7 +95,7 @@ export default function AddPost() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Add Review Post</h1>
+      <h1 className="text-2xl font-bold mb-4">Viết Bài Review</h1>
       <Form
         layout="vertical"
         onFinish={(values) => onFinish(values, selectedImages)}
@@ -153,23 +153,25 @@ export default function AddPost() {
             { required: true, message: "Please rate the overall experience!" },
           ]}
         >
-          <Rate allowHalf />
+          <Rate allowHalf style={{ color: "orange" }} />
         </Form.Item>
-        <Form.Item name="flavor" label="Flavor">
-          <Slider min={1} max={10} />
-        </Form.Item>
-        <Form.Item name="space" label="Space">
-          <Slider min={1} max={10} />
-        </Form.Item>
-        <Form.Item name="hygiene" label="Hygiene">
-          <Slider min={1} max={10} />
-        </Form.Item>
-        <Form.Item name="price" label="Price">
-          <Slider min={1} max={10} />
-        </Form.Item>
-        <Form.Item name="serves" label="Serves">
-          <Slider min={1} max={10} />
-        </Form.Item>
+        <div className="w-1/2">
+          <Form.Item name="flavor" label="Flavor">
+            <Slider min={1} max={10} />
+          </Form.Item>
+          <Form.Item name="space" label="Space">
+            <Slider min={1} max={10} />
+          </Form.Item>
+          <Form.Item name="hygiene" label="Hygiene">
+            <Slider min={1} max={10} />
+          </Form.Item>
+          <Form.Item name="price" label="Price">
+            <Slider min={1} max={10} />
+          </Form.Item>
+          <Form.Item name="serves" label="Serves">
+            <Slider min={1} max={10} />
+          </Form.Item>
+        </div>
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Add Review Post

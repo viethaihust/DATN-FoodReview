@@ -3,6 +3,7 @@ import { CameraOutlined } from "@ant-design/icons";
 import { Tabs, TabsProps } from "antd";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import BookmarkList from "../components/BookmarkList";
 
 const ProfilePage = () => {
   const { data: session } = useSession();
@@ -16,8 +17,15 @@ const ProfilePage = () => {
     {
       key: "2",
       label: "Bài viết đã lưu",
-      children: "Content of Tab Pane 2",
-    }
+      children: session ? (
+        <BookmarkList
+          userId={session.user._id}
+          accessToken={session.backendTokens.accessToken}
+        />
+      ) : (
+        "Vui lòng đăng nhập để xem các bài viết đã lưu"
+      ),
+    },
   ];
 
   return (

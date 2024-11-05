@@ -15,6 +15,7 @@ export default function PostCardInfinite({ post }: { post: IReviewPost }) {
         />
         <div className="pb-0 p-4">
           <h2 className="text-lg font-bold text-gray-800">{post.title}</h2>
+          <p className="text-gray-600 mb-2">{post.content.slice(0, 100)}...</p>
         </div>
       </Link>
       <div className="flex items-center justify-between p-5">

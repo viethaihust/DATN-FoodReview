@@ -4,6 +4,7 @@ import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { BACKEND_URL } from "@/lib/constants";
 
 export default function LikeButton({ postId }: { postId: string }) {
   const { data: session } = useSession();
@@ -16,7 +17,7 @@ export default function LikeButton({ postId }: { postId: string }) {
       if (userId) {
         try {
           const response = await fetch(
-            `http://localhost:8000/api/like-posts/status?userId=${userId}&postId=${postId}`,
+            `${BACKEND_URL}/api/like-posts/status?userId=${userId}&postId=${postId}`,
             {
               method: "GET",
               headers: {
@@ -25,12 +26,12 @@ export default function LikeButton({ postId }: { postId: string }) {
             }
           );
           if (!response.ok) {
-            throw new Error("Failed to fetch like status");
+            throw new Error("Lỗi khi kiểm tra xem bài viết đã được thích hay chưa.");
           }
           const data = await response.json();
           setLiked(data.liked);
         } catch (error) {
-          console.error("Error checking if post is liked:", error);
+          console.error("Lỗi khi kiểm tra xem bài viết đã được thích hay chưa:", error);
         }
       }
     };
@@ -39,7 +40,7 @@ export default function LikeButton({ postId }: { postId: string }) {
 
   const handleLikePost = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/like-posts", {
+      const response = await fetch(`${BACKEND_URL}/api/like-posts`, {
         method: "POST",
         headers: {
           authorization: `Bearer ${session?.backendTokens.accessToken}`,
@@ -65,20 +66,17 @@ export default function LikeButton({ postId }: { postId: string }) {
 
   const handleUnlikePost = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/like-posts/unlike",
-        {
-          method: "POST",
-          headers: {
-            authorization: `Bearer ${session?.backendTokens.accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: userId,
-            postId: postId,
-          }),
-        }
-      );
+      const response = await fetch(`${BACKEND_URL}/api/like-posts/unlike`, {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${session?.backendTokens.accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId,
+          postId: postId,
+        }),
+      });
 
       if (response.ok) {
         setLiked(false);

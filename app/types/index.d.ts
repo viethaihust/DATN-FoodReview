@@ -69,3 +69,16 @@ interface ICommentComponentProps {
   onReply: (id: string, content: string) => void;
   onDelete: (id: string) => void;
 }
+
+interface IBookmark {
+  _id: string;
+  postId: {
+    images: string[];
+    title: string;
+    content: string;
+    ratings: {
+      overall: number;
+    };
+    address: string;
+  };
+}

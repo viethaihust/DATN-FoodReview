@@ -2,11 +2,11 @@ import { Carousel, Rate } from "antd";
 import Image from "next/image";
 import React from "react";
 import "./Carousel.css";
-import { FaRegBookmark } from "react-icons/fa";
 import ServerCommentSection from "../../components/ServerCommentSection";
 import { BACKEND_URL } from "@/lib/constants";
 import { formatDate } from "@/utils/formatDate";
 import LikeButton from "../../components/LikeButton";
+import BookmarkButton from "../../components/BookmarkButton";
 
 export default async function DiaDiemReview({
   params,
@@ -45,7 +45,7 @@ export default async function DiaDiemReview({
           <div className="flex items-center gap-2 md:gap-5">
             <div>{post.likesCount} lượt thích</div>
             <LikeButton postId={post._id} />
-            <FaRegBookmark className="text-xl md:text-2xl" />
+            <BookmarkButton postId={post._id} />
           </div>
         </div>
         <div className="pt-5 -mx-5">

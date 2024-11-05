@@ -2,10 +2,7 @@ import useSocket from "@/actions/useSocket";
 import { BACKEND_URL } from "@/lib/constants";
 import { BellOutlined } from "@ant-design/icons";
 import { Dropdown, Badge, MenuProps } from "antd";
-import { ok } from "assert";
-import { read } from "fs";
 import React, { useCallback, useEffect, useState } from "react";
-import { json } from "stream/consumers";
 
 const NotificationComponent = ({ userId }: { userId: string }) => {
   const socket = useSocket(userId);
@@ -87,8 +84,11 @@ const NotificationComponent = ({ userId }: { userId: string }) => {
       menu={{ items: notificationMenu }}
       trigger={["click"]}
       onOpenChange={handleDropdownOpen}
+      getPopupContainer={() =>
+        document.getElementById("sticky-header") as HTMLElement
+      }
     >
-      <div className="flex items-center relative cursor-pointer">
+      <div className="flex items-center cursor-pointer">
         <Badge count={unreadCount}>
           <BellOutlined className="text-2xl" />
         </Badge>
