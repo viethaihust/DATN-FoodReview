@@ -37,14 +37,8 @@ export default function VietBaiReview() {
     setSelectedImages((prev) => prev.filter((img) => img.uid !== file.uid));
   };
 
-  const onFinish = async (values: IReviewPost, selectedImages: RcFile[]) => {
-    const {
-      title,
-      content,
-      categoryId,
-      address,
-      ratings: { overall, flavor, space, hygiene, price, serves },
-    } = values;
+  const onFinish = async (values: any) => {
+    const { title, content, categoryId, address, ratings } = values;
 
     const formData = new FormData();
     selectedImages.forEach((file) => formData.append("images", file));
@@ -65,7 +59,10 @@ export default function VietBaiReview() {
 
       const postRes = await fetch(`${BACKEND_URL}/api/review-posts`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          authorization: `Bearer ${session?.backendTokens.accessToken}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           userId: session?.user._id,
           title,
@@ -73,14 +70,7 @@ export default function VietBaiReview() {
           images: imageUrls,
           categoryId,
           address,
-          ratings: {
-            overall,
-            flavor,
-            space,
-            hygiene,
-            price,
-            serves,
-          },
+          ratings,
         }),
       });
 
@@ -98,7 +88,7 @@ export default function VietBaiReview() {
       <h1 className="text-2xl font-bold mb-4">Viết Bài Review</h1>
       <Form
         layout="vertical"
-        onFinish={(values) => onFinish(values, selectedImages)}
+        onFinish={onFinish}
         className="bg-white p-6 rounded-lg shadow-md"
       >
         <Form.Item
@@ -147,7 +137,7 @@ export default function VietBaiReview() {
           <Input />
         </Form.Item>
         <Form.Item
-          name="overall"
+          name={["ratings", "overall"]}
           label="Overall Rating"
           rules={[
             { required: true, message: "Please rate the overall experience!" },
@@ -155,23 +145,21 @@ export default function VietBaiReview() {
         >
           <Rate allowHalf style={{ color: "orange" }} />
         </Form.Item>
-        <div className="w-1/2">
-          <Form.Item name="flavor" label="Flavor">
-            <Slider min={1} max={10} />
-          </Form.Item>
-          <Form.Item name="space" label="Space">
-            <Slider min={1} max={10} />
-          </Form.Item>
-          <Form.Item name="hygiene" label="Hygiene">
-            <Slider min={1} max={10} />
-          </Form.Item>
-          <Form.Item name="price" label="Price">
-            <Slider min={1} max={10} />
-          </Form.Item>
-          <Form.Item name="serves" label="Serves">
-            <Slider min={1} max={10} />
-          </Form.Item>
-        </div>
+        <Form.Item name={["ratings", "flavor"]} label="Flavor">
+          <Slider min={1} max={10} />
+        </Form.Item>
+        <Form.Item name={["ratings", "space"]} label="Space">
+          <Slider min={1} max={10} />
+        </Form.Item>
+        <Form.Item name={["ratings", "hygiene"]} label="Hygiene">
+          <Slider min={1} max={10} />
+        </Form.Item>
+        <Form.Item name={["ratings", "price"]} label="Price">
+          <Slider min={1} max={10} />
+        </Form.Item>
+        <Form.Item name={["ratings", "serves"]} label="Serves">
+          <Slider min={1} max={10} />
+        </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Add Review Post

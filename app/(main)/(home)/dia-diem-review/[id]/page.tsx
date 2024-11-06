@@ -66,6 +66,7 @@ export default async function DiaDiemReview({
         <div className="pt-5 px-2">
           <div>
             <Rate
+              allowHalf
               disabled
               value={post.ratings.overall}
               style={{ color: "orange" }}
@@ -111,6 +112,7 @@ export default async function DiaDiemReview({
                 <div className="opacity-80">06/15/2024</div>
                 <div className="flex items-center">
                   <Rate
+                    allowHalf
                     disabled
                     value={5}
                     style={{ color: "orange", fontSize: 15 }}
@@ -143,6 +145,7 @@ export default async function DiaDiemReview({
                 <div className="opacity-80">06/15/2024</div>
                 <div>
                   <Rate
+                    allowHalf
                     disabled
                     value={5}
                     style={{ color: "orange", fontSize: 15 }}

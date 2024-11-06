@@ -1,8 +1,5 @@
-import { Inter } from "next/font/google";
 import { Layout } from "antd";
 import AuthBackground from "./components/AuthBackground";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export default function AuthLayout({
   children,

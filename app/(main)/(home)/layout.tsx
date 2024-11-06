@@ -20,6 +20,7 @@ import {
 } from "@ant-design/icons";
 import NotificationComponent from "./components/NotificationComponent";
 import SearchBar from "./components/SearchBar";
+import { BACKEND_URL } from "@/lib/constants";
 
 export default function HomeLayout({
   children,
@@ -131,10 +132,10 @@ export default function HomeLayout({
               </Button>
             </Link>
           </div>
-          <div className="flex items-center ml-auto">
+          <div className="flex items-center ml-auto mr-5">
             {session ? (
               <div className="flex gap-10">
-                <NotificationComponent userId={session.user._id} />
+                <NotificationComponent userId={session.user?._id} />
                 <Dropdown
                   menu={{ items }}
                   trigger={["click"]}

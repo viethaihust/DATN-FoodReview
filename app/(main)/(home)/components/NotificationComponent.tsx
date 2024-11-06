@@ -33,15 +33,17 @@ const NotificationComponent = ({ userId }: { userId: string }) => {
 
   useEffect(() => {
     if (socket) {
-      socket.on("likeNotification", (data) => {
-        setNotifications((prev) => [
-          { message: data.message, read: false },
-          ...prev,
-        ]);
-        setUnreadCount((prevCount) => prevCount + 1);
+      socket.on("likeNotification", () => {
+        fetchNotifications();
       });
     }
-  }, [socket]);
+
+    return () => {
+      if (socket) {
+        socket.off("likeNotification");
+      }
+    };
+  }, [socket, fetchNotifications]);
 
   const handleDropdownOpen = async (open: boolean) => {
     if (open) {

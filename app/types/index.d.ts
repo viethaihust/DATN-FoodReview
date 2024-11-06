@@ -14,7 +14,7 @@ interface IReviewPost {
   title: string;
   content: string;
   images: string[];
-  categoryId: string;
+  categoryId: { _id: string; name: string; description: string };
   address: string;
   likesCount: number;
   ratings: {
@@ -30,15 +30,8 @@ interface IReviewPost {
 
 interface ICategory {
   _id: string;
-  slug: string;
   name: string;
   description: string;
-  subCategories: {
-    _id: string;
-    slug: string;
-    name: string;
-    description: string;
-  };
 }
 
 interface ISubCategory {
@@ -73,12 +66,22 @@ interface ICommentComponentProps {
 interface IBookmark {
   _id: string;
   postId: {
-    images: string[];
+    _id: string;
+    userId: { _id: string; name: string };
     title: string;
     content: string;
+    images: string[];
+    categoryId: { _id: string; name: string; description: string };
+    address: string;
+    likesCount: number;
     ratings: {
       overall: number;
+      flavor: number;
+      space: number;
+      hygiene: number;
+      price: number;
+      serves: number;
     };
-    address: string;
+    createdAt: string;
   };
 }

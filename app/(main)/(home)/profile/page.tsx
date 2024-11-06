@@ -4,6 +4,7 @@ import { Tabs, TabsProps } from "antd";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import BookmarkList from "../components/BookmarkList";
+import UserPostList from "../components/UserPostList";
 
 const ProfilePage = () => {
   const { data: session } = useSession();
@@ -12,7 +13,11 @@ const ProfilePage = () => {
     {
       key: "1",
       label: "Bài viết của tôi",
-      children: "Content of Tab Pane 1",
+      children: session ? (
+        <UserPostList userId={session.user._id} />
+      ) : (
+        "Vui lòng đăng nhập để xem các bài viết đã lưu"
+      ),
     },
     {
       key: "2",

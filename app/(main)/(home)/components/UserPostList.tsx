@@ -3,31 +3,24 @@ import { BACKEND_URL } from "@/lib/constants";
 import PostCardInfinite from "./PostCardInfinite";
 import Masonry from "react-masonry-css";
 
-const BookmarkList = ({
-  userId,
-  accessToken,
-}: {
-  userId: string;
-  accessToken: string;
-}) => {
-  const [bookmarks, setBookmarks] = useState<IBookmark[]>([]);
+const UserPostList = ({ userId }: { userId: string }) => {
+  const [userPosts, setUserPosts] = useState<IReviewPost[]>([]);
 
   useEffect(() => {
-    const fetchBookmarks = async () => {
+    const fetchUserPosts = async () => {
       try {
         const response = await fetch(
-          `${BACKEND_URL}/api/bookmark?userId=${userId}`,
+          `${BACKEND_URL}/api/review-posts?userId=${userId}`,
           {
             method: "GET",
             headers: {
-              authorization: `Bearer ${accessToken}`,
               "Content-Type": "application/json",
             },
           }
         );
         if (response.ok) {
-          const data = await response.json();
-          setBookmarks(data);
+          const result = await response.json();
+          setUserPosts(result.data.posts);
         } else {
           console.error("Lỗi khi lấy các bài viết đã lưu.");
         }
@@ -37,7 +30,7 @@ const BookmarkList = ({
     };
 
     if (userId) {
-      fetchBookmarks();
+      fetchUserPosts();
     }
   }, [userId]);
 
@@ -55,12 +48,17 @@ const BookmarkList = ({
         className="flex w-auto gap-4 px-5"
         columnClassName="bg-clip-padding"
       >
-        {Array.isArray(bookmarks) && bookmarks.length > 0 ? (
-          bookmarks.map(({ postId }) => (
-            <div key={postId._id} className="mb-4 break-inside-avoid">
-              <PostCardInfinite post={postId} />
-            </div>
-          ))
+        {Array.isArray(userPosts) && userPosts.length > 0 ? (
+          userPosts.map(
+            (userPost) => (
+              console.log(userPost),
+              (
+                <div key={userPost._id} className="mb-4 break-inside-avoid">
+                  <PostCardInfinite post={userPost} />
+                </div>
+              )
+            )
+          )
         ) : (
           <p>Không có bài viết nào</p>
         )}
@@ -69,4 +67,4 @@ const BookmarkList = ({
   );
 };
 
-export default BookmarkList;
+export default UserPostList;

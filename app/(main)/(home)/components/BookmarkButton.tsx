@@ -29,7 +29,7 @@ export default function BookmarkButton({ postId }: { postId: string }) {
 
           if (!response.ok) {
             throw new Error(
-              "Lỗi khi kiểm tra xem bài viết đã được đánh dấu hay chưa."
+              "Lỗi khi kiểm tra xem bài viết đã được lưu hay chưa."
             );
           }
 
@@ -37,7 +37,7 @@ export default function BookmarkButton({ postId }: { postId: string }) {
           setBookmarked(data.isBookmarked);
         } catch (error) {
           console.error(
-            "Lỗi khi kiểm tra xem bài viết đã được đánh dấu hay chưa:",
+            "Lỗi khi kiểm tra xem bài viết đã được lưu hay chưa:",
             error
           );
         }
