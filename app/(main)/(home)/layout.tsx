@@ -47,7 +47,7 @@ export default function HomeLayout({
       key: "0",
     },
     {
-      label: <Link href="/profile">Thông tin</Link>,
+      label: <Link href="/thong-tin-ca-nhan">Thông tin</Link>,
       key: "1",
     },
     {
