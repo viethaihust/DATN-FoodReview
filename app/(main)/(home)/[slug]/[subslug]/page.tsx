@@ -35,20 +35,20 @@ export default async function MonNgon({
           <RightOutlined />
           <Link href={"/mon-ngon-viet-nam"}>Món ngon Việt Nam</Link>
           <RightOutlined />
-          <Link
+          {/* <Link
             href={`/mon-ngon-viet-nam/${subCategory?.slug}`}
             className="font-semibold"
           >
             {subCategory?.name}
-          </Link>
+          </Link> */}
         </div>
         <div className="mt-4 text-4xl font-semibold">{subCategory?.name}</div>
         <div className="mt-6 italic opacity-80">{subCategory?.description}</div>
-        <PostList
+        {/* <PostList
           params={subCategory?.slug}
           searchParams={searchParams}
           pageType="sub-category"
-        />
+        /> */}
       </div>
     </div>
   );

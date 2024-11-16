@@ -2,7 +2,7 @@ import { Carousel, Rate } from "antd";
 import Image from "next/image";
 import React from "react";
 import "./Carousel.css";
-import ServerCommentSection from "../../components/ServerCommentSection";
+import CommentSection from "../../components/CommentSection";
 import { BACKEND_URL } from "@/lib/constants";
 import { formatDate } from "@/utils/formatDate";
 import LikeButton from "../../components/LikeButton";
@@ -19,6 +19,15 @@ export default async function DiaDiemReview({
   })
     .then((res) => res.json())
     .then((result) => result.data as IReviewPost);
+
+  const comments = await fetch(
+    `${BACKEND_URL}/api/comments?postId=${params.id}`,
+    {
+      cache: "no-store",
+    }
+  ).then((res) => res.json());
+
+  console.log(comments);
 
   return (
     <div className="flex flex-wrap justify-between md:gap-10">
@@ -91,7 +100,7 @@ export default async function DiaDiemReview({
           </div>
         </div>
         <div className="pt-5">
-          <ServerCommentSection postId="66816b7e53fb66017848c5cb" />
+          <CommentSection comments={comments} postId={post._id} />
         </div>
       </div>
       <div className="md:max-w-[20rem]">

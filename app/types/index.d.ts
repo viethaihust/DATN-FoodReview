@@ -43,11 +43,12 @@ interface ISubCategory {
 
 interface IComment {
   _id: string;
-  user: User;
+  userId: User;
   content: string;
   likes: number;
+  replies: number;
+  postId: Post;
   likedBy: User[];
-  replies: IComment[];
   createdAt: string;
 }
 
@@ -59,7 +60,6 @@ interface IUser {
 interface ICommentComponentProps {
   comment: IComment;
   onLike: (id: string) => void;
-  onReply: (id: string, content: string) => void;
   onDelete: (id: string) => void;
 }
 

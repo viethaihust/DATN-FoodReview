@@ -23,11 +23,9 @@ async function refreshToken(token: JWT): Promise<JWT> {
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      credentials: {
-        email: {},
-        password: {},
-      },
-      async authorize(credentials) {
+      name: "credentials",
+      credentials: {},
+      async authorize(credentials: any) {
         if (!credentials?.email || !credentials?.password) return null;
         const { email, password } = credentials;
         const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
@@ -43,8 +41,7 @@ export const authOptions: NextAuthOptions = {
         if (res.status == 401) {
           throw new Error("Email hoặc mật khẩu không chính xác");
         }
-        const result = await res.json();
-        const user = result.data;
+        const user = await res.json();
         return user;
       },
     }),
@@ -75,9 +72,9 @@ export const authOptions: NextAuthOptions = {
     //   }
     //   return true;
     // },
-    async jwt({ token, user }: { token: JWT; user: any }) {
+    async jwt({ token, user }) {
       if (user) return { ...token, ...user };
-      if (Date.now() / 1000 < token.backendTokens?.expiresIn) return token;
+      if (new Date().getTime() < token.backendTokens?.expiresIn) return token;
       return await refreshToken(token);
     },
 
@@ -88,8 +85,5 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-  },
-  pages: {
-    signIn: "/login",
   },
 };

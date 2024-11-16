@@ -66,7 +66,6 @@ export default function BookmarkButton({ postId }: { postId: string }) {
         toast.success(
           bookmarked ? "Đã bỏ lưu bài viết" : "Bài viết đã được lưu"
         );
-        router.refresh();
       } else {
         toast.error("Lưu bài viết thất bại.");
       }

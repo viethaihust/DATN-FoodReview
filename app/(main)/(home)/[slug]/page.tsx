@@ -34,11 +34,11 @@ export default async function MonNgon({
         </div>
         <div className="mt-4 text-4xl font-semibold">{category?.name}</div>
         <div className="mt-6 italic opacity-80">{category?.description}</div>
-        <PostList
+        {/* <PostList
           params={category?.slug}
           searchParams={searchParams}
           pageType="category"
-        />
+        /> */}
       </div>
     </div>
   );

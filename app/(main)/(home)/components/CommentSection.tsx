@@ -1,13 +1,12 @@
 "use client";
-
 import { BACKEND_URL } from "@/lib/constants";
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import CommentComponent from "./CommentComponent";
 import { Input } from "antd";
 
-export default function ClientCommentSection({
-  comments = [],
+export default function CommentSection({
+  comments,
   postId,
 }: {
   comments: IComment[];
@@ -54,10 +53,6 @@ export default function ClientCommentSection({
     }
   };
 
-  const handleReply = (id: string, content: string) => {
-    // Implement reply functionality here
-  };
-
   const handleDelete = async (id: string) => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/comments/${id}`, {
@@ -94,7 +89,7 @@ export default function ClientCommentSection({
         body: JSON.stringify({
           content: commentText,
           postId: postId,
-          user: session?.user?._id,
+          userId: session?.user?._id,
           likes: 0,
         }),
       });
@@ -124,6 +119,7 @@ export default function ClientCommentSection({
           onChange={(e) => setCommentText(e.target.value)}
           className="border p-2 rounded w-full"
           placeholder="Viết bình luận..."
+          onPressEnter={handleAddComment}
         />
         <button
           onClick={handleAddComment}
@@ -138,7 +134,6 @@ export default function ClientCommentSection({
             key={comment._id}
             comment={comment}
             onLike={handleLike}
-            onReply={handleReply}
             onDelete={handleDelete}
           />
         ))}

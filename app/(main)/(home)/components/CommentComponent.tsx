@@ -1,28 +1,134 @@
-"use client";
-import { formatDate } from "@/utils/formatDate";
+import { useState, useEffect } from "react";
 import { HeartFilled, HeartOutlined } from "@ant-design/icons";
-import TextArea from "antd/es/input/TextArea";
+import { Input } from "antd";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import { formatDate } from "@/utils/formatDate";
+import { BACKEND_URL } from "@/lib/constants";
 
 const CommentComponent: React.FC<ICommentComponentProps> = ({
   comment,
   onLike,
-  onReply,
   onDelete,
 }) => {
   const [replying, setReplying] = useState(false);
   const [replyContent, setReplyContent] = useState("");
+  const [showReplies, setShowReplies] = useState(false);
+  const [replies, setReplies] = useState<IComment[]>([]);
   const [showFullContent, setShowFullContent] = useState(false);
   const contentPreviewLength = 200;
   const { data: session } = useSession();
 
   const isLiked = comment.likedBy.includes(session?.user?._id);
 
-  const handleReply = () => {
-    onReply(comment._id, replyContent);
-    setReplying(false);
-    setReplyContent("");
+  useEffect(() => {
+    if (showReplies) {
+      const fetchReplies = async () => {
+        try {
+          const response = await fetch(
+            `${BACKEND_URL}/api/comments/replies?parentCommentId=${comment._id}`
+          );
+          const data = await response.json();
+          if (Array.isArray(data)) {
+            setReplies(data);
+          } else {
+            console.error("Replies data is not an array:", data);
+          }
+        } catch (error) {
+          console.error("Error fetching replies:", error);
+        }
+      };
+
+      fetchReplies();
+    }
+  }, [showReplies, comment._id]);
+
+  const handleReply = async () => {
+    if (!replyContent.trim()) return;
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/comments`, {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${session?.backendTokens.accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: replyContent,
+          postId: comment.postId,
+          userId: session?.user?._id,
+          likes: 0,
+          parentCommentId: comment._id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const newReply = await response.json();
+
+      setReplies((prevReplies) => [...prevReplies, newReply]);
+      setShowReplies(true);
+      setReplying(false);
+      setReplyContent("");
+    } catch (error) {
+      console.error("Error adding reply:", error);
+    }
+  };
+
+  const handleReplyLike = async (replyId: string) => {
+    const isLiked = replies
+      .find((reply) => reply._id === replyId)
+      ?.likedBy.includes(session?.user?._id);
+
+    try {
+      const response = await fetch(
+        `${BACKEND_URL}/api/comments/${replyId}/like`,
+        {
+          method: "PATCH",
+          headers: {
+            authorization: `Bearer ${session?.backendTokens.accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            replyId,
+            userId: session?.user?._id,
+            isLiked,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      setReplies((prevReplies) =>
+        prevReplies.map((reply) =>
+          reply._id === replyId
+            ? {
+                ...reply,
+                likes: isLiked ? reply.likes - 1 : reply.likes + 1,
+                likedBy: isLiked
+                  ? reply.likedBy.filter((id) => id !== session?.user?._id)
+                  : [...reply.likedBy, session?.user?._id],
+              }
+            : reply
+        )
+      );
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
+
+  const handleReplyDelete = async (replyId: string) => {
+    try {
+      onDelete(replyId);
+      setReplies((prevReplies) =>
+        prevReplies.filter((reply) => reply._id !== replyId)
+      );
+    } catch (error) {
+      console.error("Error deleting reply:", error);
+    }
   };
 
   return (
@@ -30,7 +136,7 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
       <div className="flex justify-between items-center">
         <div className="p-6">
           <div>
-            <span className="font-bold">{comment.user?.name} </span>
+            <span className="font-bold">{comment.userId?.name} </span>
             <span className="text-gray-500 text-sm">
               {formatDate(comment.createdAt)}
             </span>
@@ -55,6 +161,16 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
             >
               Trả lời
             </button>
+            {comment.replies > 0 && (
+              <button
+                onClick={() => setShowReplies(!showReplies)}
+                className="ml-4 text-blue-700"
+              >
+                {showReplies
+                  ? `Ẩn ${comment.replies} trả lời`
+                  : `Hiện ${comment.replies} trả lời`}
+              </button>
+            )}
           </div>
         </div>
         <div className="flex gap-5 p-6 w-32 md:min-w-max">
@@ -81,30 +197,30 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
       </div>
       {replying && (
         <div className="px-6 pb-6">
-          <TextArea
-            rows={2}
+          <Input
             className="w-full p-2 border rounded-lg"
             onChange={(e) => setReplyContent(e.target.value)}
             value={replyContent}
+            onPressEnter={handleReply}
           />
           <button
             onClick={handleReply}
             className="mt-2 bg-blue-700 text-white p-2 rounded-lg"
           >
-            Trả lời
+            Bình luận
           </button>
         </div>
       )}
       <div className="ml-4">
-        {Array.isArray(comment) &&
-          comment.replies.map((reply) => (
-            <CommentComponent
-              key={reply._id}
-              comment={reply}
-              onLike={onLike}
-              onReply={onReply}
-              onDelete={onDelete}
-            />
+        {showReplies &&
+          replies.map((reply) => (
+            <div key={reply._id} className="ml-8">
+              <CommentComponent
+                comment={reply}
+                onLike={handleReplyLike}
+                onDelete={handleReplyDelete}
+              />
+            </div>
           ))}
       </div>
     </div>
