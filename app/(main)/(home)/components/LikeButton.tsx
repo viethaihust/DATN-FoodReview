@@ -26,19 +26,24 @@ export default function LikeButton({ postId }: { postId: string }) {
             }
           );
           if (!response.ok) {
-            throw new Error("Lỗi khi kiểm tra xem bài viết đã được thích hay chưa.");
+            throw new Error(
+              "Lỗi khi kiểm tra xem bài viết đã được thích hay chưa."
+            );
           }
           const data = await response.json();
           setLiked(data.liked);
         } catch (error) {
-          console.error("Lỗi khi kiểm tra xem bài viết đã được thích hay chưa:", error);
+          console.error(
+            "Lỗi khi kiểm tra xem bài viết đã được thích hay chưa:",
+            error
+          );
         }
       }
     };
     checkIfLiked();
   }, [userId, postId]);
 
-  const handleLikePost = async () => {
+  const handleToggleLikePost = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/like-posts`, {
         method: "POST",
@@ -53,9 +58,9 @@ export default function LikeButton({ postId }: { postId: string }) {
       });
 
       if (response.ok) {
-        setLiked(true);
+        setLiked(!liked);
+        toast.success(liked ? "Đã bỏ thích bài viết" : "Đã thích bài viết");
         router.refresh();
-        toast.success("Đã thích!");
       } else {
         toast.error("Thích bài viết thất bại.");
       }
@@ -64,38 +69,9 @@ export default function LikeButton({ postId }: { postId: string }) {
     }
   };
 
-  const handleUnlikePost = async () => {
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/like-posts/unlike`, {
-        method: "POST",
-        headers: {
-          authorization: `Bearer ${session?.backendTokens.accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: userId,
-          postId: postId,
-        }),
-      });
-
-      if (response.ok) {
-        setLiked(false);
-        router.refresh();
-        toast.success("Bỏ thích bài viết!");
-      } else {
-        toast.error("Bỏ thích bài viết thất bại.");
-      }
-    } catch (error) {
-      toast.error("Có lỗi xảy ra.");
-    }
-  };
-
   return (
     <div>
-      <span
-        onClick={liked ? handleUnlikePost : handleLikePost}
-        className="cursor-pointer"
-      >
+      <span onClick={handleToggleLikePost} className="cursor-pointer">
         {liked ? (
           <HeartFilled className="text-2xl text-red-500" />
         ) : (

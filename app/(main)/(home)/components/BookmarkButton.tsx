@@ -3,14 +3,12 @@ import { useEffect, useState } from "react";
 import { FaRegBookmark } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { BACKEND_URL } from "@/lib/constants";
 
 export default function BookmarkButton({ postId }: { postId: string }) {
   const { data: session } = useSession();
   const userId = session?.user._id;
   const [bookmarked, setBookmarked] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const checkIfBookmarked = async () => {
@@ -45,7 +43,7 @@ export default function BookmarkButton({ postId }: { postId: string }) {
     };
 
     checkIfBookmarked();
-  }, [userId, postId]);
+  });
 
   const handleToggleBookmark = async () => {
     try {
