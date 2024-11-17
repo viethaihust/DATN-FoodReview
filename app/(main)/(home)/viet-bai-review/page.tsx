@@ -99,7 +99,7 @@ export default function VietBaiReview() {
   };
 
   const onFinish = async (values: any) => {
-    const { title, content, categoryId, address, ratings } = values;
+    const { title, content, categoryId, ratings } = values;
 
     const formData = new FormData();
     selectedImages.forEach((file) => formData.append("images", file));
@@ -130,7 +130,7 @@ export default function VietBaiReview() {
           content,
           images: imageUrls,
           categoryId,
-          address,
+          address: selectedAddress,
           ratings,
         }),
       });
