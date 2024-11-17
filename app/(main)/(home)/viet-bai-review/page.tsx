@@ -12,6 +12,61 @@ const mapContainerStyle = { width: "100%", height: "400px" };
 const defaultCenter = { lat: 10.7769, lng: 106.7009 };
 
 export default function VietBaiReview() {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+
+  useEffect(() => {
+    const initMap = async () => {
+      const loader = new Loader({
+        apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+        version: "weekly",
+      });
+
+      const { Map } = await loader.importLibrary("maps");
+
+      const { Geocoder } = (await loader.importLibrary(
+        "geocoding"
+      )) as google.maps.GeocodingLibrary;
+
+      const mapOptions: google.maps.MapOptions = {
+        center: defaultCenter,
+        zoom: 15,
+        mapId: "bf3ef2c398be7c83",
+      };
+
+      const map = new Map(mapRef.current!, mapOptions);
+
+      const marker = new google.maps.marker.AdvancedMarkerElement({
+        map: map,
+        position: defaultCenter,
+      });
+
+      const geocoder = new Geocoder();
+
+      map.addListener("click", async (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+          const position = e.latLng;
+          marker.position = position;
+
+          try {
+            const response = await geocoder.geocode({ location: position });
+            if (response.results && response.results[0]) {
+              const address = response.results[0].formatted_address;
+              setSelectedAddress(address);
+            } else {
+              toast.error("Không thể tìm địa chỉ!");
+            }
+          } catch (error) {
+            console.error("Geocoding error:", error);
+            toast.error("Có lỗi xảy ra khi lấy địa chỉ!");
+          }
+        }
+      });
+    };
+
+    initMap();
+  }, []);
+
   const [selectedImages, setSelectedImages] = useState<RcFile[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const { data: session } = useSession();
@@ -42,7 +97,7 @@ export default function VietBaiReview() {
   };
 
   const onFinish = async (values: any) => {
-    const { title, content, categoryId, ratings } = values;
+    const { title, content, categoryId, address, ratings } = values;
 
     const formData = new FormData();
     selectedImages.forEach((file) => formData.append("images", file));
@@ -61,8 +116,6 @@ export default function VietBaiReview() {
       const uploadedImages = await uploadRes.json();
       const imageUrls = uploadedImages.map((image: any) => image.secure_url);
 
-      console.log(selectedAddress);
-
       const postRes = await fetch(`${BACKEND_URL}/api/review-posts`, {
         method: "POST",
         headers: {
@@ -75,7 +128,7 @@ export default function VietBaiReview() {
           content,
           images: imageUrls,
           categoryId,
-          address: selectedAddress,
+          address,
           ratings,
         }),
       });
@@ -139,10 +192,16 @@ export default function VietBaiReview() {
         </Form.Item>
         <Form.Item
           name="address"
-          label="Address"
-          rules={[{ required: true, message: "Please input the address!" }]}
+          label="Địa chỉ"
+          rules={[{ required: true, message: "Vui lòng chọn địa chỉ!" }]}
         >
-          <Input />
+          <div ref={mapRef} style={mapContainerStyle}></div>
+          <Input
+            placeholder="Địa chỉ sẽ tự động cập nhật khi bạn chọn trên bản đồ"
+            value={selectedAddress || ""}
+            className="mt-2"
+            readOnly
+          />
         </Form.Item>
         <Form.Item
           name={["ratings", "overall"]}
