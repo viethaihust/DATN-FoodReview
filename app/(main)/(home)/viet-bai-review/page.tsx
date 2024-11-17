@@ -195,15 +195,16 @@ export default function VietBaiReview() {
         <Form.Item
           name="address"
           label="Địa chỉ"
-          rules={[{ required: true, message: "Vui lòng chọn địa chỉ!" }]}
         >
-          <div ref={mapRef} style={mapContainerStyle}></div>
-          <Input
-            placeholder="Địa chỉ sẽ tự động cập nhật khi bạn chọn trên bản đồ"
-            value={selectedAddress || ""}
-            className="mt-2"
-            readOnly
-          />
+          <div>
+            <div ref={mapRef} style={mapContainerStyle}></div>
+            <Input
+              placeholder="Địa chỉ sẽ tự động cập nhật khi bạn chọn trên bản đồ"
+              value={selectedAddress || ""}
+              className="mt-2"
+              readOnly
+            />
+          </div>
         </Form.Item>
         <Form.Item
           name={["ratings", "overall"]}
