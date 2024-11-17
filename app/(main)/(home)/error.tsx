@@ -6,5 +6,5 @@ export default function ErrorPage({ error }: { error: Error }) {
   useEffect(() => {
     toast.error(error.message);
   }, [error]);
-  return <div>Error fetching data :(</div>;
+  return <div>Có gì đấy sai sai :(</div>;
 }

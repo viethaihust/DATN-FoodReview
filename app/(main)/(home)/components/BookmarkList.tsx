@@ -39,7 +39,7 @@ const BookmarkList = ({
     if (userId) {
       fetchBookmarks();
     }
-  }, [userId]);
+  });
 
   const breakpointColumns = {
     default: 4,
