@@ -9,41 +9,61 @@ import { useSession } from "next-auth/react";
 import { Loader } from "@googlemaps/js-api-loader";
 
 const mapContainerStyle = { width: "100%", height: "400px" };
-const defaultCenter = { lat: 10.7769, lng: 106.7009 };
+const defaultCenter = { lat: 21.0044, lng: 105.8441 };
 
 export default function VietBaiReview() {
   const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstance = useRef<google.maps.Map | null>(null);
+  const markerInstance =
+    useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+
+  const loader = new Loader({
+    apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+    version: "weekly",
+    language: "vi",
+    region: "VN",
+  });
 
   useEffect(() => {
     const initMap = async () => {
-      const loader = new Loader({
-        apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-        version: "weekly",
-      });
-
       const { Map } = await loader.importLibrary("maps");
-
-      const { Marker } = await loader.importLibrary("marker");
-
+      const { AdvancedMarkerElement } = await loader.importLibrary("marker");
       const { Geocoder } = (await loader.importLibrary(
         "geocoding"
       )) as google.maps.GeocodingLibrary;
+      const { Autocomplete } = await loader.importLibrary("places");
 
       const mapOptions: google.maps.MapOptions = {
         center: defaultCenter,
         zoom: 15,
         mapId: "bf3ef2c398be7c83",
+        gestureHandling: "greedy",
       };
 
       const map = new Map(mapRef.current!, mapOptions);
+      mapInstance.current = map;
 
-      const marker = new google.maps.marker.AdvancedMarkerElement({
+      const marker = new AdvancedMarkerElement({
         map: map,
         position: defaultCenter,
       });
+      markerInstance.current = marker;
 
       const geocoder = new Geocoder();
+      const input = document.getElementById("searchBox") as HTMLInputElement;
+      const autocomplete = new Autocomplete(input);
+      autocomplete.bindTo("bounds", map);
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry?.location) {
+          const position = place.geometry.location;
+          map.panTo(position);
+          marker.position = position;
+          setSelectedAddress(place.formatted_address || null);
+        }
+      });
 
       map.addListener("click", async (e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
@@ -68,6 +88,38 @@ export default function VietBaiReview() {
 
     initMap();
   }, []);
+
+  const handleLocationShare = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          const location = new google.maps.LatLng(latitude, longitude);
+
+          if (mapInstance.current && markerInstance.current) {
+            const { Geocoder } = (await loader.importLibrary(
+              "geocoding"
+            )) as google.maps.GeocodingLibrary;
+            const geocoder = new Geocoder();
+            const response = await geocoder.geocode({ location });
+            const address = response.results[0]?.formatted_address || null;
+
+            mapInstance.current.panTo(location);
+            markerInstance.current.position = location;
+
+            setSelectedAddress(address);
+            toast.success("Đã chọn vị trí của bạn!");
+          }
+        },
+        (error) => {
+          console.error(error);
+          toast.error("Không thể truy cập vị trí của bạn!");
+        }
+      );
+    } else {
+      toast.error("Trình duyệt của bạn không hỗ trợ chia sẻ vị trí!");
+    }
+  };
 
   const [selectedImages, setSelectedImages] = useState<RcFile[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
@@ -192,14 +244,19 @@ export default function VietBaiReview() {
             }))}
           />
         </Form.Item>
-        <Form.Item
-          name="address"
-          label="Địa chỉ"
-        >
+        <Button onClick={handleLocationShare} type="primary" className="mb-4">
+          Chọn vị trí của tôi
+        </Button>
+        <Form.Item name="address" label="Tìm kiếm địa chỉ">
           <div>
+            <Input
+              id="searchBox"
+              placeholder="Nhập địa chỉ để tìm kiếm"
+              className="mb-4"
+            />
             <div ref={mapRef} style={mapContainerStyle}></div>
             <Input
-              placeholder="Địa chỉ sẽ tự động cập nhật khi bạn chọn trên bản đồ"
+              placeholder="Địa chỉ đã chọn"
               value={selectedAddress || ""}
               className="mt-2"
               readOnly
