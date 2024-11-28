@@ -17,6 +17,9 @@ export default function VietBaiReview() {
   const markerInstance =
     useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+  const directionsRenderer = useRef<google.maps.DirectionsRenderer | null>(
+    null
+  );
 
   const loader = new Loader({
     apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
@@ -84,12 +87,14 @@ export default function VietBaiReview() {
           }
         }
       });
+
+      directionsRenderer.current = new google.maps.DirectionsRenderer({ map });
     };
 
     initMap();
   }, []);
 
-  const handleLocationShare = () => {
+  const handleSelectMyLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -109,6 +114,46 @@ export default function VietBaiReview() {
 
             setSelectedAddress(address);
             toast.success("Đã chọn vị trí của bạn!");
+          }
+        },
+        (error) => {
+          console.error(error);
+          toast.error("Không thể truy cập vị trí của bạn!");
+        }
+      );
+    } else {
+      toast.error("Trình duyệt của bạn không hỗ trợ chia sẻ vị trí!");
+    }
+  };
+
+  const handleShowDirections = async () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          const origin = new google.maps.LatLng(latitude, longitude);
+
+          if (mapInstance.current && markerInstance.current) {
+            const destination = markerInstance.current.position!;
+            const directionsService = new google.maps.DirectionsService();
+
+            const request: google.maps.DirectionsRequest = {
+              origin,
+              destination,
+              travelMode: google.maps.TravelMode.DRIVING,
+            };
+
+            directionsService.route(request, (result, status) => {
+              if (status === google.maps.DirectionsStatus.OK) {
+                directionsRenderer.current?.setDirections(result);
+                toast.success(
+                  "Đang hiển thị chỉ đường đến vị trí đã đánh dấu!"
+                );
+              } else {
+                toast.error("Không thể hiển thị chỉ đường!");
+                console.error("Directions request failed:", status);
+              }
+            });
           }
         },
         (error) => {
@@ -244,8 +289,15 @@ export default function VietBaiReview() {
             }))}
           />
         </Form.Item>
-        <Button onClick={handleLocationShare} type="primary" className="mb-4">
+        <Button
+          onClick={handleSelectMyLocation}
+          type="primary"
+          className="mb-4"
+        >
           Chọn vị trí của tôi
+        </Button>
+        <Button onClick={handleShowDirections} className="ml-5">
+          Chỉ đường đến vị trí đã chọn
         </Button>
         <Form.Item name="address" label="Tìm kiếm địa chỉ">
           <div>
