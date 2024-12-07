@@ -10,7 +10,6 @@ export default async function BaiViet({ params }: { params: { id: string } }) {
     .then((res) => res.json())
     .then((result) => result.data as IPost);
 
-  console.log(post);
   const postContent = post.content;
 
   return (

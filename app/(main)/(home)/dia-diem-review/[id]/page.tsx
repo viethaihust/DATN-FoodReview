@@ -1,12 +1,12 @@
 import { Carousel, Rate } from "antd";
 import Image from "next/image";
-import React from "react";
 import "./Carousel.css";
 import CommentSection from "../../components/CommentSection";
 import { BACKEND_URL } from "@/lib/constants";
 import { formatDate } from "@/utils/formatDate";
 import LikeButton from "../../components/LikeButton";
 import BookmarkButton from "../../components/BookmarkButton";
+import MapModal from "../../components/MapModal";
 
 export default async function DiaDiemReview({
   params,
@@ -27,8 +27,6 @@ export default async function DiaDiemReview({
     }
   ).then((res) => res.json());
 
-  console.log(comments);
-
   return (
     <div className="flex flex-wrap justify-between md:gap-10">
       <div className="flex-grow w-full md:w-1/2 md:px-5">
@@ -46,7 +44,11 @@ export default async function DiaDiemReview({
               <div>
                 <span>{formatDate(post.createdAt)} tại&nbsp;</span>
                 <span className="text-orange-600 hover:cursor-pointer">
-                  {post.address}
+                  <MapModal
+                    destination={post.locationId.latLong}
+                    locationName={post.locationId.name}
+                    locationAddress={post.locationId.address}
+                  />
                 </span>
               </div>
             </div>

@@ -81,8 +81,6 @@ export default function VietBaiReview() {
           }
         : null;
 
-      console.log("latLong", latLong);
-
       const response = await fetch(`${BACKEND_URL}/api/location`, {
         method: "POST",
         headers: {
@@ -270,7 +268,7 @@ export default function VietBaiReview() {
   };
 
   const onFinish = async (values: any) => {
-    const { title, content, categoryId, ratings } = values;
+    const { title, content, categoryId, locationId, ratings } = values;
 
     const formData = new FormData();
     selectedImages.forEach((file) => formData.append("images", file));
@@ -301,7 +299,7 @@ export default function VietBaiReview() {
           content,
           images: imageUrls,
           categoryId,
-          address: selectedAddress,
+          locationId: locationId,
           ratings,
         }),
       });
@@ -363,8 +361,14 @@ export default function VietBaiReview() {
             }))}
           />
         </Form.Item>
-        <Form.Item label="Địa điểm">
-          <div className="flex gap-6">
+        <Form.Item
+          name="locationId"
+          label="Địa điểm"
+          rules={[
+            { required: true, message: "Vui lòng lựa chọn một địa điểm!" },
+          ]}
+        >
+          <div className="flex gap-6 items-center">
             <Select
               showSearch
               value={query}
@@ -376,6 +380,7 @@ export default function VietBaiReview() {
                 loading ? "Đang tải..." : "Không tìm thấy địa điểm"
               }
               filterOption={false}
+              className="flex-1"
             >
               {results.map((item: ILocation) => (
                 <Select.Option key={item._id} value={item._id}>
@@ -393,6 +398,8 @@ export default function VietBaiReview() {
           open={isModalOpen}
           onOk={handleOk}
           onCancel={handleCancel}
+          okText="Lưu"
+          cancelText="Hủy"
           width={1400}
         >
           <Form form={form} layout="vertical">

@@ -51,7 +51,6 @@ const UserPostList = ({ userId }: { userId: string }) => {
         {Array.isArray(userPosts) && userPosts.length > 0 ? (
           userPosts.map(
             (userPost) => (
-              console.log(userPost),
               (
                 <div key={userPost._id} className="mb-4 break-inside-avoid">
                   <PostCardInfinite post={userPost} />
