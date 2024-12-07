@@ -85,3 +85,13 @@ interface IBookmark {
     createdAt: string;
   };
 }
+
+interface ILocation {
+  _id: string;
+  name: string;
+  address: string;
+  latLong: {
+    lat: number;
+    lng: number;
+  };
+}

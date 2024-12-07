@@ -1,17 +1,117 @@
 "use client";
-import { Button, Form, Input, Select, Upload, Slider, Rate } from "antd";
-import React, { useEffect, useRef, useState } from "react";
+import { Button, Form, Input, Select, Upload, Slider, Rate, Modal } from "antd";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
 import { toast } from "react-toastify";
 import { BACKEND_URL } from "@/lib/constants";
 import { useSession } from "next-auth/react";
 import { Loader } from "@googlemaps/js-api-loader";
+import { debounce } from "lodash";
 
 const mapContainerStyle = { width: "100%", height: "400px" };
 const defaultCenter = { lat: 21.0044, lng: 105.8441 };
 
 export default function VietBaiReview() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<ILocation[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchLocations = useMemo(
+    () =>
+      debounce(async (searchQuery: string) => {
+        if (!searchQuery) {
+          setResults([]);
+          return;
+        }
+
+        setLoading(true);
+        try {
+          const response = await fetch(
+            `${BACKEND_URL}/api/location/search?query=${encodeURIComponent(
+              searchQuery
+            )}`,
+            { method: "GET" }
+          );
+          const data = await response.json();
+          setResults(data);
+        } catch (error) {
+          console.error("Error fetching locations:", error);
+        } finally {
+          setLoading(false);
+        }
+      }, 500),
+    []
+  );
+
+  const handleSearch = (value: string) => {
+    setQuery(value);
+    fetchLocations(value);
+  };
+
+  const handleSelect = (value: string) => {
+    const selectedLocation = results.find((item) => item._id === value);
+    if (selectedLocation) {
+      setQuery(`${selectedLocation.name} - ${selectedLocation.address}`);
+    }
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+
+    setTimeout(() => {
+      initMap();
+    }, 300);
+  };
+
+  const [form] = Form.useForm();
+
+  const handleOk = async () => {
+    try {
+      const values = await form.validateFields();
+      const { locationName } = values;
+      const address = selectedAddress;
+
+      const latLong = markerInstance.current?.position
+        ? {
+            lat: markerInstance.current.position.lat,
+            lng: markerInstance.current.position.lng,
+          }
+        : null;
+
+      console.log("latLong", latLong);
+
+      const response = await fetch(`${BACKEND_URL}/api/location`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: locationName,
+          address,
+          latLong: latLong,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Đã thêm địa điểm mới thành công!");
+        setIsModalOpen(false);
+        form.resetFields();
+      } else {
+        toast.error("Có lỗi xảy ra khi lưu địa điểm!");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Không thể lưu địa điểm, vui lòng thử lại!");
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<google.maps.Map | null>(null);
   const markerInstance =
@@ -28,71 +128,67 @@ export default function VietBaiReview() {
     region: "VN",
   });
 
-  useEffect(() => {
-    const initMap = async () => {
-      const { Map } = await loader.importLibrary("maps");
-      const { AdvancedMarkerElement } = await loader.importLibrary("marker");
-      const { Geocoder } = (await loader.importLibrary(
-        "geocoding"
-      )) as google.maps.GeocodingLibrary;
-      const { Autocomplete } = await loader.importLibrary("places");
+  const initMap = async () => {
+    const { Map } = await loader.importLibrary("maps");
+    const { AdvancedMarkerElement } = await loader.importLibrary("marker");
+    const { Geocoder } = (await loader.importLibrary(
+      "geocoding"
+    )) as google.maps.GeocodingLibrary;
+    const { Autocomplete } = await loader.importLibrary("places");
 
-      const mapOptions: google.maps.MapOptions = {
-        center: defaultCenter,
-        zoom: 15,
-        mapId: "bf3ef2c398be7c83",
-        gestureHandling: "greedy",
-      };
-
-      const map = new Map(mapRef.current!, mapOptions);
-      mapInstance.current = map;
-
-      const marker = new AdvancedMarkerElement({
-        map: map,
-        position: defaultCenter,
-      });
-      markerInstance.current = marker;
-
-      const geocoder = new Geocoder();
-      const input = document.getElementById("searchBox") as HTMLInputElement;
-      const autocomplete = new Autocomplete(input);
-      autocomplete.bindTo("bounds", map);
-
-      autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace();
-        if (place.geometry?.location) {
-          const position = place.geometry.location;
-          map.panTo(position);
-          marker.position = position;
-          setSelectedAddress(place.formatted_address || null);
-        }
-      });
-
-      map.addListener("click", async (e: google.maps.MapMouseEvent) => {
-        if (e.latLng) {
-          const position = e.latLng;
-          marker.position = position;
-
-          try {
-            const response = await geocoder.geocode({ location: position });
-            if (response.results && response.results[0]) {
-              const address = response.results[0].formatted_address;
-              setSelectedAddress(address);
-            } else {
-              toast.error("Không thể tìm địa chỉ!");
-            }
-          } catch (error) {
-            console.error("Geocoding error:", error);
-            toast.error("Có lỗi xảy ra khi lấy địa chỉ!");
-          }
-        }
-      });
-
-      directionsRenderer.current = new google.maps.DirectionsRenderer({ map });
+    const mapOptions: google.maps.MapOptions = {
+      center: defaultCenter,
+      zoom: 15,
+      mapId: "bf3ef2c398be7c83",
+      gestureHandling: "greedy",
     };
 
-    initMap();
-  }, []);
+    const map = new Map(mapRef.current!, mapOptions);
+    mapInstance.current = map;
+
+    const marker = new AdvancedMarkerElement({
+      map: map,
+      position: defaultCenter,
+    });
+    markerInstance.current = marker;
+
+    const geocoder = new Geocoder();
+    const input = document.getElementById("searchBox") as HTMLInputElement;
+    const autocomplete = new Autocomplete(input);
+    autocomplete.bindTo("bounds", map);
+
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      if (place.geometry?.location) {
+        const position = place.geometry.location;
+        map.panTo(position);
+        marker.position = position;
+        setSelectedAddress(place.formatted_address || null);
+      }
+    });
+
+    map.addListener("click", async (e: google.maps.MapMouseEvent) => {
+      if (e.latLng) {
+        const position = e.latLng;
+        marker.position = position;
+
+        try {
+          const response = await geocoder.geocode({ location: position });
+          if (response.results && response.results[0]) {
+            const address = response.results[0].formatted_address;
+            setSelectedAddress(address);
+          } else {
+            toast.error("Không thể tìm địa chỉ!");
+          }
+        } catch (error) {
+          console.error("Geocoding error:", error);
+          toast.error("Có lỗi xảy ra khi lấy địa chỉ!");
+        }
+      }
+    });
+
+    directionsRenderer.current = new google.maps.DirectionsRenderer({ map });
+  };
 
   const handleSelectMyLocation = () => {
     if (navigator.geolocation) {
@@ -117,48 +213,26 @@ export default function VietBaiReview() {
           }
         },
         (error) => {
-          console.error(error);
-          toast.error("Không thể truy cập vị trí của bạn!");
-        }
-      );
-    } else {
-      toast.error("Trình duyệt của bạn không hỗ trợ chia sẻ vị trí!");
-    }
-  };
-
-  const handleShowDirections = async () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          const origin = new google.maps.LatLng(latitude, longitude);
-
-          if (mapInstance.current && markerInstance.current) {
-            const destination = markerInstance.current.position!;
-            const directionsService = new google.maps.DirectionsService();
-
-            const request: google.maps.DirectionsRequest = {
-              origin,
-              destination,
-              travelMode: google.maps.TravelMode.DRIVING,
-            };
-
-            directionsService.route(request, (result, status) => {
-              if (status === google.maps.DirectionsStatus.OK) {
-                directionsRenderer.current?.setDirections(result);
-                toast.success(
-                  "Đang hiển thị chỉ đường đến vị trí đã đánh dấu!"
-                );
-              } else {
-                toast.error("Không thể hiển thị chỉ đường!");
-                console.error("Directions request failed:", status);
-              }
-            });
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              toast.error(
+                "Bạn đã từ chối truy cập vị trí. Hãy cấp quyền để tiếp tục."
+              );
+              break;
+            case error.POSITION_UNAVAILABLE:
+              toast.error(
+                "Không thể lấy vị trí của bạn. Vui lòng kiểm tra GPS hoặc thử lại."
+              );
+              break;
+            case error.TIMEOUT:
+              toast.error("Quá thời gian chờ. Vui lòng thử lại.");
+              break;
+            default:
+              toast.error(
+                "Không thể truy cập vị trí của bạn. Vui lòng thử lại."
+              );
+              break;
           }
-        },
-        (error) => {
-          console.error(error);
-          toast.error("Không thể truy cập vị trí của bạn!");
         }
       );
     } else {
@@ -289,32 +363,75 @@ export default function VietBaiReview() {
             }))}
           />
         </Form.Item>
-        <Button
-          onClick={handleSelectMyLocation}
-          type="primary"
-          className="mb-4"
-        >
-          Chọn vị trí của tôi
-        </Button>
-        <Button onClick={handleShowDirections} className="ml-5">
-          Chỉ đường đến vị trí đã chọn
-        </Button>
-        <Form.Item name="address" label="Tìm kiếm địa chỉ">
-          <div>
-            <Input
-              id="searchBox"
-              placeholder="Nhập địa chỉ để tìm kiếm"
-              className="mb-4"
-            />
-            <div ref={mapRef} style={mapContainerStyle}></div>
-            <Input
-              placeholder="Địa chỉ đã chọn"
-              value={selectedAddress || ""}
-              className="mt-2"
-              readOnly
-            />
+        <Form.Item label="Địa điểm">
+          <div className="flex gap-6">
+            <Select
+              showSearch
+              value={query}
+              placeholder="Tìm kiếm địa điểm"
+              suffixIcon={null}
+              onSearch={handleSearch}
+              onChange={handleSelect}
+              notFoundContent={
+                loading ? "Đang tải..." : "Không tìm thấy địa điểm"
+              }
+              filterOption={false}
+            >
+              {results.map((item: ILocation) => (
+                <Select.Option key={item._id} value={item._id}>
+                  <strong>{item.name}</strong> - {item.address}
+                </Select.Option>
+              ))}
+            </Select>
+            <Button type="primary" onClick={showModal}>
+              Tạo địa điểm mới
+            </Button>
           </div>
         </Form.Item>
+        <Modal
+          title="Tạo địa điểm mới"
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          width={1400}
+        >
+          <Form form={form} layout="vertical">
+            <Form.Item
+              name="locationName"
+              label="Tên địa điểm"
+              rules={[
+                { required: true, message: "Vui lòng điền tên địa điểm!" },
+              ]}
+            >
+              <Input name="locationName" />
+            </Form.Item>
+            <Form.Item name="address" label="Tìm kiếm địa chỉ">
+              <div>
+                <div className="flex gap-6">
+                  <Input
+                    id="searchBox"
+                    placeholder="Nhập địa chỉ để tìm kiếm"
+                    className="mb-4"
+                  />
+                  <Button
+                    onClick={handleSelectMyLocation}
+                    type="primary"
+                    className="mb-4"
+                  >
+                    Chọn vị trí của tôi
+                  </Button>
+                </div>
+                <div ref={mapRef} style={mapContainerStyle}></div>
+                <Input
+                  placeholder="Địa chỉ đã chọn"
+                  value={selectedAddress || ""}
+                  className="mt-2"
+                  readOnly
+                />
+              </div>
+            </Form.Item>
+          </Form>
+        </Modal>
         <Form.Item
           name={["ratings", "overall"]}
           label="Đánh giá tổng thể"
@@ -324,6 +441,7 @@ export default function VietBaiReview() {
               message: "Vui lòng đánh giá trải nghiệm tổng thể!",
             },
           ]}
+          className="mt-4"
         >
           <Rate allowHalf style={{ color: "orange" }} />
         </Form.Item>
