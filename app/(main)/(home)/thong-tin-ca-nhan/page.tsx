@@ -14,7 +14,7 @@ const ProfilePage = () => {
       key: "1",
       label: "Bài viết của tôi",
       children: session ? (
-        <UserPostList userId={session.user._id} />
+        <UserPostList userId={session?.user?._id} />
       ) : (
         "Vui lòng đăng nhập để xem các bài viết đã lưu"
       ),
@@ -24,7 +24,7 @@ const ProfilePage = () => {
       label: "Bài viết đã lưu",
       children: session ? (
         <BookmarkList
-          userId={session.user._id}
+          userId={session?.user?._id}
           accessToken={session.backendTokens.accessToken}
         />
       ) : (
@@ -49,8 +49,8 @@ const ProfilePage = () => {
           </button>
         </div>
         <div>
-          <div className="text-xl font-semibold">{session?.user.name}</div>
-          <div className="text-gray-500">{session?.user.email}</div>
+          <div className="text-xl font-semibold">{session?.user?.name}</div>
+          <div className="text-gray-500">{session?.user?.email}</div>
         </div>
       </div>
       <div className="mt-5">

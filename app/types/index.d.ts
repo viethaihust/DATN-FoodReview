@@ -77,7 +77,12 @@ interface IBookmark {
     content: string;
     images: string[];
     categoryId: { _id: string; name: string; description: string };
-    address: string;
+    locationId: {
+      _id: string;
+      name: string;
+      address: string;
+      latLong: { lat: number; lng: number };
+    };
     likesCount: number;
     ratings: {
       overall: number;

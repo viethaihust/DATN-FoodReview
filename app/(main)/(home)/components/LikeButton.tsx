@@ -8,7 +8,7 @@ import { BACKEND_URL } from "@/lib/constants";
 
 export default function LikeButton({ postId }: { postId: string }) {
   const { data: session } = useSession();
-  const userId = session?.user._id;
+  const userId = session?.user?._id;
   const [liked, setLiked] = useState(false);
   const router = useRouter();
 
@@ -21,6 +21,7 @@ export default function LikeButton({ postId }: { postId: string }) {
             {
               method: "GET",
               headers: {
+                authorization: `Bearer ${session?.backendTokens.accessToken}`,
                 "Content-Type": "application/json",
               },
             }

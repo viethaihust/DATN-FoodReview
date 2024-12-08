@@ -299,7 +299,7 @@ export default function VietBaiReview() {
           content,
           images: imageUrls,
           categoryId,
-          locationId: locationId,
+          locationId,
           ratings,
         }),
       });
@@ -368,31 +368,29 @@ export default function VietBaiReview() {
             { required: true, message: "Vui lòng lựa chọn một địa điểm!" },
           ]}
         >
-          <div className="flex gap-6 items-center">
-            <Select
-              showSearch
-              value={query}
-              placeholder="Tìm kiếm địa điểm"
-              suffixIcon={null}
-              onSearch={handleSearch}
-              onChange={handleSelect}
-              notFoundContent={
-                loading ? "Đang tải..." : "Không tìm thấy địa điểm"
-              }
-              filterOption={false}
-              className="flex-1"
-            >
-              {results.map((item: ILocation) => (
-                <Select.Option key={item._id} value={item._id}>
-                  <strong>{item.name}</strong> - {item.address}
-                </Select.Option>
-              ))}
-            </Select>
-            <Button type="primary" onClick={showModal}>
-              Tạo địa điểm mới
-            </Button>
-          </div>
+          <Select
+            showSearch
+            value={query}
+            placeholder="Tìm kiếm địa điểm"
+            suffixIcon={null}
+            onSearch={handleSearch}
+            onChange={handleSelect}
+            notFoundContent={
+              loading ? "Đang tải..." : "Không tìm thấy địa điểm"
+            }
+            filterOption={false}
+            className="flex-1"
+          >
+            {results.map((item: ILocation) => (
+              <Select.Option key={item._id} value={item._id}>
+                <strong>{item.name}</strong> - {item.address}
+              </Select.Option>
+            ))}
+          </Select>
         </Form.Item>
+        <Button type="primary" onClick={showModal}>
+          Tạo địa điểm mới
+        </Button>
         <Modal
           title="Tạo địa điểm mới"
           open={isModalOpen}

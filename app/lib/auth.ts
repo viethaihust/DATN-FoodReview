@@ -51,27 +51,29 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    // async signIn({ user, account }: { user: any; account: any }) {
-    //   if (account.provider === "google") {
-    //     const { name, email } = user;
-    //     try {
-    //       await connectMongoDB();
-    //       const userExists = await User.findOne({ email });
+    async signIn({ user, account }: { user: any; account: any }) {
+      if (account.provider === "google") {
+        const { name, email } = user;
+        const res = await fetch(`${BACKEND_URL}/api/auth/google-login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, name }),
+        });
 
-    //       if (!userExists) {
-    //         const newUser = new User({
-    //           name: name,
-    //           email: email,
-    //         });
-    //         await newUser.save();
-    //       }
-    //     } catch (error) {
-    //       console.error("Error calling Google API", error);
-    //       throw new Error("Sign in failed");
-    //     }
-    //   }
-    //   return true;
-    // },
+        if (!res.ok) {
+          console.error("Google login failed:", await res.text());
+          return false;
+        }
+
+        const backendUser = await res.json();
+
+        user.user = backendUser.user;
+        user.backendTokens = backendUser.backendTokens;
+        user.expiresIn = backendUser.expiresIn;
+        return true;
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) return { ...token, ...user };
       if (new Date().getTime() < token.backendTokens?.expiresIn) return token;
