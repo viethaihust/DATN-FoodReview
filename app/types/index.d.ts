@@ -60,6 +60,9 @@ interface IComment {
 interface IUser {
   _id: string;
   name: string;
+  email: string;
+  image: string;
+  banned: boolean;
 }
 
 interface ICommentComponentProps {

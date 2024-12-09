@@ -8,6 +8,7 @@ import UserPostList from "../components/UserPostList";
 
 const ProfilePage = () => {
   const { data: session } = useSession();
+  console.log(session);
 
   const items: TabsProps["items"] = [
     {
@@ -16,7 +17,7 @@ const ProfilePage = () => {
       children: session ? (
         <UserPostList userId={session?.user?._id} />
       ) : (
-        "Vui lòng đăng nhập để xem các bài viết đã lưu"
+        "Vui lòng đăng nhập để xem các bài viết của bạn"
       ),
     },
     {
@@ -41,7 +42,7 @@ const ProfilePage = () => {
             className="rounded-full"
             height={100}
             width={100}
-            src="/profile.jpg"
+            src={session?.user?.image || "/profile.jpg"}
             alt="profile-pic"
           />
           <button className="absolute bottom-0 right-0 bg-gray-400 px-2 py-1 rounded-full">

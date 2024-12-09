@@ -20,7 +20,6 @@ import {
 } from "@ant-design/icons";
 import NotificationComponent from "./components/NotificationComponent";
 import SearchBar from "./components/SearchBar";
-import { BACKEND_URL } from "@/lib/constants";
 
 export default function HomeLayout({
   children,

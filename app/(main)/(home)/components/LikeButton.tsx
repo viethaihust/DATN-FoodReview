@@ -60,7 +60,6 @@ export default function LikeButton({ postId }: { postId: string }) {
 
       if (response.ok) {
         setLiked(!liked);
-        toast.success(liked ? "Đã bỏ thích bài viết" : "Đã thích bài viết");
         router.refresh();
       } else {
         toast.error("Thích bài viết thất bại.");
