@@ -91,7 +91,6 @@ export const authOptions: NextAuthOptions = {
 
     async session({ token, session }) {
       if (token) {
-        console.log("token", token);
         session.user = token.user;
         session.backendTokens = token.backendTokens;
       }

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { BACKEND_URL } from "@/lib/constants";
 import PostCardInfinite from "./PostCardInfinite";
 import Masonry from "react-masonry-css";
+import { Button } from "antd";
+import Link from "next/link";
 
 const UserPostList = ({ userId }: { userId: string }) => {
   const [userPosts, setUserPosts] = useState<IReviewPost[]>([]);
@@ -49,15 +51,16 @@ const UserPostList = ({ userId }: { userId: string }) => {
         columnClassName="bg-clip-padding"
       >
         {Array.isArray(userPosts) && userPosts.length > 0 ? (
-          userPosts.map(
-            (userPost) => (
-              (
-                <div key={userPost._id} className="mb-4 break-inside-avoid">
-                  <PostCardInfinite post={userPost} />
-                </div>
-              )
-            )
-          )
+          userPosts.map((userPost) => (
+            <div key={userPost._id} className="mb-4 break-inside-avoid">
+              <PostCardInfinite post={userPost} />
+              <Link href={`/update-bai-viet/${userPost._id}`}>
+                <Button type="primary" className="w-full">
+                  Sửa bài viết
+                </Button>
+              </Link>
+            </div>
+          ))
         ) : (
           <p>Không có bài viết nào</p>
         )}

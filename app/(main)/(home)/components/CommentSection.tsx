@@ -58,6 +58,7 @@ export default function CommentSection({
       const response = await fetch(`${BACKEND_URL}/api/comments/${id}`, {
         method: "DELETE",
         headers: {
+          authorization: `Bearer ${session?.backendTokens.accessToken}`,
           "Content-Type": "application/json",
         },
       });

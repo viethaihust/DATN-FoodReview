@@ -101,8 +101,6 @@ const AdminDashboard: React.FC = () => {
     },
   ];
 
-  console.log(users);
-
   return (
     <div>
       <h1>Admin Dashboard</h1>

@@ -8,7 +8,6 @@ import UserPostList from "../components/UserPostList";
 
 const ProfilePage = () => {
   const { data: session } = useSession();
-  console.log(session);
 
   const items: TabsProps["items"] = [
     {

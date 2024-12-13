@@ -1,5 +1,5 @@
 "use client";
-import { Button, Form, Input, Select, Upload, Rate, Slider } from "antd";
+import { Button, Form, Input, Select, Upload, Rate } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
@@ -7,12 +7,58 @@ import { toast } from "react-toastify";
 import { BACKEND_URL } from "@/lib/constants";
 import { useSession } from "next-auth/react";
 import { debounce } from "lodash";
-import CreateLocationButton from "../components/CreateLocationButton";
-import IconSlider from "../components/IconSlider";
+import CreateLocationButton from "@/(main)/(home)/components/CreateLocationButton";
+import IconSlider from "@/(main)/(home)/components/IconSlider";
 
-export default function VietBaiReview() {
+export default function VietBaiReview({
+  params,
+}: {
+  params: { postId: string };
+}) {
+  const [form] = Form.useForm();
+  const [selectedImages, setSelectedImages] = useState<RcFile[]>([]);
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const { data: session } = useSession();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ILocation[]>([]);
+
+  const fetchPostDetails = async () => {
+    try {
+      const response = await fetch(
+        `${BACKEND_URL}/api/review-posts/${params.postId}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch post details");
+      }
+      const result = await response.json();
+
+      const data = result.data;
+
+      form.setFieldsValue({
+        title: data.title,
+        content: data.content,
+        categoryId: data.categoryId._id,
+        locationId: data.locationId._id,
+        ratings: data.ratings,
+      });
+
+      if (data.locationId) {
+        setQuery(`${data.locationId.name} - ${data.locationId.address}`);
+      }
+
+      setSelectedImages(
+        data.images.map((url: string, index: number) => ({
+          uid: `${index}`,
+          name: `image-${index}`,
+          status: "done",
+          url,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching post details:", error);
+      toast.error("Failed to load post details!");
+    }
+  };
 
   const fetchLocations = useMemo(
     () =>
@@ -50,11 +96,8 @@ export default function VietBaiReview() {
     }
   };
 
-  const [selectedImages, setSelectedImages] = useState<RcFile[]>([]);
-  const [categories, setCategories] = useState<ICategory[]>([]);
-  const { data: session } = useSession();
-
   useEffect(() => {
+    fetchPostDetails();
     async function fetchCategories() {
       try {
         const response = await fetch(`${BACKEND_URL}/api/categories`, {
@@ -99,25 +142,28 @@ export default function VietBaiReview() {
       const uploadedImages = await uploadRes.json();
       const imageUrls = uploadedImages.map((image: any) => image.secure_url);
 
-      const postRes = await fetch(`${BACKEND_URL}/api/review-posts`, {
-        method: "POST",
-        headers: {
-          authorization: `Bearer ${session?.backendTokens.accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: session?.user._id,
-          title,
-          content,
-          images: imageUrls,
-          categoryId,
-          locationId,
-          ratings,
-        }),
-      });
+      const postRes = await fetch(
+        `${BACKEND_URL}/api/review-posts/${params.postId}`,
+        {
+          method: "PATCH",
+          headers: {
+            authorization: `Bearer ${session?.backendTokens.accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: session?.user._id,
+            title,
+            content,
+            images: imageUrls,
+            categoryId,
+            locationId,
+            ratings,
+          }),
+        }
+      );
 
       if (postRes.ok) {
-        toast.success("Tạo bài viết thành công!");
+        toast.success("Update bài viết thành công!");
       } else {
         toast.error("Có lỗi xảy ra, vui lòng thử lại sau!");
       }
@@ -127,10 +173,13 @@ export default function VietBaiReview() {
     }
   };
 
+  console.log(query);
+
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Viết Bài Review</h1>
+      <h1 className="text-2xl font-bold mb-4">Update bài viết</h1>
       <Form
+        form={form}
         layout="vertical"
         onFinish={onFinish}
         className="bg-white p-6 rounded-lg shadow-md"
@@ -219,7 +268,7 @@ export default function VietBaiReview() {
         </Form.Item>
         <div className="max-w-60">
           <Form.Item name={["ratings", "flavor"]} label="Hương vị">
-            <IconSlider min={1} max={10} />
+            <IconSlider min={0} max={10} />
           </Form.Item>
           <Form.Item name={["ratings", "space"]} label="Không gian">
             <IconSlider min={0} max={10} />
@@ -236,7 +285,7 @@ export default function VietBaiReview() {
         </div>
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Đăng bài review
+            Update bài viết
           </Button>
         </Form.Item>
       </Form>

@@ -10,7 +10,7 @@ interface IPost {
 
 interface IReviewPost {
   _id: string;
-  userId: { _id: string; name: string };
+  userId: { _id: string; name: string; image?: string };
   title: string;
   content: string;
   images: string[];

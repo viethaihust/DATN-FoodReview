@@ -56,11 +56,17 @@ const BookmarkList = ({
         columnClassName="bg-clip-padding"
       >
         {Array.isArray(bookmarks) && bookmarks.length > 0 ? (
-          bookmarks.map(({ postId }) => (
-            <div key={postId._id} className="mb-4 break-inside-avoid">
-              <PostCardInfinite post={postId} />
-            </div>
-          ))
+          bookmarks.every(({ postId }) => !postId) ? (
+            <p>Không có bài viết nào</p>
+          ) : (
+            bookmarks.map(({ postId }) =>
+              postId ? (
+                <div key={postId._id} className="mb-4 break-inside-avoid">
+                  <PostCardInfinite post={postId} />
+                </div>
+              ) : null
+            )
+          )
         ) : (
           <p>Không có bài viết nào</p>
         )}
