@@ -11,14 +11,13 @@ import CreateLocationButton from "../components/CreateLocationButton";
 import IconSlider from "../components/IconSlider";
 
 export default function VietBaiReview() {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<ILocation[]>([]);
+  const [locations, setLocations] = useState<ILocation[]>([]);
 
   const fetchLocations = useMemo(
     () =>
       debounce(async (searchQuery: string) => {
         if (!searchQuery) {
-          setResults([]);
+          setLocations([]);
           return;
         }
 
@@ -30,7 +29,7 @@ export default function VietBaiReview() {
             { method: "GET" }
           );
           const data = await response.json();
-          setResults(data);
+          setLocations(data);
         } catch (error) {
           console.error("Error fetching locations:", error);
         }
@@ -39,15 +38,7 @@ export default function VietBaiReview() {
   );
 
   const handleSearch = (value: string) => {
-    setQuery(value);
     fetchLocations(value);
-  };
-
-  const handleSelect = (value: string) => {
-    const selectedLocation = results.find((item) => item._id === value);
-    if (selectedLocation) {
-      setQuery(`${selectedLocation.name} - ${selectedLocation.address}`);
-    }
   };
 
   const [selectedImages, setSelectedImages] = useState<RcFile[]>([]);
@@ -186,21 +177,17 @@ export default function VietBaiReview() {
           >
             <Select
               showSearch
-              value={query}
               placeholder="Tìm kiếm địa điểm"
               suffixIcon={null}
               onSearch={handleSearch}
-              onChange={handleSelect}
               notFoundContent={"Không tìm thấy địa điểm"}
               filterOption={false}
               className="flex-1"
-            >
-              {results.map((item: ILocation) => (
-                <Select.Option key={item._id} value={item._id}>
-                  <strong>{item.name}</strong> - {item.address}
-                </Select.Option>
-              ))}
-            </Select>
+              options={locations?.map((location: ILocation) => ({
+                value: location._id,
+                label: `${location.name} - ${location.address}`,
+              }))}
+            />
           </Form.Item>
           <CreateLocationButton />
         </div>

@@ -7,6 +7,7 @@ import { formatDate } from "@/utils/formatDate";
 import LikeButton from "../../components/LikeButton";
 import BookmarkButton from "../../components/BookmarkButton";
 import MapModal from "../../components/MapModal";
+import Link from "next/link";
 
 export default async function DiaDiemReview({
   params,
@@ -19,6 +20,13 @@ export default async function DiaDiemReview({
   })
     .then((res) => res.json())
     .then((result) => result.data as IReviewPost);
+
+  const randomPosts = await fetch(
+    `${BACKEND_URL}/api/review-posts/random?excludedPostId=${params.id}`,
+    {
+      cache: "no-store",
+    }
+  ).then((res) => res.json());
 
   const comments = await fetch(
     `${BACKEND_URL}/api/comments?postId=${params.id}`,
@@ -107,75 +115,50 @@ export default async function DiaDiemReview({
       </div>
       <div className="md:max-w-[20rem]">
         <div className="text-xl font-semibold underline decoration-orange-500 underline-offset-8">
-          Bài viết tương tự
+          Các bài viết khác
         </div>
         <div className="flex flex-col mt-5 gap-6">
-          <div className="rounded-md border">
-            <Image
-              height={200}
-              width={200}
-              src="/mon-an-trung-quoc.jpg"
-              alt="profile-pic"
-              className="w-full rounded-t-md"
-            />
-            <div className="flex flex-col gap-1 p-5">
-              <div className="flex flex-wrap gap-5">
-                <div className="opacity-80">06/15/2024</div>
-                <div className="flex items-center">
-                  <Rate
-                    allowHalf
-                    disabled
-                    value={5}
-                    style={{ color: "orange", fontSize: 15 }}
-                  />
-                  <span className="ml-2">
-                    <strong>5.0 </strong>/5 điểm
-                  </span>
+          {randomPosts.map((randomPost: IReviewPost) => (
+            <div className="rounded-md border">
+              <Image
+                height={100}
+                width={100}
+                src={randomPost.images[0]}
+                alt="profile-pic"
+                className="w-full max-h-52 rounded-t-md object-cover"
+              />
+              <div className="flex flex-col gap-1 p-4">
+                <div className="flex flex-wrap">
+                  <div className="opacity-80">{formatDate(post.createdAt)}</div>
+                  <div className="flex items-center">
+                    <Rate
+                      allowHalf
+                      disabled
+                      value={post.ratings.overall}
+                      style={{ color: "orange" }}
+                    />
+                    <span className="ml-5">
+                      <strong className="text-xl">
+                        {post.ratings.overall}{" "}
+                      </strong>
+                      /5 điểm
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="text-lg font-semibold">
-                LẨU RIÊU CUA TÓP MỠ !!
-              </div>
-              <div>
-                Nhân một ngày mát trời được bạn dẫn đi thẩm lẩu real quán quen
-                của nó. Hàng này thì không gian rộng rãi...
-              </div>
-              <div className="underline text-xl font-semibold">Xem thêm</div>
-            </div>
-          </div>
-          <div className="rounded-md border">
-            <Image
-              height={200}
-              width={200}
-              src="/mon-an-trung-quoc.jpg"
-              alt="profile-pic"
-              className="w-full rounded-t-md"
-            />
-            <div className="flex flex-col gap-1 p-5">
-              <div className="flex flex-row gap-5">
-                <div className="opacity-80">06/15/2024</div>
+                <Link
+                  href={`/dia-diem-review/${randomPost._id}`}
+                  className="hover:text-orange-600 text-lg font-semibold"
+                >
+                  {randomPost.title}
+                </Link>
                 <div>
-                  <Rate
-                    allowHalf
-                    disabled
-                    value={5}
-                    style={{ color: "orange", fontSize: 15 }}
-                  />
-                  <span className="ml-2">
-                    <strong>5.0 </strong>/5 điểm
-                  </span>
+                  {randomPost.content.length > 100
+                    ? randomPost.content.slice(0, 100) + "..."
+                    : randomPost.content}
                 </div>
               </div>
-              <div className="text-md font-semibold">
-                LẨU RIÊU CUA TÓP MỠ !!
-              </div>
-              <div>
-                Nhân một ngày mát trời được bạn dẫn đi thẩm lẩu real quán quen
-                của nó. Hàng này thì không gian rộng rãi...
-              </div>
-              <div className="underline text-xl font-semibold">Xem thêm</div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>

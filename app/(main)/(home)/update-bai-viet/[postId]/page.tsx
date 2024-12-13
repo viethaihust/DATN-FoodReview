@@ -19,8 +19,7 @@ export default function VietBaiReview({
   const [selectedImages, setSelectedImages] = useState<RcFile[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const { data: session } = useSession();
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<ILocation[]>([]);
+  const [locations, setLocations] = useState<ILocation[]>([]);
 
   const fetchPostDetails = async () => {
     try {
@@ -38,22 +37,8 @@ export default function VietBaiReview({
         title: data.title,
         content: data.content,
         categoryId: data.categoryId._id,
-        locationId: data.locationId._id,
         ratings: data.ratings,
       });
-
-      if (data.locationId) {
-        setQuery(`${data.locationId.name} - ${data.locationId.address}`);
-      }
-
-      setSelectedImages(
-        data.images.map((url: string, index: number) => ({
-          uid: `${index}`,
-          name: `image-${index}`,
-          status: "done",
-          url,
-        }))
-      );
     } catch (error) {
       console.error("Error fetching post details:", error);
       toast.error("Failed to load post details!");
@@ -64,7 +49,7 @@ export default function VietBaiReview({
     () =>
       debounce(async (searchQuery: string) => {
         if (!searchQuery) {
-          setResults([]);
+          setLocations([]);
           return;
         }
 
@@ -76,7 +61,7 @@ export default function VietBaiReview({
             { method: "GET" }
           );
           const data = await response.json();
-          setResults(data);
+          setLocations(data);
         } catch (error) {
           console.error("Error fetching locations:", error);
         }
@@ -85,15 +70,7 @@ export default function VietBaiReview({
   );
 
   const handleSearch = (value: string) => {
-    setQuery(value);
     fetchLocations(value);
-  };
-
-  const handleSelect = (value: string) => {
-    const selectedLocation = results.find((item) => item._id === value);
-    if (selectedLocation) {
-      setQuery(`${selectedLocation.name} - ${selectedLocation.address}`);
-    }
   };
 
   useEffect(() => {
@@ -126,6 +103,7 @@ export default function VietBaiReview({
     const { title, content, categoryId, locationId, ratings } = values;
 
     const formData = new FormData();
+    console.log("selectedImages", selectedImages);
     selectedImages.forEach((file) => formData.append("images", file));
 
     try {
@@ -172,8 +150,6 @@ export default function VietBaiReview({
       toast.error("Có lỗi xảy ra, vui lòng thử lại sau!");
     }
   };
-
-  console.log(query);
 
   return (
     <div className="p-4">
@@ -235,21 +211,17 @@ export default function VietBaiReview({
           >
             <Select
               showSearch
-              value={query}
               placeholder="Tìm kiếm địa điểm"
               suffixIcon={null}
               onSearch={handleSearch}
-              onChange={handleSelect}
               notFoundContent={"Không tìm thấy địa điểm"}
               filterOption={false}
               className="flex-1"
-            >
-              {results.map((item: ILocation) => (
-                <Select.Option key={item._id} value={item._id}>
-                  <strong>{item.name}</strong> - {item.address}
-                </Select.Option>
-              ))}
-            </Select>
+              options={locations?.map((location: ILocation) => ({
+                value: location._id,
+                label: `${location.name} - ${location.address}`,
+              }))}
+            />
           </Form.Item>
           <CreateLocationButton />
         </div>
