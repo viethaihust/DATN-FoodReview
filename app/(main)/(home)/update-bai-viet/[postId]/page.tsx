@@ -30,8 +30,31 @@ export default function VietBaiReview({
         throw new Error("Failed to fetch post details");
       }
       const result = await response.json();
-
       const data = result.data;
+
+      const initialImages: RcFile[] = await Promise.all(
+        data.images.map(async (url: string, index: number) => {
+          const response = await fetch(url);
+          const blob = await response.blob();
+
+          // Create a File object and attach the 'url' for preview
+          const file = new File(
+            [blob],
+            url.split("/").pop() || `image-${index}`,
+            {
+              type: blob.type,
+            }
+          ) as RcFile;
+
+          // Add the URL to the file object
+          return Object.assign(file, {
+            uid: `${index}`, // Ensure unique identifiers
+            url, // Required for preview
+          });
+        })
+      );
+
+      setSelectedImages(initialImages);
 
       form.setFieldsValue({
         title: data.title,
@@ -44,6 +67,10 @@ export default function VietBaiReview({
       toast.error("Failed to load post details!");
     }
   };
+
+  useEffect(() => {
+    fetchPostDetails();
+  }, []);
 
   const fetchLocations = useMemo(
     () =>
@@ -74,7 +101,6 @@ export default function VietBaiReview({
   };
 
   useEffect(() => {
-    fetchPostDetails();
     async function fetchCategories() {
       try {
         const response = await fetch(`${BACKEND_URL}/api/categories`, {
@@ -105,6 +131,7 @@ export default function VietBaiReview({
     const formData = new FormData();
     console.log("selectedImages", selectedImages);
     selectedImages.forEach((file) => formData.append("images", file));
+    console.log("formData", formData);
 
     try {
       const uploadRes = await fetch(`${BACKEND_URL}/api/upload/many-images`, {
@@ -181,6 +208,7 @@ export default function VietBaiReview({
             onRemove={handleImageRemove}
             multiple
             listType="picture"
+            fileList={selectedImages}
           >
             <Button icon={<UploadOutlined />}>Tải ảnh lên</Button>
           </Upload>
