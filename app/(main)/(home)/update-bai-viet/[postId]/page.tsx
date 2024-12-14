@@ -60,6 +60,7 @@ export default function VietBaiReview({
         title: data.title,
         content: data.content,
         categoryId: data.categoryId._id,
+        locationId: data.locationId._id,
         ratings: data.ratings,
       });
     } catch (error) {
@@ -117,13 +118,25 @@ export default function VietBaiReview({
   }, []);
 
   const handleImageSelect = (file: RcFile) => {
+    file.thumbUrl = URL.createObjectURL(file); // Add preview URL
     setSelectedImages((prev) => [...prev, file]);
-    return false;
+    return false; // Prevent automatic upload
   };
 
   const handleImageRemove = (file: UploadFile<any>) => {
-    setSelectedImages((prev) => prev.filter((img) => img.uid !== file.uid));
+    setSelectedImages((prev) => {
+      URL.revokeObjectURL(file.thumbUrl || "");
+      return prev.filter((img) => img.uid !== file.uid);
+    });
   };
+
+  useEffect(() => {
+    return () => {
+      selectedImages.forEach((file) =>
+        URL.revokeObjectURL(file.thumbUrl || "")
+      );
+    };
+  }, [selectedImages]);
 
   const onFinish = async (values: any) => {
     const { title, content, categoryId, locationId, ratings } = values;
