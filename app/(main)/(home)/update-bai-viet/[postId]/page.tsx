@@ -193,9 +193,9 @@ export default function VietBaiReview({
       } else {
         toast.error("Có lỗi xảy ra, vui lòng thử lại sau!");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error("Có lỗi xảy ra, vui lòng thử lại sau!");
+      toast.error("Có lỗi xảy ra, vui lòng thử lại sau!", error.message);
     }
   };
 
