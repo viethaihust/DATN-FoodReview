@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Table, Space, TablePaginationConfig } from "antd";
 import { useSession } from "next-auth/react";
 import { BACKEND_URL } from "@/lib/constants";
@@ -20,38 +20,41 @@ const AdminDashboard: React.FC = () => {
     total: 0,
   });
 
-  const fetchUsers = async (page: number, pageSize: number) => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `${BACKEND_URL}/api/users?page=${page}&pageSize=${pageSize}`,
-        {
-          method: "GET",
-          headers: {
-            authorization: `Bearer ${session?.backendTokens.accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      setUsers(data.users);
-      setPagination({
-        current: data.page,
-        pageSize: data.pageSize,
-        total: data.total,
-      });
-    } catch (error) {
-      console.error("Failed to fetch users", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchUsers = useCallback(
+    async (page: number, pageSize: number) => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `${BACKEND_URL}/api/users?page=${page}&pageSize=${pageSize}`,
+          {
+            method: "GET",
+            headers: {
+              authorization: `Bearer ${session?.backendTokens.accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        setUsers(data.users);
+        setPagination({
+          current: data.page,
+          pageSize: data.pageSize,
+          total: data.total,
+        });
+      } catch (error) {
+        console.error("Failed to fetch users", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [session?.backendTokens.accessToken]
+  );
 
   useEffect(() => {
     if (status === "authenticated") {
       fetchUsers(pagination.current, pagination.pageSize);
     }
-  }, [session]);
+  }, [session, fetchUsers, pagination, status]);
 
   const handleTableChange = (pagination: TablePaginationConfig) => {
     const currentPage = pagination.current || 1;

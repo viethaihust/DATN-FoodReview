@@ -1,10 +1,87 @@
 import Image from "next/image";
 import Link from "next/link";
 import LikeButton from "./LikeButton";
+import { Button, Dropdown, MenuProps, Modal } from "antd";
+import { MenuOutlined } from "@ant-design/icons";
+import { useSession } from "next-auth/react";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+import { BACKEND_URL } from "@/lib/constants";
 
 export default function PostCardInfinite({ post }: { post: IReviewPost }) {
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  const items: MenuProps["items"] = [
+    {
+      label: (
+        <Link href={`/update-bai-viet/${post._id}`}>
+          <Button type="primary" className="w-full">
+            Sửa bài viết
+          </Button>
+        </Link>
+      ),
+      key: "0",
+    },
+    {
+      label: (
+        <Button
+          type="default"
+          danger
+          onClick={() => {
+            Modal.confirm({
+              title: "Xác nhận xóa bài viết",
+              content: "Bạn có chắc chắn muốn xóa bài viết này không?",
+              okText: "Xóa",
+              cancelText: "Hủy",
+              onOk: async () => {
+                try {
+                  const response = await fetch(
+                    `${BACKEND_URL}/api/review-posts/${post._id}`,
+                    {
+                      method: "DELETE",
+                      headers: {
+                        authorization: `Bearer ${session?.backendTokens.accessToken}`,
+                        "Content-Type": "application/json",
+                      },
+                    }
+                  );
+
+                  if (response.ok) {
+                    router.refresh();
+                    toast.success("Xóa bài viết thành công");
+                  } else {
+                    toast.error("Lỗi khi xóa bài viết");
+                  }
+                } catch (error) {
+                  console.error("Lỗi khi xóa bài viết:", error);
+                  toast.error("Lỗi kết nối tới máy chủ");
+                }
+              },
+            });
+          }}
+          className="w-full"
+        >
+          Xóa bài viết
+        </Button>
+      ),
+      key: "1",
+    },
+  ];
+
   return (
     <div className="mb-4 h-min break-inside-avoid relative bg-white rounded-lg shadow-md hover:shadow-lg border border-gray-100 overflow-hidden">
+      {session?.user?._id === post.userId._id && (
+        <Dropdown
+          menu={{ items }}
+          trigger={["click"]}
+          className="absolute top-3 right-3 text-black w-8 h-8"
+        >
+          <Button onClick={(e) => e.preventDefault()}>
+            <MenuOutlined style={{ fontSize: "18px" }} />
+          </Button>
+        </Dropdown>
+      )}
       <Link href={`/dia-diem-review/${post?._id}`}>
         <Image
           src={post?.images[0]}
