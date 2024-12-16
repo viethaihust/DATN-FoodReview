@@ -1,6 +1,6 @@
 "use client";
 import { Button, Form, Input, Select, Upload, Rate } from "antd";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
 import { toast } from "react-toastify";
@@ -21,7 +21,7 @@ export default function VietBaiReview({
   const { data: session } = useSession();
   const [locations, setLocations] = useState<ILocation[]>([]);
 
-  const fetchPostDetails = async () => {
+  const fetchPostDetails = useCallback(async () => {
     try {
       const response = await fetch(
         `${BACKEND_URL}/api/review-posts/${params.postId}`
@@ -32,29 +32,20 @@ export default function VietBaiReview({
       const result = await response.json();
       const data = result.data;
 
-      const initialImages: RcFile[] = await Promise.all(
-        data.images.map(async (url: string, index: number) => {
-          const response = await fetch(url);
-          const blob = await response.blob();
-
-          // Create a File object and attach the 'url' for preview
-          const file = new File(
-            [blob],
-            url.split("/").pop() || `image-${index}`,
-            {
-              type: blob.type,
-            }
-          ) as RcFile;
-
-          // Add the URL to the file object
-          return Object.assign(file, {
-            uid: `${index}`, // Ensure unique identifiers
-            url, // Required for preview
-          });
-        })
+      const locationResponse = await fetch(
+        `${BACKEND_URL}/api/location/${data.locationId._id}`
       );
+      const locationData = await locationResponse.json();
 
-      setSelectedImages(initialImages);
+      setLocations((prev) => [
+        ...prev,
+        {
+          _id: locationData._id,
+          name: locationData.name,
+          address: locationData.address,
+          latLong: locationData.latLong,
+        },
+      ]);
 
       form.setFieldsValue({
         title: data.title,
@@ -63,15 +54,32 @@ export default function VietBaiReview({
         locationId: data.locationId._id,
         ratings: data.ratings,
       });
+
+      const initialImages: RcFile[] = await Promise.all(
+        data.images.map(async (url: string, index: number) => {
+          const response = await fetch(url);
+          const blob = await response.blob();
+          const file = new File(
+            [blob],
+            url.split("/").pop() || `image-${index}`,
+            { type: blob.type }
+          ) as RcFile;
+          return Object.assign(file, {
+            uid: `${index}`,
+            url,
+          });
+        })
+      );
+      setSelectedImages(initialImages);
     } catch (error) {
       console.error("Error fetching post details:", error);
       toast.error("Failed to load post details!");
     }
-  };
+  }, [form, params.postId]);
 
   useEffect(() => {
     fetchPostDetails();
-  }, []);
+  }, [fetchPostDetails]);
 
   const fetchLocations = useMemo(
     () =>
@@ -118,9 +126,9 @@ export default function VietBaiReview({
   }, []);
 
   const handleImageSelect = (file: RcFile) => {
-    file.thumbUrl = URL.createObjectURL(file); // Add preview URL
+    file.thumbUrl = URL.createObjectURL(file);
     setSelectedImages((prev) => [...prev, file]);
-    return false; // Prevent automatic upload
+    return false;
   };
 
   const handleImageRemove = (file: UploadFile<any>) => {

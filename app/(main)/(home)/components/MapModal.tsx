@@ -1,5 +1,11 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { Modal } from "antd";
 import { Loader } from "@googlemaps/js-api-loader";
 
@@ -20,19 +26,27 @@ const MapModal: React.FC<MapModalProps> = ({
   const openModal = () => setIsVisible(true);
   const closeModal = () => setIsVisible(false);
 
-  const loader = new Loader({
-    apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-    version: "weekly",
-    language: "vi",
-    region: "VN",
-  });
+  const loader = useMemo(() => {
+    if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
+      console.error("Google Maps API key is missing.");
+      return null;
+    }
+    return new Loader({
+      apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+      version: "weekly",
+      language: "vi",
+      region: "VN",
+    });
+  }, []);
 
-  const initMap = async () => {
+  const initMap = useCallback(async () => {
+    if (!loader) return;
     if (!mapRef.current) {
       const { Map } = await loader.importLibrary("maps");
 
       const mapOptions: google.maps.MapOptions = {
         zoom: 15,
+        center: destination,
         mapId: "bf3ef2c398be7c83",
         gestureHandling: "greedy",
       };
@@ -71,13 +85,13 @@ const MapModal: React.FC<MapModalProps> = ({
         }
       );
     }
-  };
+  }, [loader, destination]);
 
   useEffect(() => {
     if (isVisible) {
       initMap();
     }
-  }, [isVisible, destination]);
+  }, [isVisible, initMap]);
 
   return (
     <>

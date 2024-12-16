@@ -8,6 +8,7 @@ import LikeButton from "../../components/LikeButton";
 import BookmarkButton from "../../components/BookmarkButton";
 import MapModal from "../../components/MapModal";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 export default async function DiaDiemReview({
   params,
@@ -20,6 +21,10 @@ export default async function DiaDiemReview({
   })
     .then((res) => res.json())
     .then((result) => result.data as IReviewPost);
+
+  if (!post) {
+    notFound();
+  }
 
   const randomPosts = await fetch(
     `${BACKEND_URL}/api/review-posts/random?excludedPostId=${params.id}`,
@@ -119,44 +124,52 @@ export default async function DiaDiemReview({
         </div>
         <div className="flex flex-col mt-5 gap-6">
           {randomPosts.map((randomPost: IReviewPost) => (
-            <div className="rounded-md border">
-              <Image
-                height={100}
-                width={100}
-                src={randomPost.images[0]}
-                alt="profile-pic"
-                className="w-full max-h-52 rounded-t-md object-cover"
-              />
-              <div className="flex flex-col gap-1 p-4">
-                <div className="flex flex-wrap">
-                  <div className="opacity-80">{formatDate(post.createdAt)}</div>
-                  <div className="flex items-center">
-                    <Rate
-                      allowHalf
-                      disabled
-                      value={post.ratings.overall}
-                      style={{ color: "orange" }}
-                    />
-                    <span className="ml-5">
-                      <strong className="text-xl">
-                        {post.ratings.overall}{" "}
-                      </strong>
-                      /5 điểm
-                    </span>
+            <div key={randomPost._id} className="rounded-md border">
+              <Link
+                href={`/dia-diem-review/${randomPost._id}`}
+                className="group hover:text-black"
+              >
+                <div className="rounded-md border">
+                  <Image
+                    height={100}
+                    width={100}
+                    src={randomPost.images[0]}
+                    alt="profile-pic"
+                    className="w-full max-h-52 rounded-t-md object-cover"
+                  />
+                  <div className="flex flex-col gap-1 p-4">
+                    <div className="flex flex-wrap">
+                      <div className="opacity-80">
+                        {formatDate(randomPost.createdAt)}
+                      </div>
+                      <div className="flex items-center">
+                        <Rate
+                          allowHalf
+                          disabled
+                          value={randomPost.ratings.overall}
+                          style={{ color: "orange" }}
+                        />
+                        <span className="ml-5">
+                          <strong className="text-xl">
+                            {randomPost.ratings.overall}{" "}
+                          </strong>
+                          /5 điểm
+                        </span>
+                      </div>
+                    </div>
+                    <div className="group-hover:text-orange-600">
+                      <span className="text-lg font-semibold">
+                        {randomPost.title}
+                      </span>
+                    </div>
+                    <div>
+                      {randomPost.content.length > 100
+                        ? randomPost.content.slice(0, 100) + "..."
+                        : randomPost.content}
+                    </div>
                   </div>
                 </div>
-                <Link
-                  href={`/dia-diem-review/${randomPost._id}`}
-                  className="hover:text-orange-600 text-lg font-semibold"
-                >
-                  {randomPost.title}
-                </Link>
-                <div>
-                  {randomPost.content.length > 100
-                    ? randomPost.content.slice(0, 100) + "..."
-                    : randomPost.content}
-                </div>
-              </div>
+              </Link>
             </div>
           ))}
         </div>

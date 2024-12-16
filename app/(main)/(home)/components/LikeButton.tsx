@@ -42,7 +42,7 @@ export default function LikeButton({ postId }: { postId: string }) {
       }
     };
     checkIfLiked();
-  }, [userId, postId]);
+  }, [userId, postId, session]);
 
   const handleToggleLikePost = async () => {
     try {
