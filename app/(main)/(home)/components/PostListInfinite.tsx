@@ -106,7 +106,17 @@ export default function PostListInfinite({
         {Array.isArray(filteredPosts) && filteredPosts.length > 0 ? (
           filteredPosts.map((post) => (
             <div key={post._id} className="mb-4 break-inside-avoid">
-              <PostCardInfinite post={post} />
+              <PostCardInfinite
+                post={post}
+                onPostDelete={(postId: string) => {
+                  setPosts((prevPosts) =>
+                    prevPosts.filter((p) => p._id !== postId)
+                  );
+                  setFilteredPosts((prevFilteredPosts) =>
+                    prevFilteredPosts.filter((p) => p._id !== postId)
+                  );
+                }}
+              />
             </div>
           ))
         ) : (

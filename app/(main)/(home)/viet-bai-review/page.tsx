@@ -9,8 +9,10 @@ import { useSession } from "next-auth/react";
 import { debounce } from "lodash";
 import CreateLocationButton from "../components/CreateLocationButton";
 import IconSlider from "../components/IconSlider";
+import { useRouter } from "next/navigation";
 
 export default function VietBaiReview() {
+  const router = useRouter();
   const [locations, setLocations] = useState<ILocation[]>([]);
 
   const fetchLocations = useMemo(
@@ -108,6 +110,8 @@ export default function VietBaiReview() {
       });
 
       if (postRes.ok) {
+        router.push("/");
+        router.refresh();
         toast.success("Tạo bài viết thành công!");
       } else {
         toast.error("Có lỗi xảy ra, vui lòng thử lại sau!");

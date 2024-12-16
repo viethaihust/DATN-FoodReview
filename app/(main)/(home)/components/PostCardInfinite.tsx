@@ -5,12 +5,16 @@ import { Button, Dropdown, MenuProps, Modal } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
 import { BACKEND_URL } from "@/lib/constants";
 
-export default function PostCardInfinite({ post }: { post: IReviewPost }) {
+export default function PostCardInfinite({
+  post,
+  onPostDelete,
+}: {
+  post: IReviewPost;
+  onPostDelete: (postId: string) => void;
+}) {
   const { data: session } = useSession();
-  const router = useRouter();
 
   const items: MenuProps["items"] = [
     {
@@ -48,7 +52,7 @@ export default function PostCardInfinite({ post }: { post: IReviewPost }) {
                   );
 
                   if (response.ok) {
-                    router.refresh();
+                    onPostDelete(post._id);
                     toast.success("Xóa bài viết thành công");
                   } else {
                     toast.error("Lỗi khi xóa bài viết");

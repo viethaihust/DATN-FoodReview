@@ -9,12 +9,14 @@ import { useSession } from "next-auth/react";
 import { debounce } from "lodash";
 import CreateLocationButton from "@/(main)/(home)/components/CreateLocationButton";
 import IconSlider from "@/(main)/(home)/components/IconSlider";
+import { useRouter } from "next/navigation";
 
 export default function VietBaiReview({
   params,
 }: {
   params: { postId: string };
 }) {
+  const router = useRouter();
   const [form] = Form.useForm();
   const [selectedImages, setSelectedImages] = useState<RcFile[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
@@ -189,6 +191,8 @@ export default function VietBaiReview({
       );
 
       if (postRes.ok) {
+        router.push(`/dia-diem-review/${params.postId}`);
+        router.refresh();
         toast.success("Update bài viết thành công!");
       } else {
         toast.error("Có lỗi xảy ra, vui lòng thử lại sau!");

@@ -1,12 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { List, Avatar, Typography, Rate } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import { List, Typography, Rate } from "antd";
 import Image from "next/image";
 import MapModal from "../components/MapModal";
 import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
+import { BACKEND_URL } from "@/lib/constants";
 
 const SearchResultsPage = () => {
   const searchParams = useSearchParams();
@@ -19,7 +19,7 @@ const SearchResultsPage = () => {
     const fetchSearchResults = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/review-posts/search?query=${encodeURIComponent(
+          `${BACKEND_URL}/api/review-posts/search?query=${encodeURIComponent(
             query
           )}`,
           {
