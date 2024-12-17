@@ -62,7 +62,14 @@ const BookmarkList = ({
             bookmarks.map(({ postId }) =>
               postId ? (
                 <div key={postId._id} className="mb-4 break-inside-avoid">
-                  <PostCardInfinite post={postId} />
+                  <PostCardInfinite
+                    post={postId}
+                    onPostDelete={(postId: string) => {
+                      setBookmarks((prevPosts) =>
+                        prevPosts.filter((p) => p._id !== postId)
+                      );
+                    }}
+                  />
                 </div>
               ) : null
             )

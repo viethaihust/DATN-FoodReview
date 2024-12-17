@@ -22,10 +22,10 @@ const UserPostList = ({ userId }: { userId: string }) => {
           const result = await response.json();
           setUserPosts(result.data.posts);
         } else {
-          console.error("Lỗi khi lấy các bài viết đã lưu.");
+          console.error("Lỗi khi lấy các bài viết.");
         }
       } catch (error) {
-        console.error("Lỗi khi lấy các bài viết đã lưu:", error);
+        console.error("Lỗi khi lấy các bài viết:", error);
       }
     };
 
@@ -51,7 +51,14 @@ const UserPostList = ({ userId }: { userId: string }) => {
         {Array.isArray(userPosts) && userPosts.length > 0 ? (
           userPosts.map((userPost) => (
             <div key={userPost._id} className="mb-4 break-inside-avoid">
-              <PostCardInfinite post={userPost} />
+              <PostCardInfinite
+                post={userPost}
+                onPostDelete={(postId: string) => {
+                  setUserPosts((prevPosts) =>
+                    prevPosts.filter((p) => p._id !== postId)
+                  );
+                }}
+              />
             </div>
           ))
         ) : (
