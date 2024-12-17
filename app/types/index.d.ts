@@ -62,6 +62,7 @@ interface IUser {
   name: string;
   email: string;
   image: string;
+  role: string;
   banned: boolean;
 }
 

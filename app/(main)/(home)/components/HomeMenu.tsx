@@ -5,8 +5,6 @@ import {
   HomeOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
-import { IoMdStar } from "react-icons/io";
-import { TbWorld } from "react-icons/tb";
 
 export default function HomeMenu({ onClose }: { onClose?: () => void }) {
   const sideItems: MenuProps["items"] = [

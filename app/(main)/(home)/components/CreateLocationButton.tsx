@@ -3,6 +3,7 @@ import { Loader } from "@googlemaps/js-api-loader";
 import { Button, Form, Input, Modal } from "antd";
 import React, { useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { IoLocationOutline } from "react-icons/io5";
 
 const mapContainerStyle = { width: "100%", height: "400px" };
 const defaultCenter = { lat: 21.0044, lng: 105.8441 };
@@ -192,7 +193,11 @@ export default function CreateLocationButton() {
 
   return (
     <>
-      <Button type="primary" onClick={showModal}>
+      <Button
+        icon={<IoLocationOutline className="text-lg" />}
+        className="rounded-md bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold px-4 py-5 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center"
+        onClick={showModal}
+      >
         Tạo địa điểm mới
       </Button>
       <Modal

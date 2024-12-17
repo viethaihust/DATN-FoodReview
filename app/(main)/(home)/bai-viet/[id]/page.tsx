@@ -19,7 +19,7 @@ export default async function BaiViet({ params }: { params: { id: string } }) {
         <div className="mt-5 flex opacity-80 gap-6 text-gray-800">
           <span>
             <UserOutlined className="mr-2" />
-            by Review ẩm thực
+            by admin
           </span>
           <span>
             <ClockCircleOutlined className="mr-2" />

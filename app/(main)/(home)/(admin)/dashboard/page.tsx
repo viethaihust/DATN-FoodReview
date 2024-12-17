@@ -1,8 +1,10 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
-import { Table, Space, TablePaginationConfig } from "antd";
+import { Table, TablePaginationConfig, Button } from "antd";
 import { useSession } from "next-auth/react";
 import { BACKEND_URL } from "@/lib/constants";
+import Image from "next/image";
+import Link from "next/link";
 
 interface Pagination {
   current: number;
@@ -54,7 +56,7 @@ const AdminDashboard: React.FC = () => {
     if (status === "authenticated") {
       fetchUsers(pagination.current, pagination.pageSize);
     }
-  }, [session, fetchUsers, pagination, status]);
+  }, [session, status, fetchUsers]);
 
   const handleTableChange = (pagination: TablePaginationConfig) => {
     const currentPage = pagination.current || 1;
@@ -80,7 +82,13 @@ const AdminDashboard: React.FC = () => {
 
   const columns = [
     {
-      title: "Name",
+      title: "ID",
+      dataIndex: "_id",
+      key: "_id",
+      render: (id: string) => <Link href={`/nguoi-dung/${id}`}>{id}</Link>,
+    },
+    {
+      title: "Tên",
       dataIndex: "name",
       key: "name",
     },
@@ -90,23 +98,44 @@ const AdminDashboard: React.FC = () => {
       key: "email",
     },
     {
-      title: "Actions",
-      key: "actions",
-      render: (_: any, record: IUser) => (
-        <Space size="middle">
-          {record.banned ? (
-            <a onClick={() => handleBan(record._id, "unban")}>Unban</a>
-          ) : (
-            <a onClick={() => handleBan(record._id, "ban")}>Ban</a>
-          )}
-        </Space>
+      title: "Vai trò",
+      dataIndex: "role",
+      key: "role",
+    },
+    {
+      title: "Avatar",
+      dataIndex: "image",
+      key: "image",
+      render: (image: string) => (
+        <Image
+          src={image || "/profile.jpg"}
+          alt="User Avatar"
+          width={50}
+          height={50}
+          style={{ borderRadius: "50%" }}
+        />
       ),
+    },
+    {
+      title: "Hành động",
+      key: "actions",
+      render: (_: any, record: IUser) =>
+        record.role === "admin" ? null : (
+          <Button size="middle">
+            {record.banned ? (
+              <a onClick={() => handleBan(record._id, "unban")}>
+                Bỏ khóa tài khoản
+              </a>
+            ) : (
+              <a onClick={() => handleBan(record._id, "ban")}>Khóa tài khoản</a>
+            )}
+          </Button>
+        ),
     },
   ];
 
   return (
     <div>
-      <h1>Admin Dashboard</h1>
       <Table
         columns={columns}
         dataSource={users}

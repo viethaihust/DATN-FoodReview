@@ -128,7 +128,7 @@ export default function VietBaiReview() {
       <Form
         layout="vertical"
         onFinish={onFinish}
-        className="bg-white p-6 rounded-lg shadow-md"
+        className="bg-white p-6 rounded-lg border border-gray-200 shadow-md"
       >
         <Form.Item
           name="title"

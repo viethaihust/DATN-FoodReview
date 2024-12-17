@@ -1,53 +1,49 @@
 "use client";
-import { Button, Drawer, Dropdown, Layout, MenuProps } from "antd";
-import { useEffect, useState } from "react";
+import { Button, Dropdown, Layout, MenuProps } from "antd";
+import { useEffect } from "react";
 import { Content, Footer, Header } from "antd/es/layout/layout";
-import HomeMenu from "./components/HomeMenu";
-import Sider from "antd/es/layout/Sider";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { VscSignOut } from "react-icons/vsc";
 import {
   EditOutlined,
   FacebookOutlined,
   InstagramOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
   TwitterOutlined,
 } from "@ant-design/icons";
 import NotificationComponent from "./components/NotificationComponent";
 import SearchBar from "./components/SearchBar";
+import CreateLocationButton from "./components/CreateLocationButton";
 
 export default function HomeLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [collapsed, setCollapsed] = useState<boolean>(false);
-  const [open, setOpen] = useState(false);
-
-  const showDrawer = () => {
-    setOpen(true);
-  };
-
-  const onClose = () => {
-    setOpen(false);
-  };
-
   const { status, data: session } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
+  const isDashboardPage = pathname.startsWith("/dashboard");
 
   const items: MenuProps["items"] = [
     {
       label: <Link href="/">Trang chủ</Link>,
       key: "0",
     },
+    ...(session?.user?.role === "admin"
+      ? [
+          {
+            label: <Link href="/dashboard">Dashboard</Link>,
+            key: "1",
+          },
+        ]
+      : []),
     {
       label: <Link href="/thong-tin-ca-nhan">Thông tin</Link>,
-      key: "1",
+      key: "2",
     },
     {
       type: "divider",
@@ -81,45 +77,22 @@ export default function HomeLayout({
 
   return (
     <Layout className="min-h-screen" hasSider>
-      <Drawer
-        open={open}
-        onClose={onClose}
-        placement="left"
-        width={220}
-        className="md:hidden"
-        styles={{ body: { padding: 0 } }}
-      >
-        <HomeMenu onClose={onClose} />
-      </Drawer>
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
-        width={220}
-        breakpoint="sm"
-        collapsedWidth={50}
-        style={{
-          backgroundColor: "white",
-          position: "fixed",
-          overflow: "auto",
-          minHeight: "100vh",
-        }}
-        className="hidden md:block"
-      >
-        <HomeMenu />
-      </Sider>
-      <Layout
-        className={`min-h-full rounded-md transition-margin-left duration-200 ${
-          collapsed ? "md:ml-[50px]" : "md:ml-[220px]"
-        }`}
-      >
+      <Layout className="min-h-full rounded-md">
         <Header
           id="sticky-header"
           className="flex items-center justify-between border-b-[1px] bg-white top-0 sticky z-10 px-5 md:px-12"
         >
-          <Button onClick={showDrawer} className="md:hidden">
-            {open ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
-          </Button>
+          <div className="mr-10">
+            <Link href="/">
+              <Image
+                src="/logo.jpg"
+                width={60}
+                height={60}
+                alt="logo"
+                className="cursor-pointer"
+              />
+            </Link>
+          </div>
           <div className="flex items-center gap-6">
             <SearchBar />
             <Link href="/viet-bai-review">
@@ -130,6 +103,7 @@ export default function HomeLayout({
                 Viết bài review
               </Button>
             </Link>
+            <CreateLocationButton />
           </div>
           <div className="flex items-center ml-auto mr-5">
             {session ? (
@@ -161,26 +135,30 @@ export default function HomeLayout({
             )}
           </div>
         </Header>
-        <Content className="bg-white mt-2 md:ml-2 p-5 rounded-lg">
+        <Content
+          className={`bg-white mt-2 rounded-lg ${isDashboardPage ? "" : "p-5"}`}
+        >
           {children}
         </Content>
-        <Footer>
-          <div className="flex flex-col gap-2 md:flex-row justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold">FoodReview</h2>
-            </div>
-            <div>
-              <div className="flex gap-5">
-                <FacebookOutlined style={{ fontSize: "30px" }} />
-                <TwitterOutlined style={{ fontSize: "30px" }} />
-                <InstagramOutlined style={{ fontSize: "30px" }} />
+        {!isDashboardPage && (
+          <Footer className="relative mt-auto">
+            <div className="flex flex-col gap-2 md:flex-row justify-between items-center">
+              <div>
+                <h2 className="text-2xl font-bold">FoodReview</h2>
+              </div>
+              <div>
+                <div className="flex gap-5">
+                  <FacebookOutlined style={{ fontSize: "30px" }} />
+                  <TwitterOutlined style={{ fontSize: "30px" }} />
+                  <InstagramOutlined style={{ fontSize: "30px" }} />
+                </div>
               </div>
             </div>
-          </div>
-          <div className="mt-5 text-center text-gray-500">
-            © 2024 VuVietHai. All rights reserved.
-          </div>
-        </Footer>
+            <div className="mt-5 text-center text-gray-500">
+              © 2024 VuVietHai. All rights reserved.
+            </div>
+          </Footer>
+        )}
       </Layout>
     </Layout>
   );
