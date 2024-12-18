@@ -23,41 +23,44 @@ const ReviewPostList: React.FC = () => {
     total: 0,
   });
 
-  const fetchPosts = useCallback(async (page: number, pageSize: number) => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `${BACKEND_URL}/api/review-posts?page=${page}&pageSize=${pageSize}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+  const fetchPosts = useCallback(
+    async (page: number, pageSize: number) => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `${BACKEND_URL}/api/review-posts?page=${page}&pageSize=${pageSize}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch posts: ${response.statusText}`);
         }
-      );
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch posts: ${response.statusText}`);
+        const result = await response.json();
+        setPosts(result.data.posts);
+        if (
+          pagination.current !== pagination.current ||
+          pagination.pageSize !== pagination.pageSize
+        ) {
+          setPagination({
+            current: result.data.page,
+            pageSize: result.data.pageSize,
+            total: result.data.totalPosts,
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch posts:", error);
+      } finally {
+        setLoading(false);
       }
-
-      const result = await response.json();
-      setPosts(result.data.posts);
-      if (
-        pagination.current !== pagination.current ||
-        pagination.pageSize !== pagination.pageSize
-      ) {
-        setPagination({
-          current: result.data.page,
-          pageSize: result.data.pageSize,
-          total: result.data.totalPosts,
-        });
-      }
-    } catch (error) {
-      console.error("Failed to fetch posts:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [pagination]
+  );
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -114,6 +117,7 @@ const ReviewPostList: React.FC = () => {
       title: "Tiêu đề",
       dataIndex: "title",
       key: "title",
+      width: "20%",
     },
     {
       title: "Thể loại",

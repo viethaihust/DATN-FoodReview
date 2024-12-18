@@ -223,7 +223,7 @@ export default function VietBaiReview({
         >
           <Input.TextArea rows={4} />
         </Form.Item>
-        <Form.Item label="Hình ảnh (tối đa 5)">
+        <Form.Item label="Hình ảnh (tối đa 10)">
           <Upload
             accept="image/*"
             beforeUpload={handleImageSelect}

@@ -2,13 +2,13 @@ import useSocket from "@/actions/useSocket";
 import { BACKEND_URL } from "@/lib/constants";
 import { BellOutlined } from "@ant-design/icons";
 import { Dropdown, Badge, MenuProps } from "antd";
+import Image from "next/image";
+import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 
 const NotificationComponent = ({ userId }: { userId: string }) => {
   const socket = useSocket(userId);
-  const [notifications, setNotifications] = useState<
-    { message: string; read: boolean }[]
-  >([]);
+  const [notifications, setNotifications] = useState<INotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
   const fetchNotifications = useCallback(async () => {
@@ -62,13 +62,31 @@ const NotificationComponent = ({ userId }: { userId: string }) => {
     }
   };
 
+  console.log("notifications", notifications);
+
   const notificationMenu: MenuProps["items"] =
     notifications.length > 0
       ? notifications.map((notif, index) => ({
           label: (
-            <span className={notif.read ? "text-gray-500" : "text-black"}>
-              {notif.message}
-            </span>
+            <div className="flex items-center gap-2">
+              <Link href={`/nguoi-dung/${notif?.sender._id}`}>
+                <Image
+                  className="rounded-full h-10 w-10"
+                  height={60}
+                  width={60}
+                  src={notif.sender?.image || "/profile.jpg"}
+                  alt="profile-pic"
+                />
+              </Link>
+              <Link
+                href={`/dia-diem-review/${notif?.postId._id}`}
+                className="hover:text-black"
+              >
+                <span>{notif.sender.name}</span> <span>{notif.message}</span>{" "}
+                <span>&quot;{notif.postId.title}&quot;</span>{" "}
+                <span>của bạn!</span>
+              </Link>
+            </div>
           ),
           key: index.toString(),
         }))

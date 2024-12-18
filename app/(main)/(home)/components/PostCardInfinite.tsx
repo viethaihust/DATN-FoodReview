@@ -95,7 +95,7 @@ export default function PostCardInfinite({
         />
         <div className="pb-0 p-4">
           <h2 className="text-lg font-bold text-gray-800">{post?.title}</h2>
-          <p className="text-gray-600 mb-2">
+          <p className="text-gray-600 mt-1">
             {post.content.length > 100
               ? post.content.slice(0, 100) + "..."
               : post.content}

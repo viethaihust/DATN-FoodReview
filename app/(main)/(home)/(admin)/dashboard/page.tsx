@@ -52,7 +52,7 @@ const AdminDashboard: React.FC = () => {
         setLoading(false);
       }
     },
-    [session]
+    [session, pagination]
   );
 
   useEffect(() => {

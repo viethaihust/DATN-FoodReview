@@ -143,7 +143,7 @@ export default function VietBaiReview() {
         >
           <Input.TextArea rows={4} />
         </Form.Item>
-        <Form.Item label="Hình ảnh (tối đa 5)">
+        <Form.Item label="Hình ảnh (tối đa 10)">
           <Upload
             accept="image/*"
             beforeUpload={handleImageSelect}
@@ -225,9 +225,12 @@ export default function VietBaiReview() {
           </Form.Item>
         </div>
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <button
+            type="submit"
+            className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+          >
             Đăng bài review
-          </Button>
+          </button>
         </Form.Item>
       </Form>
     </div>

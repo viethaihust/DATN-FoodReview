@@ -41,7 +41,7 @@ const UserPostList = ({
     if (userId) {
       fetchUserPosts();
     }
-  }, [userId]);
+  }, [userId, setUserPosts]);
 
   const breakpointColumns = {
     default: 4,

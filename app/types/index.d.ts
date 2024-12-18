@@ -109,3 +109,13 @@ interface ILocation {
     lng: number;
   };
 }
+
+interface INotification {
+  _id: string;
+  reciever: User;
+  sender: User;
+  postId: ReviewPost;
+  message: string;
+  read: boolean;
+  createdAt: string;
+}
