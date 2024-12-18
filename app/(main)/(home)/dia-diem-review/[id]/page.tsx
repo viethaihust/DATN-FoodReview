@@ -45,13 +45,15 @@ export default async function DiaDiemReview({
       <div className="flex-grow w-full md:w-1/2 md:px-5">
         <div className="flex flex-row justify-between">
           <div className="flex items-center gap-6">
-            <Image
-              className="cursor-pointer hover:shadow-sm hover:shadow-slate-400 rounded-full"
-              height={60}
-              width={60}
-              src="/profile.jpg"
-              alt="profile-pic"
-            />
+            <Link href={`/nguoi-dung/${post?.userId._id}`}>
+              <Image
+                className="hover:shadow-sm hover:shadow-slate-400 rounded-full h-12 w-12"
+                height={60}
+                width={60}
+                src={post.userId.image || "/profile.jpg"}
+                alt="profile-pic"
+              />
+            </Link>
             <div>
               <div className="font-bold">{post.userId.name}</div>
               <div>
@@ -73,21 +75,33 @@ export default async function DiaDiemReview({
           </div>
         </div>
         <div className="pt-5 -mx-5">
-          <Carousel arrows>
-            {post.images.map((image, index) => (
-              <div key={index} className="h-[20rem] md:h-[35rem]">
-                <Image
-                  height={200}
-                  width={200}
-                  src={image}
-                  alt="profile-pic"
-                  className="h-full w-auto object-contain m-auto"
-                />
-              </div>
-            ))}
-          </Carousel>
+          {post.images.length > 1 ? (
+            <Carousel arrows>
+              {post.images.map((image, index) => (
+                <div key={index} className="h-[20rem] md:h-[35rem]">
+                  <Image
+                    height={200}
+                    width={200}
+                    src={image}
+                    alt="review-pic"
+                    className="h-full w-auto object-contain m-auto"
+                  />
+                </div>
+              ))}
+            </Carousel>
+          ) : (
+            <div className="h-[20rem] md:h-[35rem]">
+              <Image
+                height={200}
+                width={200}
+                src={post.images[0]}
+                alt="review-pic"
+                className="h-full w-auto object-contain m-auto"
+              />
+            </div>
+          )}
         </div>
-        <div className="pt-5 px-2">
+        <div className="mt-10 px-2">
           <div>
             <Rate
               allowHalf
@@ -108,7 +122,7 @@ export default async function DiaDiemReview({
             <div>Phục vụ: {post.ratings.serves}</div>
           </div>
         </div>
-        <div>
+        <div className="mt-5">
           <div className="text-3xl font-semibold">{post.title}</div>
           <div className="text-gray-800 text-xl font-sans mt-5">
             {post.content}
@@ -135,7 +149,7 @@ export default async function DiaDiemReview({
                       height={100}
                       width={100}
                       src={randomPost.images[0]}
-                      alt="profile-pic"
+                      alt="random-post-pic"
                       className="w-full max-h-52 rounded-t-md object-cover"
                     />
                     <div className="flex flex-col gap-1 p-4">
@@ -164,9 +178,16 @@ export default async function DiaDiemReview({
                         </span>
                       </div>
                       <div>
-                        {randomPost.content.length > 100
-                          ? randomPost.content.slice(0, 100) + "..."
-                          : randomPost.content}
+                        <div className="flex items-center gap-2 hover:text-black">
+                          <Image
+                            className="rounded-full h-12 w-12"
+                            height={60}
+                            width={60}
+                            src={randomPost?.userId.image || "/profile.jpg"}
+                            alt="profile-pic"
+                          />
+                          <span>{randomPost?.userId.name}</span>
+                        </div>
                       </div>
                     </div>
                   </div>

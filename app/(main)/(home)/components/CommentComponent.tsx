@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { HeartFilled, HeartOutlined } from "@ant-design/icons";
+import { CommentOutlined, HeartFilled, HeartOutlined } from "@ant-design/icons";
 import { Input } from "antd";
 import { useSession } from "next-auth/react";
 import { formatDate } from "@/utils/formatDate";
 import { BACKEND_URL } from "@/lib/constants";
+import Image from "next/image";
 
 const CommentComponent: React.FC<ICommentComponentProps> = ({
   comment,
@@ -135,42 +136,52 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
     <div className="border rounded-lg mb-4">
       <div className="flex justify-between items-center">
         <div className="p-6">
-          <div>
+          <div className="flex items-center gap-2">
+            <Image
+              src={comment.userId?.image || "/profile.jpg"}
+              width={40}
+              height={40}
+              className="rounded-full"
+              alt="user-avatar"
+            />
             <span className="font-bold">{comment.userId?.name} </span>
             <span className="text-gray-500 text-sm">
               {formatDate(comment.createdAt)}
             </span>
           </div>
-          <div>
-            {showFullContent || comment.content.length <= contentPreviewLength
-              ? comment.content
-              : `${comment.content.slice(0, contentPreviewLength)}...`}
-            {comment.content.length > contentPreviewLength && (
+          <div className="ml-12 mt-1">
+            <div>
+              {showFullContent || comment.content.length <= contentPreviewLength
+                ? comment.content
+                : `${comment.content.slice(0, contentPreviewLength)}...`}
+              {comment.content.length > contentPreviewLength && (
+                <button
+                  onClick={() => setShowFullContent(!showFullContent)}
+                  className="text-blue-700 pl-2"
+                >
+                  {showFullContent ? "Hiện ít hơn" : "Xem thêm"}
+                </button>
+              )}
+            </div>
+            <div className="mt-1">
               <button
-                onClick={() => setShowFullContent(!showFullContent)}
-                className="text-blue-700 pl-2"
+                onClick={() => setReplying(!replying)}
+                className="text-blue-700 font-semibold"
               >
-                {showFullContent ? "Hiện ít hơn" : "Xem thêm"}
+                <CommentOutlined className="mr-1" />
+                Trả lời
               </button>
-            )}
-          </div>
-          <div>
-            <button
-              onClick={() => setReplying(!replying)}
-              className="text-blue-700"
-            >
-              Trả lời
-            </button>
-            {comment.replies > 0 && (
-              <button
-                onClick={() => setShowReplies(!showReplies)}
-                className="ml-4 text-blue-700"
-              >
-                {showReplies
-                  ? `Ẩn ${comment.replies} trả lời`
-                  : `Hiện ${comment.replies} trả lời`}
-              </button>
-            )}
+              {comment.replies > 0 && (
+                <button
+                  onClick={() => setShowReplies(!showReplies)}
+                  className="ml-4 text-blue-700 font-semibold"
+                >
+                  {showReplies
+                    ? `Ẩn ${comment.replies} trả lời`
+                    : `Hiện ${comment.replies} trả lời`}
+                </button>
+              )}
+            </div>
           </div>
         </div>
         <div className="flex gap-5 p-6 md:min-w-max">
@@ -198,14 +209,14 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
       {replying && (
         <div className="px-6 pb-6">
           <Input
-            className="w-full p-2 border rounded-lg"
+            className="w-full p-2 border rounded-md"
             onChange={(e) => setReplyContent(e.target.value)}
             value={replyContent}
             onPressEnter={handleReply}
           />
           <button
             onClick={handleReply}
-            className="mt-2 bg-blue-700 text-white p-2 rounded-lg"
+            className="mt-2 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
           >
             Bình luận
           </button>

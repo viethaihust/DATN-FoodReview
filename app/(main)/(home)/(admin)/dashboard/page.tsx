@@ -36,25 +36,30 @@ const AdminDashboard: React.FC = () => {
         );
         const data = await response.json();
         setUsers(data.users);
-        setPagination({
-          current: data.page,
-          pageSize: data.pageSize,
-          total: data.total,
-        });
+        if (
+          pagination.current !== pagination.current ||
+          pagination.pageSize !== pagination.pageSize
+        ) {
+          setPagination({
+            current: data.page,
+            pageSize: data.pageSize,
+            total: data.total,
+          });
+        }
       } catch (error) {
         console.error("Failed to fetch users", error);
       } finally {
         setLoading(false);
       }
     },
-    [session?.backendTokens.accessToken]
+    [session]
   );
 
   useEffect(() => {
     if (status === "authenticated") {
       fetchUsers(pagination.current, pagination.pageSize);
     }
-  }, [session, status, fetchUsers]);
+  }, [session, status, fetchUsers, pagination]);
 
   const handleTableChange = (pagination: TablePaginationConfig) => {
     const currentPage = pagination.current || 1;

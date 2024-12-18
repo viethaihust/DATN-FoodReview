@@ -1,14 +1,16 @@
 "use client";
 import { CameraOutlined } from "@ant-design/icons";
-import { Tabs, TabsProps } from "antd";
-import { useSession } from "next-auth/react";
+import { Tabs, TabsProps, Upload, UploadProps } from "antd";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import BookmarkList from "../components/BookmarkList";
 import UserPostList from "../components/UserPostList";
 import { useState } from "react";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
+import { toast } from "react-toastify";
 
 const ProfilePage = () => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
 
   const [userPosts, setUserPosts] = useState<IReviewPost[]>([]);
   const [bookmarks, setBookmarks] = useState<IBookmark[]>([]);
@@ -18,6 +20,44 @@ const ProfilePage = () => {
     setBookmarks((prev) =>
       prev.filter((bookmark) => bookmark.postId?._id !== postId)
     );
+  };
+
+  const handleImageUpdate = async (secureUrl: string) => {
+    try {
+      const response = await fetchWithAuth(
+        "http://localhost:8000/api/users/profile/image",
+        {
+          method: "PATCH",
+          body: JSON.stringify({ image: secureUrl }),
+        },
+        session
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update profile image");
+      }
+
+      toast.success("Cập nhật ảnh đại diện thành công");
+      await update({ user: { image: secureUrl } });
+    } catch (error) {
+      console.error("Failed to update profile image:", error);
+    }
+  };
+
+  const uploadProps: UploadProps = {
+    name: "image",
+    action: "http://localhost:8000/api/upload/one-image",
+    showUploadList: false,
+    onChange(info) {
+      if (info.file.status === "done") {
+        const secureUrl = info.file.response?.secure_url;
+        if (secureUrl) {
+          handleImageUpdate(secureUrl);
+        }
+      } else if (info.file.status === "error") {
+        toast.error("Image upload failed");
+      }
+    },
   };
 
   const items: TabsProps["items"] = [
@@ -57,17 +97,19 @@ const ProfilePage = () => {
       <div className="flex items-center gap-5">
         <div className="relative">
           <Image
-            className="rounded-full"
+            className="rounded-full w-24 h-24"
             height={100}
             width={100}
             src={session?.user?.image || "/profile.jpg"}
             alt="profile-pic"
           />
-          <button className="absolute bottom-0 right-0 bg-gray-400 px-2 py-1 rounded-full">
-            <CameraOutlined />
-          </button>
+          <Upload {...uploadProps}>
+            <button className="absolute bottom-4 right-2 bg-gray-400 px-2 py-1 rounded-full">
+              <CameraOutlined />
+            </button>
+          </Upload>
         </div>
-        <div>
+        <div className="-mt-4">
           <div className="text-xl font-semibold">{session?.user?.name}</div>
           <div className="text-gray-500">{session?.user?.email}</div>
         </div>

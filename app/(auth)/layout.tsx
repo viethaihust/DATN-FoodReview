@@ -1,5 +1,6 @@
-import { Layout } from "antd";
+import { Layout, Spin } from "antd";
 import AuthBackground from "./components/AuthBackground";
+import { Suspense } from "react";
 
 export default function AuthLayout({
   children,
@@ -10,7 +11,7 @@ export default function AuthLayout({
     <Layout className="flex items-center justify-center">
       <AuthBackground />
       <Layout className="absolute rounded-[10px] md:w-[25rem] bg-white">
-        {children}
+        <Suspense fallback={<Spin />}>{children}</Suspense>
       </Layout>
     </Layout>
   );

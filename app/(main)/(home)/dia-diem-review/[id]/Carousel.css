@@ -27,6 +27,10 @@
   margin-left: -5px;
 }
 
+.ant-carousel .slick-dots {
+  bottom: -15px;
+}
+
 .ant-carousel .slick-dots li.slick-active button {
   background-color: #dc2626;
 }

@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { IoLocationOutline } from "react-icons/io5";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
 import { useSession } from "next-auth/react";
+import { CompassOutlined } from "@ant-design/icons";
 
 const mapContainerStyle = { width: "100%", height: "400px" };
 const defaultCenter = { lat: 21.0044, lng: 105.8441 };
@@ -227,11 +228,8 @@ export default function CreateLocationButton() {
                   placeholder="Nhập địa chỉ để tìm kiếm"
                   className="mb-4"
                 />
-                <Button
-                  onClick={handleSelectMyLocation}
-                  type="primary"
-                  className="mb-4"
-                >
+                <Button onClick={handleSelectMyLocation} className="mb-4">
+                  <CompassOutlined />
                   Chọn vị trí của tôi
                 </Button>
               </div>

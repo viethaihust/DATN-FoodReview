@@ -6,7 +6,6 @@ import { MenuOutlined } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import { BACKEND_URL } from "@/lib/constants";
-import { useRouter } from "next/navigation";
 
 export default function PostCardInfinite({
   post,
@@ -21,7 +20,7 @@ export default function PostCardInfinite({
     {
       label: (
         <Link href={`/update-bai-viet/${post._id}`}>
-          <Button type="primary" className="w-full">
+          <Button className="w-full border-blue-500 text-blue-500">
             Sửa bài viết
           </Button>
         </Link>
@@ -105,14 +104,19 @@ export default function PostCardInfinite({
       </Link>
       <div className="flex items-center justify-between p-5">
         <div className="flex items-center gap-5">
-          <Image
-            src={"/profile.jpg"}
-            width={40}
-            height={40}
-            alt="user-profile"
-            style={{ borderRadius: "50%" }}
-          />
-          <span>{post?.userId.name}</span>
+          <Link
+            href={`/nguoi-dung/${post?.userId._id}`}
+            className="flex items-center gap-2 hover:text-orange-600"
+          >
+            <Image
+              src={post.userId.image || "/profile.jpg"}
+              width={40}
+              height={40}
+              alt="user-profile"
+              className="rounded-full w-8 h-8"
+            />
+            <span>{post?.userId.name}</span>
+          </Link>
         </div>
         <LikeButton postId={post?._id} />
       </div>

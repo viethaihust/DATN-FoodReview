@@ -125,7 +125,7 @@ export default function HomeLayout({
                       width={40}
                       height={40}
                       alt="user-profile"
-                      style={{ borderRadius: "50%" }}
+                      className="rounded-full h-10 w-10"
                     />
                   </button>
                 </Dropdown>

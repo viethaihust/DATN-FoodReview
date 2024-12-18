@@ -83,8 +83,11 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) return { ...token, ...user };
+      if (trigger === "update" && session?.user) {
+        token.user = { ...token.user, ...session.user };
+      }
       if (new Date().getTime() < token.backendTokens?.expiresIn) return token;
       return await refreshToken(token);
     },

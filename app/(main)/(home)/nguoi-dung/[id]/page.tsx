@@ -31,8 +31,6 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
     }
   }, [params.id]);
 
-  console.log(reviewPosts);
-
   return (
     <div>
       <div className="flex items-center gap-5">

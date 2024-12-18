@@ -6,7 +6,6 @@ import { BACKEND_URL } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
 
 interface Pagination {
   current: number;
@@ -43,11 +42,16 @@ const ReviewPostList: React.FC = () => {
 
       const result = await response.json();
       setPosts(result.data.posts);
-      setPagination({
-        current: result.data.page,
-        pageSize: result.data.pageSize,
-        total: result.data.totalPosts,
-      });
+      if (
+        pagination.current !== pagination.current ||
+        pagination.pageSize !== pagination.pageSize
+      ) {
+        setPagination({
+          current: result.data.page,
+          pageSize: result.data.pageSize,
+          total: result.data.totalPosts,
+        });
+      }
     } catch (error) {
       console.error("Failed to fetch posts:", error);
     } finally {
@@ -59,7 +63,7 @@ const ReviewPostList: React.FC = () => {
     if (status === "authenticated") {
       fetchPosts(pagination.current, pagination.pageSize);
     }
-  }, [status, fetchPosts, pagination.current, pagination.pageSize]);
+  }, [status, fetchPosts, pagination]);
 
   const handleTableChange = (pagination: TablePaginationConfig) => {
     const currentPage = pagination.current || 1;

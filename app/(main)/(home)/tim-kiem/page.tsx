@@ -37,8 +37,6 @@ const SearchResultsPage = () => {
     if (query) fetchSearchResults();
   }, [query]);
 
-  console.log(posts);
-
   return (
     <div className="py-4">
       <Typography.Title level={4}>
