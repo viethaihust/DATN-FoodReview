@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import CommentComponent from "./CommentComponent";
 import { Input } from "antd";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 export default function CommentSection({
   comments,
@@ -18,16 +19,16 @@ export default function CommentSection({
 
   const handleLike = async (id: string) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/comments/${id}/like`, {
-        method: "PATCH",
-        headers: {
-          authorization: `Bearer ${session?.backendTokens.accessToken}`,
-          "Content-Type": "application/json",
+      const response = await fetchWithAuth(
+        `${BACKEND_URL}/api/comments/${id}/like`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            userId: session?.user?._id,
+          }),
         },
-        body: JSON.stringify({
-          userId: session?.user?._id,
-        }),
-      });
+        session
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -81,19 +82,19 @@ export default function CommentSection({
     if (!commentText.trim()) return;
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/comments`, {
-        method: "POST",
-        headers: {
-          authorization: `Bearer ${session?.backendTokens.accessToken}`,
-          "Content-Type": "application/json",
+      const response = await fetchWithAuth(
+        `${BACKEND_URL}/api/comments`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            content: commentText,
+            postId: postId,
+            userId: session?.user?._id,
+            likes: 0,
+          }),
         },
-        body: JSON.stringify({
-          content: commentText,
-          postId: postId,
-          userId: session?.user?._id,
-          likes: 0,
-        }),
-      });
+        session
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

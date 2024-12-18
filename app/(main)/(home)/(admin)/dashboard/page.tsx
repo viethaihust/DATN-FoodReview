@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { BACKEND_URL } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 interface Pagination {
   current: number;
@@ -26,15 +27,12 @@ const AdminDashboard: React.FC = () => {
     async (page: number, pageSize: number) => {
       setLoading(true);
       try {
-        const response = await fetch(
+        const response = await fetchWithAuth(
           `${BACKEND_URL}/api/users?page=${page}&pageSize=${pageSize}`,
           {
             method: "GET",
-            headers: {
-              authorization: `Bearer ${session?.backendTokens.accessToken}`,
-              "Content-Type": "application/json",
-            },
-          }
+          },
+          session
         );
         const data = await response.json();
         setUsers(data.users);

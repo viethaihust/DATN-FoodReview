@@ -75,7 +75,6 @@ export default function VietBaiReview({
       setSelectedImages(initialImages);
     } catch (error) {
       console.error("Error fetching post details:", error);
-      toast.error("Failed to load post details!");
     }
   }, [form, params.postId]);
 

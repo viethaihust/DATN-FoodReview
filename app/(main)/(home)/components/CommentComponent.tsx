@@ -173,7 +173,7 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
             )}
           </div>
         </div>
-        <div className="flex gap-5 p-6 w-32 md:min-w-max">
+        <div className="flex gap-5 p-6 md:min-w-max">
           <button
             onClick={() => onLike(comment._id)}
             className={`flex flex-col items-center text-gray-400 ${
@@ -187,12 +187,12 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
             )}
             {` ${comment.likes}`}
           </button>
-          <button
+          {/* <button
             onClick={() => onDelete(comment._id)}
             className="text-red-500"
           >
             Xóa
-          </button>
+          </button> */}
         </div>
       </div>
       {replying && (

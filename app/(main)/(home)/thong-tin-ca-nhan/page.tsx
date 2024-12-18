@@ -5,16 +5,32 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import BookmarkList from "../components/BookmarkList";
 import UserPostList from "../components/UserPostList";
+import { useState } from "react";
 
 const ProfilePage = () => {
   const { data: session } = useSession();
+
+  const [userPosts, setUserPosts] = useState<IReviewPost[]>([]);
+  const [bookmarks, setBookmarks] = useState<IBookmark[]>([]);
+
+  const handlePostDelete = (postId: string) => {
+    setUserPosts((prev) => prev.filter((post) => post._id !== postId));
+    setBookmarks((prev) =>
+      prev.filter((bookmark) => bookmark.postId?._id !== postId)
+    );
+  };
 
   const items: TabsProps["items"] = [
     {
       key: "1",
       label: "Bài viết của tôi",
       children: session ? (
-        <UserPostList userId={session?.user?._id} />
+        <UserPostList
+          userId={session?.user?._id}
+          userPosts={userPosts}
+          setUserPosts={setUserPosts}
+          onPostDelete={handlePostDelete}
+        />
       ) : (
         "Vui lòng đăng nhập để xem các bài viết của bạn"
       ),
@@ -26,6 +42,9 @@ const ProfilePage = () => {
         <BookmarkList
           userId={session?.user?._id}
           accessToken={session.backendTokens.accessToken}
+          bookmarks={bookmarks}
+          setBookmarks={setBookmarks}
+          onPostDelete={handlePostDelete}
         />
       ) : (
         "Vui lòng đăng nhập để xem các bài viết đã lưu"

@@ -6,6 +6,7 @@ import { BACKEND_URL } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 interface Pagination {
   current: number;
@@ -93,7 +94,6 @@ const ReviewPostList: React.FC = () => {
           }
         } catch (error) {
           console.error(`Failed to delete post with ID ${postId}:`, error);
-          toast.error("Lỗi kết nối tới máy chủ");
         }
       },
     });

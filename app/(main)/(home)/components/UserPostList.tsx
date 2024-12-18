@@ -3,9 +3,17 @@ import { BACKEND_URL } from "@/lib/constants";
 import PostCardInfinite from "./PostCardInfinite";
 import Masonry from "react-masonry-css";
 
-const UserPostList = ({ userId }: { userId: string }) => {
-  const [userPosts, setUserPosts] = useState<IReviewPost[]>([]);
-
+const UserPostList = ({
+  userId,
+  userPosts,
+  setUserPosts,
+  onPostDelete,
+}: {
+  userId: string;
+  userPosts: IReviewPost[];
+  setUserPosts: React.Dispatch<React.SetStateAction<IReviewPost[]>>;
+  onPostDelete: (postId: string) => void;
+}) => {
   useEffect(() => {
     const fetchUserPosts = async () => {
       try {
@@ -16,6 +24,7 @@ const UserPostList = ({ userId }: { userId: string }) => {
             headers: {
               "Content-Type": "application/json",
             },
+            cache: "no-store",
           }
         );
         if (response.ok) {
@@ -51,14 +60,7 @@ const UserPostList = ({ userId }: { userId: string }) => {
         {Array.isArray(userPosts) && userPosts.length > 0 ? (
           userPosts.map((userPost) => (
             <div key={userPost._id} className="mb-4 break-inside-avoid">
-              <PostCardInfinite
-                post={userPost}
-                onPostDelete={(postId: string) => {
-                  setUserPosts((prevPosts) =>
-                    prevPosts.filter((p) => p._id !== postId)
-                  );
-                }}
-              />
+              <PostCardInfinite post={userPost} onPostDelete={onPostDelete} />
             </div>
           ))
         ) : (

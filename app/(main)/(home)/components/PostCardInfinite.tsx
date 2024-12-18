@@ -6,6 +6,7 @@ import { MenuOutlined } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import { BACKEND_URL } from "@/lib/constants";
+import { useRouter } from "next/navigation";
 
 export default function PostCardInfinite({
   post,
@@ -59,7 +60,6 @@ export default function PostCardInfinite({
                   }
                 } catch (error) {
                   console.error("Lỗi khi xóa bài viết:", error);
-                  toast.error("Lỗi kết nối tới máy chủ");
                 }
               },
             });

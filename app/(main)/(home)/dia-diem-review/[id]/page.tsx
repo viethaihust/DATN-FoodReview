@@ -118,62 +118,64 @@ export default async function DiaDiemReview({
           <CommentSection comments={comments} postId={post._id} />
         </div>
       </div>
-      <div className="md:max-w-[20rem]">
-        <div className="text-xl font-semibold underline decoration-orange-500 underline-offset-8">
-          Các bài viết khác
-        </div>
-        <div className="flex flex-col mt-5 gap-6">
-          {randomPosts.map((randomPost: IReviewPost) => (
-            <div key={randomPost._id} className="rounded-md border">
-              <Link
-                href={`/dia-diem-review/${randomPost._id}`}
-                className="group hover:text-black"
-              >
-                <div className="rounded-md border">
-                  <Image
-                    height={100}
-                    width={100}
-                    src={randomPost.images[0]}
-                    alt="profile-pic"
-                    className="w-full max-h-52 rounded-t-md object-cover"
-                  />
-                  <div className="flex flex-col gap-1 p-4">
-                    <div className="flex flex-wrap">
-                      <div className="opacity-80">
-                        {formatDate(randomPost.createdAt)}
+      {randomPosts && randomPosts.length > 0 ? (
+        <div className="md:max-w-[20rem]">
+          <div className="text-xl font-semibold underline decoration-orange-500 underline-offset-8">
+            Các bài viết khác
+          </div>
+          <div className="flex flex-col mt-5 gap-6">
+            {randomPosts.map((randomPost: IReviewPost) => (
+              <div key={randomPost._id} className="rounded-md border">
+                <Link
+                  href={`/dia-diem-review/${randomPost._id}`}
+                  className="group hover:text-black"
+                >
+                  <div className="rounded-md border">
+                    <Image
+                      height={100}
+                      width={100}
+                      src={randomPost.images[0]}
+                      alt="profile-pic"
+                      className="w-full max-h-52 rounded-t-md object-cover"
+                    />
+                    <div className="flex flex-col gap-1 p-4">
+                      <div className="flex flex-wrap">
+                        <div className="opacity-80">
+                          {formatDate(randomPost.createdAt)}
+                        </div>
+                        <div className="flex items-center">
+                          <Rate
+                            allowHalf
+                            disabled
+                            value={randomPost.ratings.overall}
+                            style={{ color: "orange" }}
+                          />
+                          <span className="ml-5">
+                            <strong className="text-xl">
+                              {randomPost.ratings.overall}{" "}
+                            </strong>
+                            /5 điểm
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex items-center">
-                        <Rate
-                          allowHalf
-                          disabled
-                          value={randomPost.ratings.overall}
-                          style={{ color: "orange" }}
-                        />
-                        <span className="ml-5">
-                          <strong className="text-xl">
-                            {randomPost.ratings.overall}{" "}
-                          </strong>
-                          /5 điểm
+                      <div className="group-hover:text-orange-600">
+                        <span className="text-lg font-semibold">
+                          {randomPost.title}
                         </span>
                       </div>
-                    </div>
-                    <div className="group-hover:text-orange-600">
-                      <span className="text-lg font-semibold">
-                        {randomPost.title}
-                      </span>
-                    </div>
-                    <div>
-                      {randomPost.content.length > 100
-                        ? randomPost.content.slice(0, 100) + "..."
-                        : randomPost.content}
+                      <div>
+                        {randomPost.content.length > 100
+                          ? randomPost.content.slice(0, 100) + "..."
+                          : randomPost.content}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            </div>
-          ))}
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : null}
     </div>
   );
 }

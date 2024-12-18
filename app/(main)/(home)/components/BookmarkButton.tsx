@@ -68,7 +68,7 @@ export default function BookmarkButton({ postId }: { postId: string }) {
         toast.error("Lưu bài viết thất bại.");
       }
     } catch (error) {
-      toast.error("Có lỗi xảy ra.");
+      console.error("Có lỗi xảy ra.");
     }
   };
 

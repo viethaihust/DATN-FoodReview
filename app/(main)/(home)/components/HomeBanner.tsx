@@ -22,7 +22,7 @@ export default function HomeBanner() {
   }, [target]);
 
   return (
-    <div className="max-h-[30rem] overflow-hidden relative">
+    <div className="max-h-[25rem] overflow-hidden relative">
       <Image
         src="/home-banner.jpg"
         alt="home-banner"
@@ -34,7 +34,7 @@ export default function HomeBanner() {
         <div className="text-sm flex flex-col text-white gap-6 font-bold">
           <div className="text-sm md:text-8xl">Review Ẩm Thực</div>
           <div ref={target} className="md:text-4xl italic">
-            Khám phá hương vị, trải nghiệm văn hóa
+            Khám Phá Và Đánh Giá Các Địa Điểm Ăn Uống
           </div>
           <button className="max-w-fit rounded-2xl border-2 border-dashed border-black bg-orange-300 px-3 py-1 md:px-6 md:py-3 font-semibold uppercase text-black transition-all duration-300 hover:translate-x-[-4px] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_#fb923c] active:translate-x-[0px] active:translate-y-[0px] active:rounded-2xl active:shadow-none">
             Xem thêm

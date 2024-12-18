@@ -6,12 +6,16 @@ import Masonry from "react-masonry-css";
 const BookmarkList = ({
   userId,
   accessToken,
+  bookmarks,
+  setBookmarks,
+  onPostDelete,
 }: {
   userId: string;
   accessToken: string;
+  bookmarks: IBookmark[];
+  setBookmarks: React.Dispatch<React.SetStateAction<IBookmark[]>>;
+  onPostDelete: (postId: string) => void;
 }) => {
-  const [bookmarks, setBookmarks] = useState<IBookmark[]>([]);
-
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
@@ -23,6 +27,7 @@ const BookmarkList = ({
               authorization: `Bearer ${accessToken}`,
               "Content-Type": "application/json",
             },
+            cache: "no-store",
           }
         );
         if (response.ok) {
@@ -62,14 +67,7 @@ const BookmarkList = ({
             bookmarks.map(({ postId }) =>
               postId ? (
                 <div key={postId._id} className="mb-4 break-inside-avoid">
-                  <PostCardInfinite
-                    post={postId}
-                    onPostDelete={(postId: string) => {
-                      setBookmarks((prevPosts) =>
-                        prevPosts.filter((p) => p._id !== postId)
-                      );
-                    }}
-                  />
+                  <PostCardInfinite post={postId} onPostDelete={onPostDelete} />
                 </div>
               ) : null
             )

@@ -118,7 +118,6 @@ export default function VietBaiReview() {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Có lỗi xảy ra, vui lòng thử lại sau!");
     }
   };
 
