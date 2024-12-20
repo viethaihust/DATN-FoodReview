@@ -121,7 +121,7 @@ const SearchResultsPage = () => {
                   </div>
                 </div>
                 <Link
-                  href={`dia-diem-review/${post._id}`}
+                  href={`/dia-diem-review/${post._id}`}
                   className="font-semibold text-xl mt-4 hover:text-orange-600"
                 >
                   {post.title}

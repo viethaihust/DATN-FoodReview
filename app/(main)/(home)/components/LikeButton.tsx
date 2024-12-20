@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { BACKEND_URL } from "@/lib/constants";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
+import { useRouter } from "next/navigation";
 
 export default function LikeButton({ postId }: { postId: string }) {
   const { data: session } = useSession();
@@ -61,7 +61,16 @@ export default function LikeButton({ postId }: { postId: string }) {
 
       if (response.ok) {
         setLiked(!liked);
-        router.refresh();
+        const likeCountElement = document.getElementById(
+          `like-count-${postId}`
+        );
+        if (likeCountElement) {
+          likeCountElement.innerText = `${
+            liked
+              ? parseInt(likeCountElement.innerText) - 1
+              : parseInt(likeCountElement.innerText) + 1
+          } lượt thích`;
+        }
       } else {
         toast.error("Thích bài viết thất bại.");
       }

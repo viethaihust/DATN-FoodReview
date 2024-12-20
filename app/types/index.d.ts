@@ -19,6 +19,7 @@ interface IReviewPost {
     _id: string;
     name: string;
     address: string;
+    province: string;
     latLong: { lat: number; lng: number };
   };
   likesCount: number;
@@ -85,6 +86,7 @@ interface IBookmark {
       _id: string;
       name: string;
       address: string;
+      province: string;
       latLong: { lat: number; lng: number };
     };
     likesCount: number;
@@ -104,6 +106,7 @@ interface ILocation {
   _id: string;
   name: string;
   address: string;
+  province: string;
   latLong: {
     lat: number;
     lng: number;

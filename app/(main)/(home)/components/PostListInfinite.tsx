@@ -4,8 +4,76 @@ import { getPosts } from "@/actions/getPosts";
 import { useInView } from "react-intersection-observer";
 import { BACKEND_URL, POSTS_PER_PAGE } from "@/lib/constants";
 import PostCardInfinite from "./PostCardInfinite";
-import { Spin, Button, Tooltip } from "antd";
+import { Spin, Button, Tooltip, Select } from "antd";
 import Masonry from "react-masonry-css";
+
+const provinces = [
+  { name: "Tất cả" },
+  { name: "An Giang" },
+  { name: "Kon Tum" },
+  { name: "Đắk Nông" },
+  { name: "Sóc Trăng" },
+  { name: "Bình Phước" },
+  { name: "Hưng Yên" },
+  { name: "Thanh Hóa" },
+  { name: "Quảng Trị" },
+  { name: "Tuyên Quang" },
+  { name: "Quảng Ngãi" },
+  { name: "Hà Nội" },
+  { name: "Lào Cai" },
+  { name: "Vĩnh Long" },
+  { name: "Lâm Đồng" },
+  { name: "Bình Định" },
+  { name: "Nghệ An" },
+  { name: "Kiên Giang" },
+  { name: "Hà Giang" },
+  { name: "Phú Yên" },
+  { name: "Lạng Sơn" },
+  { name: "Đà Nẵng" },
+  { name: "Sơn La" },
+  { name: "Tây Ninh" },
+  { name: "Nam Định" },
+  { name: "Lai Châu" },
+  { name: "Bến Tre" },
+  { name: "Khánh Hòa" },
+  { name: "Bình Thuận" },
+  { name: "Cao Bằng" },
+  { name: "Hải Phòng" },
+  { name: "Ninh Bình" },
+  { name: "Yên Bái" },
+  { name: "Gia Lai" },
+  { name: "Hoà Bình" },
+  { name: "Bà Rịa - Vũng Tàu" },
+  { name: "Cà Mau" },
+  { name: "Bình Dương" },
+  { name: "Cần Thơ" },
+  { name: "Thừa Thiên Huế" },
+  { name: "Đồng Nai" },
+  { name: "Tiền Giang" },
+  { name: "Điện Biên" },
+  { name: "Vĩnh Phúc" },
+  { name: "Quảng Nam" },
+  { name: "Đắk Lắk" },
+  { name: "Thái Nguyên" },
+  { name: "Hải Dương" },
+  { name: "Bạc Liêu" },
+  { name: "Trà Vinh" },
+  { name: "Thái Bình" },
+  { name: "Hà Tĩnh" },
+  { name: "Ninh Thuận" },
+  { name: "Đồng Tháp" },
+  { name: "Long An" },
+  { name: "Hậu Giang" },
+  { name: "Quảng Ninh" },
+  { name: "Phú Thọ" },
+  { name: "Quảng Bình" },
+  { name: "Hồ Chí Minh" },
+  { name: "Hà Nam" },
+  { name: "Bắc Ninh" },
+  { name: "Bắc Giang" },
+  { name: "Bắc Kạn" },
+];
+
 export default function PostListInfinite({
   initialPosts,
 }: {
@@ -18,6 +86,7 @@ export default function PostListInfinite({
   const [hasMoreData, setHasMoreData] = useState(true);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [scrollTrigger, isInView] = useInView();
 
   const fetchCategories = useCallback(async () => {
@@ -63,6 +132,27 @@ export default function PostListInfinite({
     }
   }, [posts, selectedCategory]);
 
+  useEffect(() => {
+    if (selectedProvince) {
+      setFilteredPosts(
+        selectedProvince === "Tất cả"
+          ? posts
+          : posts.filter(
+              (post) =>
+                post.locationId &&
+                post.locationId.province &&
+                post.locationId.province === selectedProvince
+            )
+      );
+    } else {
+      setFilteredPosts(posts);
+    }
+  }, [posts, selectedProvince]);
+
+  const handleProvinceChange = (value: string) => {
+    setSelectedProvince(value);
+  };
+
   const breakpointColumns = {
     default: 4,
     1100: 3,
@@ -96,6 +186,18 @@ export default function PostListInfinite({
             </Button>
           </Tooltip>
         ))}
+
+        <Select
+          value={selectedProvince}
+          onChange={handleProvinceChange}
+          placeholder="Chọn tỉnh/thành"
+          showSearch
+          options={provinces.map((province) => ({
+            value: province.name,
+            label: province.name,
+          }))}
+          className="w-40"
+        />
       </div>
 
       <Masonry

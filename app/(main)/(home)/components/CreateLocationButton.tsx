@@ -29,7 +29,6 @@ export default function CreateLocationButton() {
     try {
       const values = await form.validateFields();
       const { locationName } = values;
-      const address = selectedAddress;
 
       const latLong = markerInstance.current?.position
         ? {
@@ -38,13 +37,40 @@ export default function CreateLocationButton() {
           }
         : null;
 
+      const geocoder = new google.maps.Geocoder();
+      const address = markerInstance.current?.position
+        ? await geocoder.geocode({ location: markerInstance.current.position })
+        : null;
+
+      let province = "";
+      let country = "";
+
+      if (address && address.results && address.results[0]) {
+        const addressComponents = address.results[0].address_components;
+        console.log(addressComponents);
+        addressComponents.forEach((component) => {
+          if (component.types.includes("administrative_area_level_1")) {
+            province = component.long_name;
+          }
+          if (component.types.includes("country")) {
+            country = component.long_name;
+          }
+        });
+      }
+
+      if (country !== "Việt Nam") {
+        toast.error("Bạn chỉ có thể chọn vị trí tại Việt Nam!");
+        return;
+      }
+
       const response = await fetchWithAuth(
         `${BACKEND_URL}/api/location`,
         {
           method: "POST",
           body: JSON.stringify({
             name: locationName,
-            address,
+            address: selectedAddress,
+            province: province,
             latLong: latLong,
           }),
         },
@@ -109,7 +135,9 @@ export default function CreateLocationButton() {
 
     const geocoder = new Geocoder();
     const input = document.getElementById("searchBox") as HTMLInputElement;
-    const autocomplete = new Autocomplete(input);
+    const autocomplete = new Autocomplete(input, {
+      componentRestrictions: { country: "VN" },
+    });
     autocomplete.bindTo("bounds", map);
 
     autocomplete.addListener("place_changed", () => {

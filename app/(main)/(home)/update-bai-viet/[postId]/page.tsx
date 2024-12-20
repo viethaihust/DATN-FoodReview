@@ -45,6 +45,7 @@ export default function VietBaiReview({
           _id: locationData._id,
           name: locationData.name,
           address: locationData.address,
+          province: locationData.province,
           latLong: locationData.latLong,
         },
       ]);

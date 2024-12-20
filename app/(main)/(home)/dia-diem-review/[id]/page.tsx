@@ -69,7 +69,9 @@ export default async function DiaDiemReview({
             </div>
           </div>
           <div className="flex items-center gap-2 md:gap-5">
-            <div>{post.likesCount} lượt thích</div>
+            <div id={`like-count-${post._id}`}>
+              {post.likesCount} lượt thích
+            </div>
             <LikeButton postId={post._id} />
             <BookmarkButton postId={post._id} />
           </div>

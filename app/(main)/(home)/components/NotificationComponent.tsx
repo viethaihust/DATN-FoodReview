@@ -1,7 +1,9 @@
 import useSocket from "@/actions/useSocket";
 import { BACKEND_URL } from "@/lib/constants";
-import { BellOutlined } from "@ant-design/icons";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
+import { BellOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Dropdown, Badge, MenuProps } from "antd";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
@@ -10,11 +12,14 @@ const NotificationComponent = ({ userId }: { userId: string }) => {
   const socket = useSocket(userId);
   const [notifications, setNotifications] = useState<INotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const { data: session } = useSession();
 
   const fetchNotifications = useCallback(async () => {
     try {
-      const response = await fetch(
-        `${BACKEND_URL}/api/notification?userId=${userId}`
+      const response = await fetchWithAuth(
+        `${BACKEND_URL}/api/notification?userId=${userId}`,
+        { method: "GET" },
+        session
       );
       if (!response.ok) {
         throw new Error("Failed to fetch notifications");
@@ -27,20 +32,38 @@ const NotificationComponent = ({ userId }: { userId: string }) => {
     }
   }, [userId]);
 
+  const deleteNotification = async (notificationId: string) => {
+    try {
+      const response = await fetchWithAuth(
+        `${BACKEND_URL}/api/notification/${notificationId}`,
+        { method: "DELETE" },
+        session
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete notification");
+      }
+      setNotifications((prev) =>
+        prev.filter((notif) => notif._id !== notificationId)
+      );
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+    }
+  };
+
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
 
   useEffect(() => {
     if (socket) {
-      socket.on("likeNotification", () => {
+      socket.on("Notification", () => {
         fetchNotifications();
       });
     }
 
     return () => {
       if (socket) {
-        socket.off("likeNotification");
+        socket.off("Notification");
       }
     };
   }, [socket, fetchNotifications]);
@@ -53,20 +76,19 @@ const NotificationComponent = ({ userId }: { userId: string }) => {
       );
       setUnreadCount(0);
 
-      await fetch(
+      await fetchWithAuth(
         `${BACKEND_URL}/api/notification/markAsRead?userId=${userId}`,
         {
           method: "POST",
-        }
+        },
+        session
       );
     }
   };
 
-  console.log("notifications", notifications);
-
   const notificationMenu: MenuProps["items"] =
     notifications.length > 0
-      ? notifications.map((notif, index) => ({
+      ? notifications.map((notif) => ({
           label: (
             <div className="flex items-center gap-2">
               <Link href={`/nguoi-dung/${notif?.sender._id}`}>
@@ -80,15 +102,17 @@ const NotificationComponent = ({ userId }: { userId: string }) => {
               </Link>
               <Link
                 href={`/dia-diem-review/${notif?.postId._id}`}
-                className="hover:text-black"
+                className="hover:text-black flex-1"
               >
                 <span>{notif.sender.name}</span> <span>{notif.message}</span>{" "}
-                <span>&quot;{notif.postId.title}&quot;</span>{" "}
-                <span>của bạn!</span>
               </Link>
+              <DeleteOutlined
+                className="text-red-500 cursor-pointer ml-5 -mr-1"
+                onClick={() => deleteNotification(notif._id)}
+              />
             </div>
           ),
-          key: index.toString(),
+          key: notif._id,
         }))
       : [
           {
