@@ -9,6 +9,8 @@ import Link from "next/link";
 
 export default function NguoiDung({ params }: { params: { id: string } }) {
   const [user, setUser] = useState<IUser | null>(null);
+  const [followersCount, setFollowersCount] = useState<number>(0);
+  const [followingsCount, setFollowingsCount] = useState<number>(0);
   const [reviewPosts, setReviewPosts] = useState<IReviewPost[]>([]);
 
   useEffect(() => {
@@ -16,6 +18,26 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
       fetch(`${BACKEND_URL}/api/users/${params.id}`)
         .then((res) => res.json())
         .then((data) => setUser(data as IUser));
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  }, [params.id]);
+
+  useEffect(() => {
+    try {
+      fetch(`${BACKEND_URL}/api/follows/followers-count/${params.id}`)
+        .then((res) => res.json())
+        .then((data) => setFollowersCount(data));
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  }, [params.id]);
+
+  useEffect(() => {
+    try {
+      fetch(`${BACKEND_URL}/api/follows/followings-count/${params.id}`)
+        .then((res) => res.json())
+        .then((data) => setFollowingsCount(data));
     } catch (error) {
       console.error("Error fetching user:", error);
     }
@@ -45,7 +67,11 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
         </div>
         <div>
           <div className="text-xl font-semibold">{user?.name}</div>
-          <div>{reviewPosts.length} bài viết</div>
+          <div className="flex gap-5">
+            <div>{reviewPosts.length} bài viết</div>
+            <div>{followersCount} người theo dõi</div>
+            <div>{followingsCount} đang theo dõi</div>
+          </div>
         </div>
       </div>
       <List

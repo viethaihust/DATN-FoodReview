@@ -30,7 +30,7 @@ const NotificationComponent = ({ userId }: { userId: string }) => {
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
-  }, [userId]);
+  }, [userId, session]);
 
   const deleteNotification = async (notificationId: string) => {
     try {
@@ -108,7 +108,10 @@ const NotificationComponent = ({ userId }: { userId: string }) => {
               </Link>
               <DeleteOutlined
                 className="text-red-500 cursor-pointer ml-5 -mr-1"
-                onClick={() => deleteNotification(notif._id)}
+                onClick={(e) => {
+                  e?.stopPropagation();
+                  deleteNotification(notif._id);
+                }}
               />
             </div>
           ),

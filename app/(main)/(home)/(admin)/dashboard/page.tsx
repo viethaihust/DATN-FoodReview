@@ -19,7 +19,7 @@ const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [pagination, setPagination] = useState<Pagination>({
     current: 1,
-    pageSize: 10,
+    pageSize: 2,
     total: 0,
   });
 
@@ -36,47 +36,47 @@ const AdminDashboard: React.FC = () => {
         );
         const data = await response.json();
         setUsers(data.users);
-        if (
-          pagination.current !== pagination.current ||
-          pagination.pageSize !== pagination.pageSize
-        ) {
-          setPagination({
-            current: data.page,
-            pageSize: data.pageSize,
-            total: data.total,
-          });
-        }
+        setPagination((prev) => ({
+          ...prev,
+          total: data.total,
+        }));
       } catch (error) {
         console.error("Failed to fetch users", error);
       } finally {
         setLoading(false);
       }
     },
-    [session, pagination]
+    [session]
   );
 
   useEffect(() => {
     if (status === "authenticated") {
       fetchUsers(pagination.current, pagination.pageSize);
     }
-  }, [session, status, fetchUsers, pagination]);
+  }, [status, fetchUsers, pagination.current, pagination.pageSize]);
 
-  const handleTableChange = (pagination: TablePaginationConfig) => {
-    const currentPage = pagination.current || 1;
-    const pageSize = pagination.pageSize || 10;
-    fetchUsers(currentPage, pageSize);
+  const handleTableChange = (newPagination: TablePaginationConfig) => {
+    setPagination((prev) => ({
+      ...prev,
+      current: newPagination.current || 1,
+      pageSize: newPagination.pageSize || prev.pageSize,
+    }));
+    fetchUsers(
+      newPagination.current || 1,
+      newPagination.pageSize || pagination.pageSize
+    );
   };
 
   const handleBan = async (userId: string, action: "ban" | "unban") => {
     const url = `${BACKEND_URL}/api/users/${userId}/${action}`;
     try {
-      await fetch(url, {
-        method: "PATCH",
-        headers: {
-          authorization: `Bearer ${session?.backendTokens.accessToken}`,
-          "Content-Type": "application/json",
+      await fetchWithAuth(
+        url,
+        {
+          method: "PATCH",
         },
-      });
+        session
+      );
       fetchUsers(pagination.current, pagination.pageSize);
     } catch (error) {
       console.error(`Failed to ${action} user`, error);
@@ -115,7 +115,7 @@ const AdminDashboard: React.FC = () => {
           alt="User Avatar"
           width={50}
           height={50}
-          style={{ borderRadius: "50%" }}
+          className="rounded-full w-12 h-12"
         />
       ),
     },
@@ -124,14 +124,13 @@ const AdminDashboard: React.FC = () => {
       key: "actions",
       render: (_: any, record: IUser) =>
         record.role === "admin" ? null : (
-          <Button size="middle">
-            {record.banned ? (
-              <a onClick={() => handleBan(record._id, "unban")}>
-                Bỏ khóa tài khoản
-              </a>
-            ) : (
-              <a onClick={() => handleBan(record._id, "ban")}>Khóa tài khoản</a>
-            )}
+          <Button
+            size="middle"
+            onClick={() =>
+              handleBan(record._id, record.banned ? "unban" : "ban")
+            }
+          >
+            {record.banned ? "Bỏ khóa tài khoản" : "Khóa tài khoản"}
           </Button>
         ),
     },

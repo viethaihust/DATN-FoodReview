@@ -9,6 +9,11 @@ import BookmarkButton from "../../components/BookmarkButton";
 import MapModal from "../../components/MapModal";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getSession } from "next-auth/react";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import FollowButton from "../../components/FollowButton";
 
 export default async function DiaDiemReview({
   params,
@@ -16,6 +21,9 @@ export default async function DiaDiemReview({
   params: { id: string };
 }) {
   await new Promise((resolve) => setTimeout(resolve, 2000));
+
+  const session = await getServerSession(authOptions);
+
   const post = await fetch(`${BACKEND_URL}/api/review-posts/${params.id}`, {
     cache: "no-store",
   })
@@ -24,6 +32,21 @@ export default async function DiaDiemReview({
 
   if (!post) {
     notFound();
+  }
+
+  if (session?.user?._id) {
+    await fetchWithAuth(
+      `${BACKEND_URL}/api/read-posts`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          postId: params.id,
+          userId: session.user._id,
+        }),
+      },
+      session
+    );
+    console.log("Marked as read");
   }
 
   const randomPosts = await fetch(
@@ -55,8 +78,15 @@ export default async function DiaDiemReview({
               />
             </Link>
             <div>
-              <div className="font-bold">{post.userId.name}</div>
-              <div>
+              <div className="flex items-center gap-2">
+                <div className="font-bold">{post.userId.name}</div>
+                {session?.user?._id !== post.userId._id && (
+                  <div>
+                    <FollowButton userId={post.userId._id} />
+                  </div>
+                )}
+              </div>
+              <div className="mt-1">
                 <span>{formatDate(post.createdAt)} tại&nbsp;</span>
                 <span className="text-orange-600 hover:cursor-pointer">
                   <MapModal

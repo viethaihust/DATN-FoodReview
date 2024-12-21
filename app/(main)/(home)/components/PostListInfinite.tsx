@@ -86,7 +86,7 @@ export default function PostListInfinite({
   const [hasMoreData, setHasMoreData] = useState(true);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
+  const [selectedProvince, setSelectedProvince] = useState<string>("Tất cả");
   const [scrollTrigger, isInView] = useInView();
 
   const fetchCategories = useCallback(async () => {
@@ -99,22 +99,41 @@ export default function PostListInfinite({
     }
   }, []);
 
+  const loadMorePosts = useCallback(async () => {
+    if (hasMoreData) {
+      const apiPosts = await getPosts(
+        page,
+        POSTS_PER_PAGE,
+        selectedCategory,
+        selectedProvince
+      );
+
+      if (!apiPosts?.length) {
+        setHasMoreData(false);
+      } else {
+        setPosts((prevPosts) => [...prevPosts, ...apiPosts]);
+        setPage((prevPage) => prevPage + 1);
+      }
+    }
+  }, [hasMoreData, page, selectedCategory, selectedProvince]);
+
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
 
-  const loadMorePosts = useCallback(async () => {
-    if (hasMoreData) {
-      const apiPosts = await getPosts(page, POSTS_PER_PAGE);
-
-      if (!apiPosts?.length) {
-        setHasMoreData(false);
-      }
-
-      setPosts((prevPosts) => [...prevPosts, ...apiPosts]);
-      setPage((prevPage) => prevPage + 1);
-    }
-  }, [hasMoreData, page]);
+  useEffect(() => {
+    (async () => {
+      const apiPosts = await getPosts(
+        1,
+        POSTS_PER_PAGE,
+        selectedCategory,
+        selectedProvince
+      );
+      setPosts(apiPosts);
+      setPage(2);
+      setHasMoreData(apiPosts.length === POSTS_PER_PAGE);
+    })();
+  }, [selectedCategory, selectedProvince]);
 
   useEffect(() => {
     if (isInView && hasMoreData) {
@@ -123,31 +142,17 @@ export default function PostListInfinite({
   }, [isInView, hasMoreData, loadMorePosts]);
 
   useEffect(() => {
-    if (selectedCategory) {
-      setFilteredPosts(
-        posts.filter((post) => post.categoryId._id === selectedCategory)
-      );
-    } else {
-      setFilteredPosts(posts);
-    }
-  }, [posts, selectedCategory]);
-
-  useEffect(() => {
-    if (selectedProvince) {
-      setFilteredPosts(
-        selectedProvince === "Tất cả"
-          ? posts
-          : posts.filter(
-              (post) =>
-                post.locationId &&
-                post.locationId.province &&
-                post.locationId.province === selectedProvince
-            )
-      );
-    } else {
-      setFilteredPosts(posts);
-    }
-  }, [posts, selectedProvince]);
+    const filtered = posts.filter((post) => {
+      const matchesCategory = selectedCategory
+        ? post.categoryId._id === selectedCategory
+        : true;
+      const matchesProvince =
+        selectedProvince === "Tất cả" ||
+        post.locationId?.province === selectedProvince;
+      return matchesCategory && matchesProvince;
+    });
+    setFilteredPosts(filtered);
+  }, [posts, selectedCategory, selectedProvince]);
 
   const handleProvinceChange = (value: string) => {
     setSelectedProvince(value);
@@ -162,31 +167,29 @@ export default function PostListInfinite({
 
   return (
     <>
-      <div className="flex gap-4 px-5 mt-10">
-        <Tooltip placement="bottom">
+      <div className="flex px-5 mt-10 justify-between">
+        <div className="flex gap-5">
           <Button
             onClick={() => setSelectedCategory(null)}
             className="border-2 text-black font-semibold bg-clip-text hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white transition-all duration-300"
           >
             Tất cả
           </Button>
-        </Tooltip>
-
-        {categories.map((category) => (
-          <Tooltip
-            placement="bottom"
-            key={category._id}
-            title={category.description}
-          >
-            <Button
-              onClick={() => setSelectedCategory(category._id)}
-              className="border-2 text-black font-semibold bg-clip-text hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white transition-all duration-300"
+          {categories.map((category) => (
+            <Tooltip
+              placement="bottom"
+              key={category._id}
+              title={category.description}
             >
-              {category.name}
-            </Button>
-          </Tooltip>
-        ))}
-
+              <Button
+                onClick={() => setSelectedCategory(category._id)}
+                className="border-2 text-black font-semibold bg-clip-text hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white transition-all duration-300"
+              >
+                {category.name}
+              </Button>
+            </Tooltip>
+          ))}
+        </div>
         <Select
           value={selectedProvince}
           onChange={handleProvinceChange}
@@ -199,13 +202,12 @@ export default function PostListInfinite({
           className="w-40"
         />
       </div>
-
       <Masonry
         breakpointCols={breakpointColumns}
         className="flex w-auto gap-4 p-5"
         columnClassName="bg-clip-padding"
       >
-        {Array.isArray(filteredPosts) && filteredPosts.length > 0 ? (
+        {filteredPosts.length > 0 ? (
           filteredPosts.map((post) => (
             <div key={post._id} className="mb-4 break-inside-avoid">
               <PostCardInfinite
@@ -213,9 +215,6 @@ export default function PostListInfinite({
                 onPostDelete={(postId: string) => {
                   setPosts((prevPosts) =>
                     prevPosts.filter((p) => p._id !== postId)
-                  );
-                  setFilteredPosts((prevFilteredPosts) =>
-                    prevFilteredPosts.filter((p) => p._id !== postId)
                   );
                 }}
               />
@@ -225,15 +224,14 @@ export default function PostListInfinite({
           <p>Không có bài viết nào</p>
         )}
       </Masonry>
-
       <div className="text-center text-slate-600 mt-5">
         {hasMoreData ? (
           <div ref={scrollTrigger}>
             <Spin />
           </div>
-        ) : filteredPosts.length > 0 ? (
-          <p className="text-slate-600">Không còn bài viết nào</p>
-        ) : null}
+        ) : (
+          <p>Không còn bài viết nào</p>
+        )}
       </div>
     </>
   );

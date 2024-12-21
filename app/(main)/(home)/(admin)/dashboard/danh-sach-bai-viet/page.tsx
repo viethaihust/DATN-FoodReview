@@ -6,6 +6,7 @@ import { BACKEND_URL } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 interface Pagination {
   current: number;
@@ -43,35 +44,35 @@ const ReviewPostList: React.FC = () => {
 
         const result = await response.json();
         setPosts(result.data.posts);
-        if (
-          pagination.current !== pagination.current ||
-          pagination.pageSize !== pagination.pageSize
-        ) {
-          setPagination({
-            current: result.data.page,
-            pageSize: result.data.pageSize,
-            total: result.data.totalPosts,
-          });
-        }
+        setPagination((prev) => ({
+          ...prev,
+          total: result.data.totalPosts,
+        }));
       } catch (error) {
         console.error("Failed to fetch posts:", error);
       } finally {
         setLoading(false);
       }
     },
-    [pagination]
+    [session]
   );
 
   useEffect(() => {
     if (status === "authenticated") {
       fetchPosts(pagination.current, pagination.pageSize);
     }
-  }, [status, fetchPosts, pagination]);
+  }, [status, fetchPosts, pagination.current, pagination.pageSize]);
 
-  const handleTableChange = (pagination: TablePaginationConfig) => {
-    const currentPage = pagination.current || 1;
-    const pageSize = pagination.pageSize || 10;
-    fetchPosts(currentPage, pageSize);
+  const handleTableChange = (newPagination: TablePaginationConfig) => {
+    setPagination((prev) => ({
+      ...prev,
+      current: newPagination.current || 1,
+      pageSize: newPagination.pageSize || prev.pageSize,
+    }));
+    fetchPosts(
+      newPagination.current || 1,
+      newPagination.pageSize || pagination.pageSize
+    );
   };
 
   const handleDelete = async (postId: string) => {
@@ -82,15 +83,12 @@ const ReviewPostList: React.FC = () => {
       cancelText: "Hủy",
       onOk: async () => {
         try {
-          const response = await fetch(
+          const response = await fetchWithAuth(
             `${BACKEND_URL}/api/review-posts/${postId}`,
             {
               method: "DELETE",
-              headers: {
-                authorization: `Bearer ${session?.backendTokens.accessToken}`,
-                "Content-Type": "application/json",
-              },
-            }
+            },
+            session
           );
 
           if (response.ok) {

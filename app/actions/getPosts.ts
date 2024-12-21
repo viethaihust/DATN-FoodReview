@@ -4,9 +4,23 @@ import { handleError } from "@/utils/handleError";
 
 export const getPosts = async (
   page: number,
-  pageSize: number
+  pageSize: number,
+  categoryId?: string | null,
+  province?: string | null
 ): Promise<IReviewPost[]> => {
-  const url = `${BACKEND_URL}/api/review-posts?page=${page}&pageSize=${pageSize}`;
+  const params = new URLSearchParams({
+    page: page.toString(),
+    pageSize: pageSize.toString(),
+  });
+
+  if (categoryId) {
+    params.append("categoryId", categoryId);
+  }
+  if (province && province !== "Tất cả") {
+    params.append("province", province);
+  }
+
+  const url = `${BACKEND_URL}/api/review-posts?${params.toString()}`;
   try {
     const response = await fetch(url, { cache: "no-store" });
 
