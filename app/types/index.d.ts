@@ -13,7 +13,7 @@ interface IReviewPost {
   userId: { _id: string; name: string; image?: string };
   title: string;
   content: string;
-  images: string[];
+  files: string[];
   categoryId: { _id: string; name: string; description: string };
   locationId: {
     _id: string;
@@ -80,7 +80,7 @@ interface IBookmark {
     userId: { _id: string; name: string };
     title: string;
     content: string;
-    images: string[];
+    files: string[];
     categoryId: { _id: string; name: string; description: string };
     locationId: {
       _id: string;

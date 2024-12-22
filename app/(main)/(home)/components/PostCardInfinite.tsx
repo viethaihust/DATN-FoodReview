@@ -87,7 +87,12 @@ export default function PostCardInfinite({
       )}
       <Link href={`/dia-diem-review/${post?._id}`}>
         <Image
-          src={post?.images[0]}
+          src={
+            post?.files[0]?.includes("video")
+              ? `${post?.files[0].replace(".mp4", ".jpg")}`
+              : post?.files.find((file) => !file.includes("video")) ||
+                "/fallback-video.jpg"
+          }
           alt={post?.title}
           width={350}
           height={350}

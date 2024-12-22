@@ -132,10 +132,10 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
               </Link>
               <div>{post.content}</div>
               <div className="flex mt-2 gap-2 flex-wrap">
-                {post.images.map((image, index) => (
+                {post.files.map((file, index) => (
                   <Image
                     key={index}
-                    src={image}
+                    src={file}
                     alt={`${post.title} - Image ${index + 1}`}
                     width={100}
                     height={100}

@@ -18,7 +18,7 @@ export default function VietBaiReview({
 }) {
   const router = useRouter();
   const [form] = Form.useForm();
-  const [selectedImages, setSelectedImages] = useState<RcFile[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<RcFile[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const { data: session } = useSession();
   const [locations, setLocations] = useState<ILocation[]>([]);
@@ -58,13 +58,13 @@ export default function VietBaiReview({
         ratings: data.ratings,
       });
 
-      const initialImages: RcFile[] = await Promise.all(
-        data.images.map(async (url: string, index: number) => {
+      const initialFiles: RcFile[] = await Promise.all(
+        data.files.map(async (url: string, index: number) => {
           const response = await fetch(url);
           const blob = await response.blob();
           const file = new File(
             [blob],
-            url.split("/").pop() || `image-${index}`,
+            url.split("/").pop() || `file-${index}`,
             { type: blob.type }
           ) as RcFile;
           return Object.assign(file, {
@@ -73,7 +73,7 @@ export default function VietBaiReview({
           });
         })
       );
-      setSelectedImages(initialImages);
+      setSelectedFiles(initialFiles);
     } catch (error) {
       console.error("Error fetching post details:", error);
     }
@@ -127,46 +127,44 @@ export default function VietBaiReview({
     fetchCategories();
   }, []);
 
-  const handleImageSelect = (file: RcFile) => {
+  const handleFileSelect = (file: RcFile) => {
     file.thumbUrl = URL.createObjectURL(file);
-    setSelectedImages((prev) => [...prev, file]);
+    setSelectedFiles((prev) => [...prev, file]);
     return false;
   };
 
-  const handleImageRemove = (file: UploadFile<any>) => {
-    setSelectedImages((prev) => {
+  const handleFileRemove = (file: UploadFile<any>) => {
+    setSelectedFiles((prev) => {
       URL.revokeObjectURL(file.thumbUrl || "");
-      return prev.filter((img) => img.uid !== file.uid);
+      return prev.filter((f) => f.uid !== file.uid);
     });
   };
 
   useEffect(() => {
     return () => {
-      selectedImages.forEach((file) =>
-        URL.revokeObjectURL(file.thumbUrl || "")
-      );
+      selectedFiles.forEach((file) => URL.revokeObjectURL(file.thumbUrl || ""));
     };
-  }, [selectedImages]);
+  }, [selectedFiles]);
 
   const onFinish = async (values: any) => {
     const { title, content, categoryId, locationId, ratings } = values;
 
     const formData = new FormData();
-    selectedImages.forEach((file) => formData.append("images", file));
+    selectedFiles.forEach((file) => formData.append("files", file));
 
     try {
-      const uploadRes = await fetch(`${BACKEND_URL}/api/upload/many-images`, {
+      const uploadRes = await fetch(`${BACKEND_URL}/api/upload/many-files`, {
         method: "POST",
         body: formData,
       });
 
       if (!uploadRes.ok) {
-        toast.error("Có lỗi khi tải lên ảnh!");
+        toast.error("Có lỗi khi tải lên ảnh/video!");
         return;
       }
 
-      const uploadedImages = await uploadRes.json();
-      const imageUrls = uploadedImages.map((image: any) => image.secure_url);
+      const uploadedFiles = await uploadRes.json();
+      const fileUrls = uploadedFiles.map((file: any) => file.secure_url);
 
       const postRes = await fetch(
         `${BACKEND_URL}/api/review-posts/${params.postId}`,
@@ -180,7 +178,7 @@ export default function VietBaiReview({
             userId: session?.user._id,
             title,
             content,
-            images: imageUrls,
+            files: fileUrls,
             categoryId,
             locationId,
             ratings,
@@ -224,16 +222,16 @@ export default function VietBaiReview({
         >
           <Input.TextArea rows={4} />
         </Form.Item>
-        <Form.Item label="Hình ảnh (tối đa 10)">
+        <Form.Item label="Hình ảnh / Video (tối đa 10)">
           <Upload
-            accept="image/*"
-            beforeUpload={handleImageSelect}
-            onRemove={handleImageRemove}
+            accept="image/*,video/*"
+            beforeUpload={handleFileSelect}
+            onRemove={handleFileRemove}
             multiple
             listType="picture"
-            fileList={selectedImages}
+            fileList={selectedFiles}
           >
-            <Button icon={<UploadOutlined />}>Tải ảnh lên</Button>
+            <Button icon={<UploadOutlined />}>Tải ảnh / video lên</Button>
           </Upload>
         </Form.Item>
         <Form.Item

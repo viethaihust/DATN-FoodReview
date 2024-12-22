@@ -1,5 +1,5 @@
 "use client";
-import { Button, Form, Input, Select, Upload, Rate, Slider } from "antd";
+import { Button, Form, Input, Select, Upload, Rate } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
@@ -14,6 +14,9 @@ import { useRouter } from "next/navigation";
 export default function VietBaiReview() {
   const router = useRouter();
   const [locations, setLocations] = useState<ILocation[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<RcFile[]>([]);
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const { data: session } = useSession();
 
   const fetchLocations = useMemo(
     () =>
@@ -43,10 +46,6 @@ export default function VietBaiReview() {
     fetchLocations(value);
   };
 
-  const [selectedImages, setSelectedImages] = useState<RcFile[]>([]);
-  const [categories, setCategories] = useState<ICategory[]>([]);
-  const { data: session } = useSession();
-
   useEffect(() => {
     async function fetchCategories() {
       try {
@@ -63,34 +62,47 @@ export default function VietBaiReview() {
     fetchCategories();
   }, []);
 
-  const handleImageSelect = (file: RcFile) => {
-    setSelectedImages((prev) => [...prev, file]);
+  const handleFileSelect = (file: RcFile) => {
+    const allowedTypes = ["image/jpeg", "image/png", "video/mp4", "video/mpeg"];
+    const maxFileSize = 10 * 1024 * 1024; // 10 MB
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Chỉ chấp nhận file ảnh JPG, PNG hoặc video MP4, MPEG.");
+      return Upload.LIST_IGNORE;
+    }
+
+    if (file.size > maxFileSize) {
+      toast.error("Kích thước file phải nhỏ hơn 10 MB.");
+      return Upload.LIST_IGNORE;
+    }
+
+    setSelectedFiles((prev) => [...prev, file]);
     return false;
   };
 
-  const handleImageRemove = (file: UploadFile<any>) => {
-    setSelectedImages((prev) => prev.filter((img) => img.uid !== file.uid));
+  const handleFileRemove = (file: UploadFile<any>) => {
+    setSelectedFiles((prev) => prev.filter((f) => f.uid !== file.uid));
   };
 
   const onFinish = async (values: any) => {
     const { title, content, categoryId, locationId, ratings } = values;
 
     const formData = new FormData();
-    selectedImages.forEach((file) => formData.append("images", file));
+    selectedFiles.forEach((file) => formData.append("files", file));
 
     try {
-      const uploadRes = await fetch(`${BACKEND_URL}/api/upload/many-images`, {
+      const uploadRes = await fetch(`${BACKEND_URL}/api/upload/many-files`, {
         method: "POST",
         body: formData,
       });
 
       if (!uploadRes.ok) {
-        toast.error("Có lỗi khi tải lên ảnh!");
+        toast.error("Có lỗi khi tải lên file!");
         return;
       }
 
-      const uploadedImages = await uploadRes.json();
-      const imageUrls = uploadedImages.map((image: any) => image.secure_url);
+      const uploadedFiles = await uploadRes.json();
+      const fileUrls = uploadedFiles.map((file: any) => file.secure_url);
 
       const postRes = await fetch(`${BACKEND_URL}/api/review-posts`, {
         method: "POST",
@@ -102,7 +114,7 @@ export default function VietBaiReview() {
           userId: session?.user._id,
           title,
           content,
-          images: imageUrls,
+          files: fileUrls,
           categoryId,
           locationId,
           ratings,
@@ -143,15 +155,15 @@ export default function VietBaiReview() {
         >
           <Input.TextArea rows={4} />
         </Form.Item>
-        <Form.Item label="Hình ảnh (tối đa 10)">
+        <Form.Item label="Hình ảnh và video (tối đa 10 file)">
           <Upload
-            accept="image/*"
-            beforeUpload={handleImageSelect}
-            onRemove={handleImageRemove}
+            accept="image/*,video/*"
+            beforeUpload={handleFileSelect}
+            onRemove={handleFileRemove}
             multiple
             listType="picture"
           >
-            <Button icon={<UploadOutlined />}>Tải ảnh lên</Button>
+            <Button icon={<UploadOutlined />}>Tải lên file</Button>
           </Upload>
         </Form.Item>
         <Form.Item

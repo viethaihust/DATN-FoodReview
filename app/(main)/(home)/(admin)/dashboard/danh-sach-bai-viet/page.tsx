@@ -124,20 +124,24 @@ const ReviewPostList: React.FC = () => {
     },
     {
       title: "Ảnh",
-      dataIndex: "images",
-      key: "images",
-      render: (images: string[]) => (
+      dataIndex: "files",
+      render: (files: string[]) => (
         <div className="flex gap-2">
-          {images.map((image, index) => (
-            <Image
-              key={index}
-              src={image}
-              alt={`Image ${index + 1}`}
-              width={50}
-              height={50}
-              className="object-cover rounded-md"
-            />
-          ))}
+          {files.map((file, index) => {
+            const isVideo = file.includes("video");
+            const imageUrl = isVideo ? file.replace(".mp4", ".jpg") : file;
+
+            return (
+              <Image
+                key={index}
+                src={imageUrl || "/fallback-video.jpg"}
+                alt={`Preview ${index + 1}`}
+                width={50}
+                height={50}
+                className="object-cover rounded-md"
+              />
+            );
+          })}
         </div>
       ),
     },

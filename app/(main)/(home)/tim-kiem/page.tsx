@@ -128,14 +128,18 @@ const SearchResultsPage = () => {
                 </Link>
                 <div>{post.content}</div>
                 <div className="flex mt-2 gap-2 flex-wrap">
-                  {post.images.map((image, index) => (
+                  {post.files.map((file, index) => (
                     <Image
                       key={index}
-                      src={image}
-                      alt={`${post.title} - Image ${index + 1}`}
+                      src={
+                        file?.includes("video")
+                          ? file.replace(".mp4", ".jpg")
+                          : file
+                      }
+                      alt={`${post.title} - File ${index + 1}`}
                       width={100}
                       height={100}
-                      className="object-cover rounded-md"
+                      className="rounded-md object-cover"
                     />
                   ))}
                 </div>

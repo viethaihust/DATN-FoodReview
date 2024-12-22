@@ -107,29 +107,49 @@ export default async function DiaDiemReview({
           </div>
         </div>
         <div className="pt-5 -mx-5">
-          {post.images.length > 1 ? (
+          {post.files.length > 1 ? (
             <Carousel arrows>
-              {post.images.map((image, index) => (
+              {post.files.map((file, index) => (
                 <div key={index} className="h-[20rem] md:h-[35rem]">
-                  <Image
-                    height={200}
-                    width={200}
-                    src={image}
-                    alt="review-pic"
-                    className="h-full w-auto object-contain m-auto"
-                  />
+                  {file.endsWith(".mp4") ||
+                  file.endsWith(".mov") ||
+                  file.endsWith(".mpeg") ? (
+                    <video
+                      className="h-full w-auto object-cover m-auto"
+                      controls
+                      src={file}
+                    />
+                  ) : (
+                    <Image
+                      height={200}
+                      width={200}
+                      src={file}
+                      alt="review-pic"
+                      className="h-full w-auto object-contain m-auto"
+                    />
+                  )}
                 </div>
               ))}
             </Carousel>
           ) : (
             <div className="h-[20rem] md:h-[35rem]">
-              <Image
-                height={200}
-                width={200}
-                src={post.images[0]}
-                alt="review-pic"
-                className="h-full w-auto object-contain m-auto"
-              />
+              {post.files[0].endsWith(".mp4") ||
+              post.files[0].endsWith(".mov") ||
+              post.files[0].endsWith(".mpeg") ? (
+                <video
+                  className="h-full w-auto object-cover m-auto"
+                  controls
+                  src={post.files[0]}
+                />
+              ) : (
+                <Image
+                  height={200}
+                  width={200}
+                  src={post.files[0]}
+                  alt="review-pic"
+                  className="h-full w-auto object-contain m-auto"
+                />
+              )}
             </div>
           )}
         </div>
@@ -170,7 +190,7 @@ export default async function DiaDiemReview({
             Các bài viết khác
           </div>
           <div className="flex flex-col mt-5 gap-6">
-            {randomPosts.map((randomPost: IReviewPost) => (
+            {/* {randomPosts.map((randomPost: IReviewPost) => (
               <div key={randomPost._id} className="rounded-md border">
                 <Link
                   href={`/dia-diem-review/${randomPost._id}`}
@@ -180,7 +200,7 @@ export default async function DiaDiemReview({
                     <Image
                       height={100}
                       width={100}
-                      src={randomPost.images[0]}
+                      src={randomPost?.files[0]}
                       alt="random-post-pic"
                       className="w-full max-h-52 rounded-t-md object-cover"
                     />
@@ -225,7 +245,7 @@ export default async function DiaDiemReview({
                   </div>
                 </Link>
               </div>
-            ))}
+            ))} */}
           </div>
         </div>
       ) : null}
