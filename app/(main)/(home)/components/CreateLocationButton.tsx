@@ -222,13 +222,13 @@ export default function CreateLocationButton() {
   };
 
   return (
-    <>
+    <div className="w-12 md:w-auto">
       <Button
         icon={<IoLocationOutline className="text-lg" />}
         className="rounded-md bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold px-4 py-5 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center"
         onClick={showModal}
       >
-        Thêm địa điểm mới
+        <span className="!hidden sm:!block">Thêm địa điểm mới</span>
       </Button>
       <Modal
         title="Thêm địa điểm mới"
@@ -271,6 +271,6 @@ export default function CreateLocationButton() {
           </Form.Item>
         </Form>
       </Modal>
-    </>
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import { FaRegBookmark } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 import { BACKEND_URL } from "@/lib/constants";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 export default function BookmarkButton({ postId }: { postId: string }) {
   const { data: session } = useSession();
@@ -47,17 +48,17 @@ export default function BookmarkButton({ postId }: { postId: string }) {
 
   const handleToggleBookmark = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/bookmark`, {
-        method: "POST",
-        headers: {
-          authorization: `Bearer ${session?.backendTokens.accessToken}`,
-          "Content-Type": "application/json",
+      const response = await fetchWithAuth(
+        `${BACKEND_URL}/api/bookmark`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            userId: userId,
+            postId: postId,
+          }),
         },
-        body: JSON.stringify({
-          userId: userId,
-          postId: postId,
-        }),
-      });
+        session
+      );
 
       if (response.ok) {
         setBookmarked(!bookmarked);

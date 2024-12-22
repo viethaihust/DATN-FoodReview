@@ -10,20 +10,19 @@ export const fetchWithAuth = async (
     throw new Error("Unauthorized: User not logged in");
   }
 
-  const headers = {
-    ...options.headers,
+  let headers: { [key: string]: string } = {
     authorization: `Bearer ${session.backendTokens.accessToken}`,
     "Content-Type": "application/json",
   };
+
+  if (options.body instanceof FormData) {
+    delete headers["Content-Type"];
+  }
 
   const response = await fetch(url, {
     ...options,
     headers,
   });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
 
   return response;
 };

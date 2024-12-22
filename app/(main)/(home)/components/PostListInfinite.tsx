@@ -167,8 +167,8 @@ export default function PostListInfinite({
 
   return (
     <>
-      <div className="flex px-5 mt-10 justify-between">
-        <div className="flex gap-5">
+      <div className="flex flex-wrap px-5 mt-10 justify-between gap-5">
+        <div className="flex flex-wrap gap-2 md:gap-5 w-full md:w-auto">
           <Button
             onClick={() => setSelectedCategory(null)}
             className="border-2 text-black font-semibold bg-clip-text hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white transition-all duration-300"
@@ -199,7 +199,7 @@ export default function PostListInfinite({
             value: province.name,
             label: province.name,
           }))}
-          className="w-40"
+          className="w-full md:w-40"
         />
       </div>
       <Masonry

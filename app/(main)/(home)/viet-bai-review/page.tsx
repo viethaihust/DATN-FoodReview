@@ -10,6 +10,7 @@ import { debounce } from "lodash";
 import CreateLocationButton from "../components/CreateLocationButton";
 import IconSlider from "../components/IconSlider";
 import { useRouter } from "next/navigation";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 export default function VietBaiReview() {
   const router = useRouter();
@@ -62,7 +63,7 @@ export default function VietBaiReview() {
     fetchCategories();
   }, []);
 
-  const handleFileSelect = (file: RcFile) => {
+  const handleFileSelect = async (file: RcFile) => {
     const allowedTypes = ["image/jpeg", "image/png", "video/mp4", "video/mpeg"];
     const maxFileSize = 10 * 1024 * 1024; // 10 MB
 
@@ -76,8 +77,37 @@ export default function VietBaiReview() {
       return Upload.LIST_IGNORE;
     }
 
-    setSelectedFiles((prev) => [...prev, file]);
-    return false;
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetchWithAuth(
+        `${BACKEND_URL}/api/image-moderation/analyze`,
+        {
+          method: "POST",
+          body: formData,
+        },
+        session
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to analyze the file.");
+      }
+
+      const { isSafe } = await response.json();
+
+      if (!isSafe) {
+        toast.error(`Tệp ${file.name} chứa nội dung không an toàn.`);
+        return Upload.LIST_IGNORE;
+      }
+
+      setSelectedFiles((prev) => [...prev, file]);
+      return false;
+    } catch (error: any) {
+      toast.error(`Lỗi khi kiểm tra file: ${error.message}`);
+      return Upload.LIST_IGNORE;
+    }
   };
 
   const handleFileRemove = (file: UploadFile<any>) => {
@@ -91,35 +121,45 @@ export default function VietBaiReview() {
     selectedFiles.forEach((file) => formData.append("files", file));
 
     try {
-      const uploadRes = await fetch(`${BACKEND_URL}/api/upload/many-files`, {
-        method: "POST",
-        body: formData,
-      });
+      const uploadRes = await fetchWithAuth(
+        `${BACKEND_URL}/api/upload/many-files`,
+        {
+          method: "POST",
+          body: formData,
+        },
+        session
+      );
 
       if (!uploadRes.ok) {
-        toast.error("Có lỗi khi tải lên file!");
+        const uploadError = await uploadRes.json();
+
+        if (uploadError.message) {
+          toast.error(uploadError.message);
+        } else {
+          toast.error("Có lỗi khi tải lên file!");
+        }
         return;
       }
 
       const uploadedFiles = await uploadRes.json();
       const fileUrls = uploadedFiles.map((file: any) => file.secure_url);
 
-      const postRes = await fetch(`${BACKEND_URL}/api/review-posts`, {
-        method: "POST",
-        headers: {
-          authorization: `Bearer ${session?.backendTokens.accessToken}`,
-          "Content-Type": "application/json",
+      const postRes = await fetchWithAuth(
+        `${BACKEND_URL}/api/review-posts`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            userId: session?.user._id,
+            title,
+            content,
+            files: fileUrls,
+            categoryId,
+            locationId,
+            ratings,
+          }),
         },
-        body: JSON.stringify({
-          userId: session?.user._id,
-          title,
-          content,
-          files: fileUrls,
-          categoryId,
-          locationId,
-          ratings,
-        }),
-      });
+        session
+      );
 
       if (postRes.ok) {
         router.push("/");
@@ -128,7 +168,7 @@ export default function VietBaiReview() {
       } else {
         toast.error("Có lỗi xảy ra, vui lòng thử lại sau!");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
     }
   };
@@ -181,7 +221,7 @@ export default function VietBaiReview() {
             }))}
           />
         </Form.Item>
-        <div className="flex w-full justify-between gap-10">
+        <div className="flex w-full justify-between md:gap-10 flex-col md:flex-row">
           <Form.Item
             name="locationId"
             label="Địa điểm"

@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { formatDate } from "@/utils/formatDate";
 import { BACKEND_URL } from "@/lib/constants";
 import Image from "next/image";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 const CommentComponent: React.FC<ICommentComponentProps> = ({
   comment,
@@ -47,20 +48,20 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
     if (!replyContent.trim()) return;
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/comments`, {
-        method: "POST",
-        headers: {
-          authorization: `Bearer ${session?.backendTokens.accessToken}`,
-          "Content-Type": "application/json",
+      const response = await fetchWithAuth(
+        `${BACKEND_URL}/api/comments`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            content: replyContent,
+            postId: comment.postId,
+            userId: session?.user?._id,
+            likes: 0,
+            parentCommentId: comment._id,
+          }),
         },
-        body: JSON.stringify({
-          content: replyContent,
-          postId: comment.postId,
-          userId: session?.user?._id,
-          likes: 0,
-          parentCommentId: comment._id,
-        }),
-      });
+        session
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -72,6 +73,8 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
       setShowReplies(true);
       setReplying(false);
       setReplyContent("");
+
+      comment.replies += 1;
     } catch (error) {
       console.error("Error adding reply:", error);
     }
@@ -83,20 +86,17 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
       ?.likedBy.includes(session?.user?._id);
 
     try {
-      const response = await fetch(
+      const response = await fetchWithAuth(
         `${BACKEND_URL}/api/comments/${replyId}/like`,
         {
           method: "PATCH",
-          headers: {
-            authorization: `Bearer ${session?.backendTokens.accessToken}`,
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
             replyId,
             userId: session?.user?._id,
             isLiked,
           }),
-        }
+        },
+        session
       );
 
       if (!response.ok) {

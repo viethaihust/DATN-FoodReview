@@ -59,6 +59,9 @@ const ProfilePage = () => {
   const uploadProps: UploadProps = {
     name: "image",
     action: `${BACKEND_URL}/api/upload/one-image`,
+    headers: {
+      Authorization: `Bearer ${session?.backendTokens.accessToken}`,
+    },
     showUploadList: false,
     onChange(info) {
       if (info.file.status === "done") {
@@ -67,7 +70,9 @@ const ProfilePage = () => {
           handleImageUpdate(secureUrl);
         }
       } else if (info.file.status === "error") {
-        toast.error("Image upload failed");
+        const errorMessage =
+          info.file.response?.message || "Cập nhật ảnh đại diện thất bại";
+        toast.error(errorMessage);
       }
     },
   };
@@ -143,17 +148,17 @@ const ProfilePage = () => {
 
   return (
     <div>
-      <div className="flex items-center gap-5">
+      <div className="flex justify-evenly md:justify-normal items-center gap-2 md:gap-5 -mx-3 md:mx-0">
         <div className="relative">
           <Image
-            className="rounded-full w-24 h-24"
+            className="rounded-full w-16 h-16 md:w-24 md:h-24 object-cover"
             height={100}
             width={100}
             src={session?.user?.image || "/profile.jpg"}
             alt="profile-pic"
           />
           <Upload {...uploadProps}>
-            <button className="absolute bottom-4 right-2 bg-gray-400 px-2 py-1 rounded-full">
+            <button className="absolute bottom-4 md:right-2 right-0 bg-gray-400 px-2 py-1 rounded-full">
               <CameraOutlined />
             </button>
           </Upload>
@@ -165,7 +170,7 @@ const ProfilePage = () => {
         <button
           type="submit"
           onClick={() => setIsModalVisible(true)}
-          className="-mt-4 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded"
+          className="-mt-4 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white md:py-2 md:px-4 px-1 py-1 border border-red-500 hover:border-transparent rounded"
         >
           Đổi mật khẩu
         </button>

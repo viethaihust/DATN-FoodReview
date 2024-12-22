@@ -10,6 +10,7 @@ import { debounce } from "lodash";
 import CreateLocationButton from "@/(main)/(home)/components/CreateLocationButton";
 import IconSlider from "@/(main)/(home)/components/IconSlider";
 import { useRouter } from "next/navigation";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 export default function VietBaiReview({
   params,
@@ -153,13 +154,18 @@ export default function VietBaiReview({
     selectedFiles.forEach((file) => formData.append("files", file));
 
     try {
-      const uploadRes = await fetch(`${BACKEND_URL}/api/upload/many-files`, {
-        method: "POST",
-        body: formData,
-      });
+      const uploadRes = await fetchWithAuth(
+        `${BACKEND_URL}/api/upload/many-files`,
+        {
+          method: "POST",
+          body: formData,
+        },
+        session
+      );
 
       if (!uploadRes.ok) {
-        toast.error("Có lỗi khi tải lên ảnh/video!");
+        const error = await uploadRes.json();
+        toast.error(error.message);
         return;
       }
 
@@ -249,7 +255,7 @@ export default function VietBaiReview({
             }))}
           />
         </Form.Item>
-        <div className="flex w-full justify-between gap-10">
+        <div className="flex w-full justify-between md:gap-10 flex-col md:flex-row">
           <Form.Item
             name="locationId"
             label="Địa điểm"

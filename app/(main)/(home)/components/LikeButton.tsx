@@ -5,13 +5,11 @@ import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 import { BACKEND_URL } from "@/lib/constants";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
-import { useRouter } from "next/navigation";
 
 export default function LikeButton({ postId }: { postId: string }) {
   const { data: session } = useSession();
   const userId = session?.user?._id;
   const [liked, setLiked] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const checkIfLiked = async () => {

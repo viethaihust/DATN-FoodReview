@@ -35,7 +35,7 @@ export default async function DiaDiemReview({
 
   if (session?.user?._id) {
     await fetchWithAuth(
-      `${BACKEND_URL}/api/read-posts`,
+      `${BACKEND_URL}/api/viewed`,
       {
         method: "POST",
         body: JSON.stringify({
