@@ -9,7 +9,6 @@ import BookmarkButton from "../../components/BookmarkButton";
 import MapModal from "../../components/MapModal";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSession } from "next-auth/react";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -46,7 +45,6 @@ export default async function DiaDiemReview({
       },
       session
     );
-    console.log("Marked as read");
   }
 
   const randomPosts = await fetch(
@@ -190,7 +188,7 @@ export default async function DiaDiemReview({
             Các bài viết khác
           </div>
           <div className="flex flex-col mt-5 gap-6">
-            {/* {randomPosts.map((randomPost: IReviewPost) => (
+            {randomPosts.map((randomPost: IReviewPost) => (
               <div key={randomPost._id} className="rounded-md border">
                 <Link
                   href={`/dia-diem-review/${randomPost._id}`}
@@ -200,7 +198,10 @@ export default async function DiaDiemReview({
                     <Image
                       height={100}
                       width={100}
-                      src={randomPost?.files[0]}
+                      src={
+                        randomPost?.files[0].replace(".mp4", ".jpg") ||
+                        "/fallback-video.jpg"
+                      }
                       alt="random-post-pic"
                       className="w-full max-h-52 rounded-t-md object-cover"
                     />
@@ -245,7 +246,7 @@ export default async function DiaDiemReview({
                   </div>
                 </Link>
               </div>
-            ))} */}
+            ))}
           </div>
         </div>
       ) : null}

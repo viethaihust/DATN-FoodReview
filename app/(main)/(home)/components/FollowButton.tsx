@@ -49,7 +49,6 @@ export default function FollowButton({ userId }: { userId: string }) {
 
       if (response.ok) {
         const updatedStatus = await response.json();
-        console.log("updatedStatus", updatedStatus);
         setIsFollowing(updatedStatus.isFollowing);
         toast.success(
           isFollowing
@@ -63,8 +62,6 @@ export default function FollowButton({ userId }: { userId: string }) {
       console.error("Error toggling follow status:", error);
     }
   };
-
-  console.log("isFollowing", isFollowing);
 
   return (
     <button

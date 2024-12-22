@@ -47,7 +47,6 @@ export default function CreateLocationButton() {
 
       if (address && address.results && address.results[0]) {
         const addressComponents = address.results[0].address_components;
-        console.log(addressComponents);
         addressComponents.forEach((component) => {
           if (component.types.includes("administrative_area_level_1")) {
             province = component.long_name;
