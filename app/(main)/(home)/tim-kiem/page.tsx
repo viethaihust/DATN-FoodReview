@@ -12,6 +12,7 @@ const SearchResultsPage = () => {
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
 
+  const [locations, setLocations] = useState<ILocation[]>([]);
   const [users, setUsers] = useState<IUser[]>([]);
   const [posts, setPosts] = useState<IReviewPost[]>([]);
 
@@ -27,6 +28,7 @@ const SearchResultsPage = () => {
           }
         );
         const data = await response.json();
+        setLocations(data.locations || []);
         setUsers(data.users || []);
         setPosts(data.posts || []);
       } catch (error) {
@@ -43,6 +45,22 @@ const SearchResultsPage = () => {
         Tìm kiếm kết quả cho &quot;{query}&quot;
       </Typography.Title>
       <>
+        <List
+          header={<div>Địa điểm</div>}
+          bordered
+          dataSource={locations}
+          renderItem={(location: ILocation) => (
+            <Link href={`/dia-diem-review/${location._id}`}>
+              <List.Item key={location._id}>
+                <List.Item.Meta
+                  title={<strong>{location.name}</strong>}
+                  description={location.address}
+                />
+              </List.Item>
+            </Link>
+          )}
+          locale={{ emptyText: "Không tìm thấy địa điểm nào." }}
+        />
         <List
           header={<div>Người dùng</div>}
           bordered
@@ -67,6 +85,7 @@ const SearchResultsPage = () => {
             </Link>
           )}
           locale={{ emptyText: "Không tìm thấy người dùng nào." }}
+          className="mt-10"
         />
         <List
           header={<div>Bài viết</div>}
@@ -76,22 +95,24 @@ const SearchResultsPage = () => {
             <List.Item key={post._id}>
               <div className="w-full">
                 <div className="flex items-center gap-6">
-                  <Image
-                    className="cursor-pointer hover:shadow-sm hover:shadow-slate-400 rounded-full"
-                    height={60}
-                    width={60}
-                    src={post.userId.image || "/profile.jpg"}
-                    alt="profile-pic"
-                  />
+                  <Link href={`/nguoi-dung/${post.userId._id}`}>
+                    <Image
+                      className="rounded-full"
+                      height={60}
+                      width={60}
+                      src={post.userId.image || "/profile.jpg"}
+                      alt="profile-pic"
+                    />
+                  </Link>
                   <div>
                     <div className="font-bold">{post.userId.name}</div>
                     <div>
                       <span>{formatDate(post.createdAt)} tại&nbsp;</span>
                       <span className="text-orange-600 hover:cursor-pointer">
                         <MapModal
-                          destination={post.locationId.latLong}
-                          locationName={post.locationId.name}
-                          locationAddress={post.locationId.address}
+                          destination={post?.locationId?.latLong}
+                          locationName={post?.locationId?.name}
+                          locationAddress={post?.locationId?.address}
                         />
                       </span>
                     </div>
@@ -121,7 +142,7 @@ const SearchResultsPage = () => {
                   </div>
                 </div>
                 <Link
-                  href={`/dia-diem-review/${post._id}`}
+                  href={`/bai-viet-review/${post._id}`}
                   className="font-semibold text-xl mt-4 hover:text-orange-600"
                 >
                   {post.title}

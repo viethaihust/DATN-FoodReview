@@ -155,7 +155,7 @@ export default function VietBaiReview() {
         >
           <Input.TextArea rows={4} />
         </Form.Item>
-        <Form.Item label="Hình ảnh và video (tối đa 10 file)">
+        <Form.Item label="Hình ảnh và Video (tối đa 10 file, mỗi file dưới 10MB)">
           <Upload
             accept="image/*,video/*"
             beforeUpload={handleFileSelect}

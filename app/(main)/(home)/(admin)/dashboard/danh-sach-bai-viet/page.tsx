@@ -109,18 +109,32 @@ const ReviewPostList: React.FC = () => {
       title: "ID",
       dataIndex: "_id",
       key: "_id",
-      render: (id: string) => <Link href={`/dia-diem-review/${id}`}>{id}</Link>,
+      render: (id: string) => <Link href={`/bai-viet-review/${id}`}>{id}</Link>,
     },
     {
       title: "Tiêu đề",
       dataIndex: "title",
       key: "title",
-      width: "20%",
+      width: "15%",
     },
     {
       title: "Thể loại",
       dataIndex: ["categoryId", "name"],
       key: "categoryId.name",
+    },
+    {
+      title: "Địa điểm",
+      dataIndex: ["locationId", "name"],
+      key: "locationId.name",
+      render: (locationName: string, record: IReviewPost) => {
+        const locationId = record.locationId;
+        return (
+          <Link href={`/dia-diem-review/${locationId?._id}`}>
+            {locationName}
+          </Link>
+        );
+      },
+      width: "15%",
     },
     {
       title: "Ảnh",

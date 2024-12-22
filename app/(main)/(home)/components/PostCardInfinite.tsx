@@ -85,7 +85,7 @@ export default function PostCardInfinite({
           </Button>
         </Dropdown>
       )}
-      <Link href={`/dia-diem-review/${post?._id}`}>
+      <Link href={`/bai-viet-review/${post?._id}`}>
         <Image
           src={post?.files[0].replace(".mp4", ".jpg") || "/fallback-video.jpg"}
           alt={post?.title}

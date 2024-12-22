@@ -125,7 +125,7 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
                 </div>
               </div>
               <Link
-                href={`dia-diem-review/${post._id}`}
+                href={`/bai-viet-review/${post._id}`}
                 className="font-semibold text-xl mt-4 hover:text-orange-600"
               >
                 {post.title}

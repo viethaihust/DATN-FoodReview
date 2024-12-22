@@ -136,7 +136,7 @@ export default function HomeLayout({
           </div>
         </Header>
         <Content
-          className={`bg-white mt-2 rounded-lg ${isDashboardPage ? "" : "p-5"}`}
+          className={`bg-white rounded-lg ${isDashboardPage ? "" : "mt-2 p-5"}`}
         >
           {children}
         </Content>

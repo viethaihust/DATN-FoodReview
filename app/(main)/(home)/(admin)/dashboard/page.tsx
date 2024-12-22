@@ -19,7 +19,7 @@ const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [pagination, setPagination] = useState<Pagination>({
     current: 1,
-    pageSize: 2,
+    pageSize: 10,
     total: 0,
   });
 

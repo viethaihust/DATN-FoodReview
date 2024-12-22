@@ -187,7 +187,7 @@ export default function VietBaiReview({
       );
 
       if (postRes.ok) {
-        router.push(`/dia-diem-review/${params.postId}`);
+        router.push(`/bai-viet-review/${params.postId}`);
         router.refresh();
         toast.success("Update bài viết thành công!");
       } else {
@@ -222,7 +222,7 @@ export default function VietBaiReview({
         >
           <Input.TextArea rows={4} />
         </Form.Item>
-        <Form.Item label="Hình ảnh / Video (tối đa 10)">
+        <Form.Item label="Hình ảnh và Video (tối đa 10 file, mỗi file dưới 10MB)">
           <Upload
             accept="image/*,video/*"
             beforeUpload={handleFileSelect}

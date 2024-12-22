@@ -1,13 +1,3 @@
-interface IPost {
-  _id: string;
-  title: string;
-  summary: string;
-  content: string;
-  image: string;
-  category: { _id: string; name: string; slug: string; description: string };
-  createdAt: string;
-}
-
 interface IReviewPost {
   _id: string;
   userId: { _id: string; name: string; image?: string };
@@ -21,6 +11,8 @@ interface IReviewPost {
     address: string;
     province: string;
     latLong: { lat: number; lng: number };
+    averageRating?: number;
+    totalRatingsCount?: number;
   };
   likesCount: number;
   ratings: {
@@ -36,13 +28,6 @@ interface IReviewPost {
 
 interface ICategory {
   _id: string;
-  name: string;
-  description: string;
-}
-
-interface ISubCategory {
-  _id: string;
-  slug: string;
   name: string;
   description: string;
 }
@@ -88,6 +73,8 @@ interface IBookmark {
       address: string;
       province: string;
       latLong: { lat: number; lng: number };
+      averageRating?: number;
+      totalRatingsCount?: number;
     };
     likesCount: number;
     ratings: {
@@ -111,6 +98,8 @@ interface ILocation {
     lat: number;
     lng: number;
   };
+  averageRating?: number;
+  totalRatingsCount?: number;
 }
 
 interface INotification {
