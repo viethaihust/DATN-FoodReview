@@ -82,7 +82,7 @@ export default function HomeLayout({
           id="sticky-header"
           className="flex items-center justify-between border-b-[1px] bg-white top-0 sticky z-10 px-2 md:px-12"
         >
-          <div className="flex items-center justify-center md:mr-10 md:w-32">
+          <div className="flex items-center justify-center flex-shrink-0">
             <Link href="/">
               <Image
                 src="/logo.jpg"
@@ -93,19 +93,19 @@ export default function HomeLayout({
               />
             </Link>
           </div>
-          <div className="flex items-center gap-2 md:gap-6">
+          <div className="flex items-center gap-2 md:gap-6 md:pl-10">
             <SearchBar />
             <Link href="/viet-bai-review">
               <Button
                 className="rounded-md bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold px-4 py-5 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center"
                 icon={<EditOutlined className="text-lg" />}
               >
-                <span className="!hidden sm:!block">Viết bài review</span>
+                <span className="!hidden md:!block">Viết bài review</span>
               </Button>
             </Link>
             <CreateLocationButton />
           </div>
-          <div className="flex items-center ml-2 md:ml-auto md:mr-5">
+          <div className="flex items-center ml-2 md:ml-auto md:mr-5 flex-shrink-0">
             {session ? (
               <div className="flex gap-1 md:gap-10 md:w-full w-20 pl-1">
                 <NotificationComponent userId={session.user?._id} />

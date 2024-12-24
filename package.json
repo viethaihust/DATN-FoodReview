@@ -27,6 +27,7 @@
     "react-icons": "^5.2.1",
     "react-intersection-observer": "^9.13.0",
     "react-masonry-css": "^1.0.16",
+    "react-quill-new": "^3.3.3",
     "react-toastify": "^10.0.5",
     "sharp": "^0.33.4",
     "socket.io-client": "^4.8.1",

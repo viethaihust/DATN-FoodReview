@@ -228,7 +228,7 @@ export default function CreateLocationButton() {
         className="rounded-md bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold px-4 py-5 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center"
         onClick={showModal}
       >
-        <span className="!hidden sm:!block">Thêm địa điểm mới</span>
+        <span className="!hidden md:!block">Thêm địa điểm mới</span>
       </Button>
       <Modal
         title="Thêm địa điểm mới"
@@ -245,7 +245,7 @@ export default function CreateLocationButton() {
             label="Tên địa điểm"
             rules={[{ required: true, message: "Vui lòng điền tên địa điểm!" }]}
           >
-            <Input name="locationName" />
+            <Input name="locationName" placeholder="Nhập tên địa điểm" />
           </Form.Item>
           <Form.Item name="address" label="Tìm kiếm địa chỉ">
             <div>

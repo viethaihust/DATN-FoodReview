@@ -12,8 +12,13 @@ import IconSlider from "../components/IconSlider";
 import { useRouter } from "next/navigation";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
+import dynamic from "next/dynamic";
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+import "react-quill-new/dist/quill.snow.css";
+
 export default function VietBaiReview() {
   const router = useRouter();
+  const [value, setValue] = useState("");
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<RcFile[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
@@ -174,28 +179,39 @@ export default function VietBaiReview() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Viết Bài Review</h1>
-      <Form
-        layout="vertical"
-        onFinish={onFinish}
-        className="bg-white p-6 rounded-lg border border-gray-200 shadow-md"
-      >
+    <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg border border-gray-300 shadow-lg">
+      <h1 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">
+        Viết Bài Review
+      </h1>
+      <Form layout="vertical" onFinish={onFinish} className="space-y-6">
         <Form.Item
           name="title"
-          label="Tiêu đề"
+          label={<span className="text-lg font-medium">Tiêu đề</span>}
           rules={[{ required: true, message: "Vui lòng điền tiêu đề!" }]}
         >
-          <Input />
+          <Input placeholder="Nhập tiêu đề bài review" />
         </Form.Item>
+
         <Form.Item
           name="content"
-          label="Nội dung"
+          label={<span className="text-lg font-medium">Nội dung</span>}
           rules={[{ required: true, message: "Vui lòng điền nội dung!" }]}
         >
-          <Input.TextArea rows={4} />
+          <ReactQuill
+            theme="snow"
+            value={value}
+            onChange={setValue}
+            placeholder="Viết nội dung bài review..."
+          />
         </Form.Item>
-        <Form.Item label="Hình ảnh và Video (tối đa 10 file, mỗi file dưới 10MB)">
+
+        <Form.Item
+          label={
+            <span className="text-lg font-medium">
+              Hình ảnh và Video (tối đa 10 file, mỗi file dưới 10MB)
+            </span>
+          }
+        >
           <Upload
             accept="image/*,video/*"
             beforeUpload={handleFileSelect}
@@ -206,38 +222,38 @@ export default function VietBaiReview() {
             <Button icon={<UploadOutlined />}>Tải lên file</Button>
           </Upload>
         </Form.Item>
+
         <Form.Item
           name="categoryId"
-          label="Thể loại"
+          label={<span className="text-lg font-medium">Thể loại</span>}
           rules={[
             { required: true, message: "Vui lòng lựa chọn một thể loại!" },
           ]}
         >
           <Select
-            style={{ width: 200 }}
+            style={{ width: "100%" }}
             options={categories?.map((category: ICategory) => ({
               value: category._id,
               label: category.name,
             }))}
           />
         </Form.Item>
-        <div className="flex w-full justify-between md:gap-10 flex-col md:flex-row">
+
+        <div className="flex flex-col md:flex-row md:gap-6">
           <Form.Item
             name="locationId"
-            label="Địa điểm"
+            label={<span className="text-lg font-medium">Địa điểm</span>}
             rules={[
               { required: true, message: "Vui lòng lựa chọn một địa điểm!" },
             ]}
-            className="w-full"
+            className="flex-grow"
           >
             <Select
               showSearch
               placeholder="Tìm kiếm địa điểm"
-              suffixIcon={null}
               onSearch={handleSearch}
               notFoundContent={"Không tìm thấy địa điểm"}
               filterOption={false}
-              className="flex-1"
               options={locations?.map((location: ILocation) => ({
                 value: location._id,
                 label: `${location.name} - ${location.address}`,
@@ -246,40 +262,57 @@ export default function VietBaiReview() {
           </Form.Item>
           <CreateLocationButton />
         </div>
+
         <Form.Item
           name={["ratings", "overall"]}
-          label="Đánh giá tổng thể"
+          label={<span className="text-lg font-medium">Đánh giá tổng thể</span>}
           rules={[
             {
               required: true,
               message: "Vui lòng đánh giá trải nghiệm tổng thể!",
             },
           ]}
-          className="mt-4"
         >
           <Rate allowHalf style={{ color: "orange" }} />
         </Form.Item>
-        <div className="max-w-60">
-          <Form.Item name={["ratings", "flavor"]} label="Hương vị">
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <Form.Item
+            name={["ratings", "flavor"]}
+            label={<span className="text-lg font-medium">Hương vị</span>}
+          >
             <IconSlider min={1} max={10} />
           </Form.Item>
-          <Form.Item name={["ratings", "space"]} label="Không gian">
+          <Form.Item
+            name={["ratings", "space"]}
+            label={<span className="text-lg font-medium">Không gian</span>}
+          >
             <IconSlider min={0} max={10} />
           </Form.Item>
-          <Form.Item name={["ratings", "hygiene"]} label="Vệ sinh">
+          <Form.Item
+            name={["ratings", "hygiene"]}
+            label={<span className="text-lg font-medium">Vệ sinh</span>}
+          >
             <IconSlider min={0} max={10} />
           </Form.Item>
-          <Form.Item name={["ratings", "price"]} label="Giá cả">
+          <Form.Item
+            name={["ratings", "price"]}
+            label={<span className="text-lg font-medium">Giá cả</span>}
+          >
             <IconSlider min={0} max={10} />
           </Form.Item>
-          <Form.Item name={["ratings", "serves"]} label="Dịch vụ">
+          <Form.Item
+            name={["ratings", "serves"]}
+            label={<span className="text-lg font-medium">Dịch vụ</span>}
+          >
             <IconSlider min={0} max={10} />
           </Form.Item>
         </div>
-        <Form.Item>
+
+        <Form.Item className="text-center">
           <button
             type="submit"
-            className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+            className="w-full md:w-auto bg-transparent hover:bg-blue-600 text-blue-800 font-semibold hover:text-white py-2 px-4 border border-blue-600 hover:border-transparent rounded-md"
           >
             Đăng bài review
           </button>

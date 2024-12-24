@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
+import { title } from "process";
 
 interface Pagination {
   current: number;
@@ -135,6 +136,15 @@ const ReviewPostList: React.FC = () => {
         );
       },
       width: "15%",
+    },
+    {
+      title: "Người đăng",
+      dataIndex: ["userId", "name"],
+      key: "userId.name",
+      render: (userName: string, record: IReviewPost) => {
+        const userId = record.userId;
+        return <Link href={`/nguoi-dung/${userId?._id}`}>{userName}</Link>;
+      },
     },
     {
       title: "Ảnh",

@@ -64,18 +64,18 @@ export default async function DiaDiemReview({
   return (
     <div className="flex flex-wrap justify-between md:gap-10">
       <div className="flex-grow w-full md:w-1/2 md:px-5">
-        <div className="flex flex-row justify-between">
-          <div className="flex items-center gap-6">
+        <div className="flex flex-row justify-between -mx-4">
+          <div className="flex items-center gap-2 sm:gap-6">
             <Link href={`/nguoi-dung/${post?.userId._id}`}>
               <Image
-                className="hover:shadow-sm hover:shadow-slate-400 rounded-full h-12 w-12"
+                className="hover:shadow-sm hover:shadow-slate-400 rounded-full object-contain"
                 height={60}
                 width={60}
                 src={post.userId.image || "/profile.jpg"}
                 alt="profile-pic"
               />
             </Link>
-            <div>
+            <div className="w-full">
               <div className="flex items-center gap-2">
                 <div className="font-bold">{post.userId.name}</div>
                 {session?.user?._id !== post.userId._id && (
@@ -96,7 +96,7 @@ export default async function DiaDiemReview({
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 md:gap-5">
+          <div className="flex items-center gap-2 md:gap-5 ml-2 text-center">
             <div id={`like-count-${post._id}`}>
               {post.likesCount} lượt thích
             </div>
@@ -174,9 +174,10 @@ export default async function DiaDiemReview({
         </div>
         <div className="mt-5">
           <div className="text-3xl font-semibold">{post.title}</div>
-          <div className="text-gray-800 text-xl font-sans mt-5">
-            {post.content}
-          </div>
+          <div
+            className="text-gray-800 text-xl font-sans mt-5"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          ></div>
         </div>
         <div className="pt-5">
           <CommentSection comments={comments} postId={post._id} />

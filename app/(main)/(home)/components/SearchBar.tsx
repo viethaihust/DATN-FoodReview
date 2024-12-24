@@ -23,7 +23,7 @@ const SearchBar: React.FC = () => {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onPressEnter={handleSearch}
-        className="w-full md:w-96 rounded-full shadow-sm hover:shadow-md transition-shadow duration-200 font-semibold"
+        className="lg:w-96 rounded-full shadow-sm hover:shadow-md transition-shadow duration-200 font-semibold"
         style={{ padding: "10px 20px" }}
       />
     </div>

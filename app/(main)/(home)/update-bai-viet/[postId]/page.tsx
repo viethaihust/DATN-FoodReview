@@ -1,6 +1,6 @@
 "use client";
 import { Button, Form, Input, Select, Upload, Rate } from "antd";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
 import { toast } from "react-toastify";
@@ -11,6 +11,9 @@ import CreateLocationButton from "@/(main)/(home)/components/CreateLocationButto
 import IconSlider from "@/(main)/(home)/components/IconSlider";
 import { useRouter } from "next/navigation";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
+import dynamic from "next/dynamic";
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+import "react-quill-new/dist/quill.snow.css";
 
 export default function VietBaiReview({
   params,
@@ -19,37 +22,21 @@ export default function VietBaiReview({
 }) {
   const router = useRouter();
   const [form] = Form.useForm();
+  const [value, setValue] = useState("");
+  const [locations, setLocations] = useState<ILocation[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<RcFile[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const { data: session } = useSession();
-  const [locations, setLocations] = useState<ILocation[]>([]);
 
-  const fetchPostDetails = useCallback(async () => {
+  const fetchPostDetails = async () => {
     try {
       const response = await fetch(
         `${BACKEND_URL}/api/review-posts/${params.postId}`
       );
-      if (!response.ok) {
-        throw new Error("Failed to fetch post details");
-      }
       const result = await response.json();
       const data = result.data;
 
-      const locationResponse = await fetch(
-        `${BACKEND_URL}/api/location/${data.locationId._id}`
-      );
-      const locationData = await locationResponse.json();
-
-      setLocations((prev) => [
-        ...prev,
-        {
-          _id: locationData._id,
-          name: locationData.name,
-          address: locationData.address,
-          province: locationData.province,
-          latLong: locationData.latLong,
-        },
-      ]);
+      setCategories(data.categories);
 
       form.setFieldsValue({
         title: data.title,
@@ -78,11 +65,11 @@ export default function VietBaiReview({
     } catch (error) {
       console.error("Error fetching post details:", error);
     }
-  }, [form, params.postId]);
+  };
 
   useEffect(() => {
     fetchPostDetails();
-  }, [fetchPostDetails]);
+  }, [params.postId]);
 
   const fetchLocations = useMemo(
     () =>
@@ -112,22 +99,6 @@ export default function VietBaiReview({
     fetchLocations(value);
   };
 
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const response = await fetch(`${BACKEND_URL}/api/categories`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-        const data = await response.json();
-        setCategories(data.result);
-      } catch (error) {
-        console.error("Lỗi khi fetch category:", error);
-      }
-    }
-    fetchCategories();
-  }, []);
-
   const handleFileSelect = (file: RcFile) => {
     file.thumbUrl = URL.createObjectURL(file);
     setSelectedFiles((prev) => [...prev, file]);
@@ -140,12 +111,6 @@ export default function VietBaiReview({
       return prev.filter((f) => f.uid !== file.uid);
     });
   };
-
-  useEffect(() => {
-    return () => {
-      selectedFiles.forEach((file) => URL.revokeObjectURL(file.thumbUrl || ""));
-    };
-  }, [selectedFiles]);
 
   const onFinish = async (values: any) => {
     const { title, content, categoryId, locationId, ratings } = values;
@@ -206,29 +171,39 @@ export default function VietBaiReview({
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Update bài viết</h1>
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        className="bg-white p-6 rounded-lg border border-gray-200 shadow-md"
-      >
+    <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg border border-gray-300 shadow-lg">
+      <h1 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">
+        Cập Nhật Bài Viết
+      </h1>
+      <Form layout="vertical" onFinish={onFinish} className="space-y-6">
         <Form.Item
           name="title"
-          label="Tiêu đề"
+          label={<span className="text-lg font-medium">Tiêu đề</span>}
           rules={[{ required: true, message: "Vui lòng điền tiêu đề!" }]}
         >
-          <Input />
+          <Input placeholder="Nhập tiêu đề bài review" />
         </Form.Item>
+
         <Form.Item
           name="content"
-          label="Nội dung"
+          label={<span className="text-lg font-medium">Nội dung</span>}
           rules={[{ required: true, message: "Vui lòng điền nội dung!" }]}
         >
-          <Input.TextArea rows={4} />
+          <ReactQuill
+            theme="snow"
+            value={value}
+            onChange={setValue}
+            placeholder="Viết nội dung bài review..."
+          />
         </Form.Item>
-        <Form.Item label="Hình ảnh và Video (tối đa 10 file, mỗi file dưới 10MB)">
+
+        <Form.Item
+          label={
+            <span className="text-lg font-medium">
+              Hình ảnh và Video (tối đa 10 file, mỗi file dưới 10MB)
+            </span>
+          }
+        >
           <Upload
             accept="image/*,video/*"
             beforeUpload={handleFileSelect}
@@ -237,41 +212,41 @@ export default function VietBaiReview({
             listType="picture"
             fileList={selectedFiles}
           >
-            <Button icon={<UploadOutlined />}>Tải ảnh / video lên</Button>
+            <Button icon={<UploadOutlined />}>Tải lên file</Button>
           </Upload>
         </Form.Item>
+
         <Form.Item
           name="categoryId"
-          label="Thể loại"
+          label={<span className="text-lg font-medium">Thể loại</span>}
           rules={[
             { required: true, message: "Vui lòng lựa chọn một thể loại!" },
           ]}
         >
           <Select
-            style={{ width: 200 }}
+            style={{ width: "100%" }}
             options={categories?.map((category: ICategory) => ({
               value: category._id,
               label: category.name,
             }))}
           />
         </Form.Item>
-        <div className="flex w-full justify-between md:gap-10 flex-col md:flex-row">
+
+        <div className="flex flex-col md:flex-row md:gap-6">
           <Form.Item
             name="locationId"
-            label="Địa điểm"
+            label={<span className="text-lg font-medium">Địa điểm</span>}
             rules={[
               { required: true, message: "Vui lòng lựa chọn một địa điểm!" },
             ]}
-            className="w-full"
+            className="flex-grow"
           >
             <Select
               showSearch
               placeholder="Tìm kiếm địa điểm"
-              suffixIcon={null}
               onSearch={handleSearch}
               notFoundContent={"Không tìm thấy địa điểm"}
               filterOption={false}
-              className="flex-1"
               options={locations?.map((location: ILocation) => ({
                 value: location._id,
                 label: `${location.name} - ${location.address}`,
@@ -280,43 +255,66 @@ export default function VietBaiReview({
           </Form.Item>
           <CreateLocationButton />
         </div>
+
         <Form.Item
           name={["ratings", "overall"]}
-          label="Đánh giá tổng thể"
+          label={
+            <span className="text-lg font-medium">
+              Đánh giá tổng thể
+            </span>
+          }
           rules={[
             {
               required: true,
               message: "Vui lòng đánh giá trải nghiệm tổng thể!",
             },
           ]}
-          className="mt-4"
         >
           <Rate allowHalf style={{ color: "orange" }} />
         </Form.Item>
-        <div className="max-w-60">
-          <Form.Item name={["ratings", "flavor"]} label="Hương vị">
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <Form.Item
+            name={["ratings", "flavor"]}
+            label={<span className="text-lg font-medium">Hương vị</span>}
+          >
             <IconSlider min={0} max={10} />
           </Form.Item>
-          <Form.Item name={["ratings", "space"]} label="Không gian">
+          <Form.Item
+            name={["ratings", "space"]}
+            label={<span className="text-lg font-medium">Không gian</span>}
+          >
             <IconSlider min={0} max={10} />
           </Form.Item>
-          <Form.Item name={["ratings", "hygiene"]} label="Vệ sinh">
+          <Form.Item
+            name={["ratings", "hygiene"]}
+            label={<span className="text-lg font-medium">Vệ sinh</span>}
+          >
             <IconSlider min={0} max={10} />
           </Form.Item>
-          <Form.Item name={["ratings", "price"]} label="Giá cả">
+          <Form.Item
+            name={["ratings", "price"]}
+            label={<span className="text-lg font-medium">Giá cả</span>}
+          >
             <IconSlider min={0} max={10} />
           </Form.Item>
-          <Form.Item name={["ratings", "serves"]} label="Dịch vụ">
+          <Form.Item
+            name={["ratings", "service"]}
+            label={<span className="text-lg font-medium">Dịch vụ</span>}
+          >
             <IconSlider min={0} max={10} />
           </Form.Item>
         </div>
+
         <Form.Item>
-          <button
-            type="submit"
-            className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="w-full py-3"
+            size="large"
           >
-            Update bài viết
-          </button>
+            Cập Nhật Bài Viết
+          </Button>
         </Form.Item>
       </Form>
     </div>
