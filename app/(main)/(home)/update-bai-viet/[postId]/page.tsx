@@ -36,7 +36,21 @@ export default function VietBaiReview({
       const result = await response.json();
       const data = result.data;
 
-      setCategories(data.categories);
+      const locationResponse = await fetch(
+        `${BACKEND_URL}/api/location/${data.locationId._id}`
+      );
+      const locationData = await locationResponse.json();
+
+      setLocations((prev) => [
+        ...prev,
+        {
+          _id: locationData._id,
+          name: locationData.name,
+          address: locationData.address,
+          province: locationData.province,
+          latLong: locationData.latLong,
+        },
+      ]);
 
       form.setFieldsValue({
         title: data.title,
@@ -66,6 +80,22 @@ export default function VietBaiReview({
       console.error("Error fetching post details:", error);
     }
   };
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/categories`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        const data = await response.json();
+        setCategories(data.result);
+      } catch (error) {
+        console.error("Lỗi khi fetch category:", error);
+      }
+    }
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     fetchPostDetails();
@@ -175,7 +205,12 @@ export default function VietBaiReview({
       <h1 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">
         Cập Nhật Bài Viết
       </h1>
-      <Form layout="vertical" onFinish={onFinish} className="space-y-6">
+      <Form
+        layout="vertical"
+        onFinish={onFinish}
+        className="space-y-6"
+        form={form}
+      >
         <Form.Item
           name="title"
           label={<span className="text-lg font-medium">Tiêu đề</span>}
@@ -203,6 +238,9 @@ export default function VietBaiReview({
               Hình ảnh và Video (tối đa 10 file, mỗi file dưới 10MB)
             </span>
           }
+          rules={[
+            { required: true, message: "Vui lòng tải lên ít nhất một tệp!" },
+          ]}
         >
           <Upload
             accept="image/*,video/*"
@@ -224,7 +262,7 @@ export default function VietBaiReview({
           ]}
         >
           <Select
-            style={{ width: "100%" }}
+            style={{ width: 200 }}
             options={categories?.map((category: ICategory) => ({
               value: category._id,
               label: category.name,
@@ -258,11 +296,7 @@ export default function VietBaiReview({
 
         <Form.Item
           name={["ratings", "overall"]}
-          label={
-            <span className="text-lg font-medium">
-              Đánh giá tổng thể
-            </span>
-          }
+          label={<span className="text-lg font-medium">Đánh giá tổng thể</span>}
           rules={[
             {
               required: true,
@@ -299,22 +333,20 @@ export default function VietBaiReview({
             <IconSlider min={0} max={10} />
           </Form.Item>
           <Form.Item
-            name={["ratings", "service"]}
+            name={["ratings", "serves"]}
             label={<span className="text-lg font-medium">Dịch vụ</span>}
           >
             <IconSlider min={0} max={10} />
           </Form.Item>
         </div>
 
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="w-full py-3"
-            size="large"
+        <Form.Item className="text-center">
+          <button
+            type="submit"
+            className="w-full md:w-auto bg-transparent hover:bg-blue-600 text-blue-800 font-semibold hover:text-white py-2 px-4 border border-blue-600 hover:border-transparent rounded-md"
           >
             Cập Nhật Bài Viết
-          </Button>
+          </button>
         </Form.Item>
       </Form>
     </div>

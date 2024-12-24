@@ -231,33 +231,45 @@ export default function CreateLocationButton() {
         <span className="!hidden md:!block">Thêm địa điểm mới</span>
       </Button>
       <Modal
-        title="Thêm địa điểm mới"
+        title={<span className="text-xl font-semibold">Thêm địa điểm mới</span>}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
         okText="Lưu địa điểm"
         cancelText="Hủy"
         width={1400}
+        okButtonProps={{
+          className:
+            "bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold rounded-md shadow-md hover:shadow-xl transition-all duration-300 px-6 py-3",
+        }}
       >
         <Form form={form} layout="vertical">
           <Form.Item
             name="locationName"
-            label="Tên địa điểm"
+            label={<span className="text-lg font-medium">Tên địa điểm</span>}
             rules={[{ required: true, message: "Vui lòng điền tên địa điểm!" }]}
           >
             <Input name="locationName" placeholder="Nhập tên địa điểm" />
           </Form.Item>
-          <Form.Item name="address" label="Tìm kiếm địa chỉ">
+          <Form.Item
+            name="address"
+            label={
+              <span className="text-lg font-medium">Tìm kiếm địa chỉ</span>
+            }
+          >
             <div>
-              <div className="flex gap-6">
+              <div className="flex gap-1 md:gap-6">
                 <Input
                   id="searchBox"
                   placeholder="Nhập địa chỉ để tìm kiếm"
                   className="mb-4"
                 />
-                <Button onClick={handleSelectMyLocation} className="mb-4">
+                <Button
+                  onClick={handleSelectMyLocation}
+                  className="mb-4 font-semibold"
+                >
                   <CompassOutlined />
-                  Chọn vị trí của tôi
+                  <span className="!hidden md:!block">Chọn vị trí của tôi</span>
                 </Button>
               </div>
               <div ref={mapRef} style={mapContainerStyle}></div>

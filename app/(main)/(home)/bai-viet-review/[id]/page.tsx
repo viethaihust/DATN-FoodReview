@@ -14,7 +14,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import FollowButton from "../../components/FollowButton";
 
-export default async function DiaDiemReview({
+export default async function BaiVietReview({
   params,
 }: {
   params: { id: string };

@@ -8,6 +8,18 @@ import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
 import { BACKEND_URL } from "@/lib/constants";
 
+const highlightText = (text: string, query: string) => {
+  if (!query) return text;
+  const parts = text.split(new RegExp(`(${query})`, "gi"));
+  return parts.map((part, index) =>
+    part.toLowerCase() === query.toLowerCase() ? (
+      <mark key={index}>{part}</mark>
+    ) : (
+      part
+    )
+  );
+};
+
 const SearchResultsPage = () => {
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
@@ -53,8 +65,8 @@ const SearchResultsPage = () => {
             <Link href={`/dia-diem-review/${location._id}`}>
               <List.Item key={location._id}>
                 <List.Item.Meta
-                  title={<strong>{location.name}</strong>}
-                  description={location.address}
+                  title={<strong>{highlightText(location.name, query)}</strong>}
+                  description={highlightText(location.address, query)}
                 />
               </List.Item>
             </Link>
@@ -78,7 +90,7 @@ const SearchResultsPage = () => {
                       style={{ borderRadius: "50%" }}
                     />
                   }
-                  title={user.name}
+                  title={highlightText(user.name, query)}
                   style={{ alignItems: "center" }}
                 />
               </List.Item>
@@ -105,7 +117,9 @@ const SearchResultsPage = () => {
                     />
                   </Link>
                   <div>
-                    <div className="font-bold">{post.userId.name}</div>
+                    <div className="font-bold">
+                      {highlightText(post.userId.name, query)}
+                    </div>
                     <div>
                       <span>{formatDate(post.createdAt)} tại&nbsp;</span>
                       <span className="text-orange-600 hover:cursor-pointer">
@@ -145,9 +159,9 @@ const SearchResultsPage = () => {
                   href={`/bai-viet-review/${post._id}`}
                   className="font-semibold text-xl mt-4 hover:text-orange-600"
                 >
-                  {post.title}
+                  {highlightText(post.title, query)}
                 </Link>
-                <div>{post.content}</div>
+                <div>{highlightText(post.content, query)}</div>
                 <div className="flex mt-2 gap-2 flex-wrap">
                   {post.files.map((file, index) => (
                     <Image

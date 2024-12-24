@@ -6,6 +6,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import MapModal from "../../components/MapModal";
 import Link from "next/link";
+import FollowButton from "../../components/FollowButton";
 
 export default function NguoiDung({ params }: { params: { id: string } }) {
   const [user, setUser] = useState<IUser | null>(null);
@@ -55,22 +56,29 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
 
   return (
     <div>
-      <div className="flex items-center gap-5">
-        <div className="relative">
-          <Image
-            className="rounded-full"
-            height={100}
-            width={100}
-            src={user?.image || "/profile.jpg"}
-            alt="profile-pic"
-          />
-        </div>
+      <div className="flex items-center gap-6 p-6 rounded-lg border shadow-md">
+        <Image
+          className="rounded-full"
+          height={100}
+          width={100}
+          src={user?.image || "/profile.jpg"}
+          alt="profile-pic"
+        />
         <div>
-          <div className="text-xl font-semibold">{user?.name}</div>
-          <div className="flex gap-5">
-            <div>{reviewPosts.length} bài viết</div>
-            <div>{followersCount} người theo dõi</div>
-            <div>{followingsCount} đang theo dõi</div>
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-bold">{user?.name}</h1>
+            <FollowButton userId={params.id} />
+          </div>
+          <div className="flex gap-6 mt-2 text-gray-600">
+            <div>
+              <strong>{reviewPosts.length} </strong>Bài viết
+            </div>
+            <div>
+              <strong>{followersCount}</strong> Người theo dõi
+            </div>
+            <div>
+              <strong>{followersCount}</strong> Đang theo dõi
+            </div>
           </div>
         </div>
       </div>

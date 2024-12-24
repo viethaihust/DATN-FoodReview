@@ -72,6 +72,12 @@ export default function PostCardInfinite({
     },
   ];
 
+  const content = post.content;
+
+  const removeHtmlTags = (str: string) => {
+    return str.replace(/<\/?[^>]+(>|$)/g, "");
+  };
+
   return (
     <div className="mb-4 h-min break-inside-avoid relative bg-white rounded-lg shadow-md hover:shadow-lg border border-gray-100 overflow-hidden">
       {session?.user?._id === post.userId._id && (
@@ -96,9 +102,14 @@ export default function PostCardInfinite({
         <div className="pb-0 p-4">
           <h2 className="text-lg font-bold text-gray-800">{post?.title}</h2>
           <p className="text-gray-600 mt-1">
-            {post.content.length > 100
-              ? post.content.slice(0, 100) + "..."
-              : post.content}
+            {content.length > 100 ? (
+              <>
+                <span>{removeHtmlTags(content.slice(0, 100))}</span>
+                ...
+              </>
+            ) : (
+              <span>{removeHtmlTags(content)}</span>
+            )}
           </p>
         </div>
       </Link>

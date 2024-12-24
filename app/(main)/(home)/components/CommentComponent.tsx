@@ -6,6 +6,7 @@ import { formatDate } from "@/utils/formatDate";
 import { BACKEND_URL } from "@/lib/constants";
 import Image from "next/image";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
+import Link from "next/link";
 
 const CommentComponent: React.FC<ICommentComponentProps> = ({
   comment,
@@ -132,18 +133,22 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
     }
   };
 
+  console.log(comment);
+
   return (
     <div className="border rounded-lg mb-4">
       <div className="flex justify-between items-center">
         <div className="p-6">
           <div className="flex items-center gap-2">
-            <Image
-              src={comment.userId?.image || "/profile.jpg"}
-              width={40}
-              height={40}
-              className="rounded-full"
-              alt="user-avatar"
-            />
+            <Link href={`/nguoi-dung/${comment.userId?._id}`}>
+              <Image
+                src={comment.userId?.image || "/profile.jpg"}
+                width={40}
+                height={40}
+                className="rounded-full"
+                alt="user-avatar"
+              />
+            </Link>
             <span className="font-bold">{comment.userId?.name} </span>
             <span className="text-gray-500 text-sm">
               {formatDate(comment.createdAt)}

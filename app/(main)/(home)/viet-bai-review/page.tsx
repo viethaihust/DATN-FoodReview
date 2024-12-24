@@ -17,6 +17,15 @@ const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 import "react-quill-new/dist/quill.snow.css";
 
 export default function VietBaiReview() {
+  const modules = {
+    toolbar: [
+      [{ header: "1" }, { header: "2" }, { font: [] }],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["bold", "italic", "underline"],
+      [{ align: [] }],
+    ],
+  };
+
   const router = useRouter();
   const [value, setValue] = useState("");
   const [locations, setLocations] = useState<ILocation[]>([]);
@@ -119,6 +128,12 @@ export default function VietBaiReview() {
     setSelectedFiles((prev) => prev.filter((f) => f.uid !== file.uid));
   };
 
+  useEffect(() => {
+    return () => {
+      selectedFiles.forEach((file) => URL.revokeObjectURL(file.thumbUrl || ""));
+    };
+  }, [selectedFiles]);
+
   const onFinish = async (values: any) => {
     const { title, content, categoryId, locationId, ratings } = values;
 
@@ -202,6 +217,7 @@ export default function VietBaiReview() {
             value={value}
             onChange={setValue}
             placeholder="Viết nội dung bài review..."
+            modules={modules}
           />
         </Form.Item>
 
@@ -211,6 +227,9 @@ export default function VietBaiReview() {
               Hình ảnh và Video (tối đa 10 file, mỗi file dưới 10MB)
             </span>
           }
+          rules={[
+            { required: true, message: "Vui lòng tải lên ít nhất một tệp!" },
+          ]}
         >
           <Upload
             accept="image/*,video/*"
@@ -231,7 +250,7 @@ export default function VietBaiReview() {
           ]}
         >
           <Select
-            style={{ width: "100%" }}
+            style={{ width: 200 }}
             options={categories?.map((category: ICategory) => ({
               value: category._id,
               label: category.name,
