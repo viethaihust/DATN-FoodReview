@@ -6,6 +6,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import MapModal from "../../components/MapModal";
+import { removeHtmlTags } from "@/utils/removeHtmlTags";
 
 export default function DiaDiemReview({ params }: { params: { id: string } }) {
   const [reviewPosts, setReviewPosts] = useState<IReviewPost[]>([]);
@@ -111,7 +112,7 @@ export default function DiaDiemReview({ params }: { params: { id: string } }) {
               >
                 {post.title}
               </Link>
-              <div>{post.content}</div>
+              <div>{removeHtmlTags(post.content)}</div>
               <div className="flex mt-2 gap-2 flex-wrap">
                 {post.files.map((file, index) => (
                   <Image

@@ -7,6 +7,7 @@ import MapModal from "../components/MapModal";
 import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
 import { BACKEND_URL } from "@/lib/constants";
+import { removeHtmlTags } from "@/utils/removeHtmlTags";
 
 const highlightText = (text: string, query: string) => {
   if (!query) return text;
@@ -161,7 +162,7 @@ const SearchResultsPage = () => {
                 >
                   {highlightText(post.title, query)}
                 </Link>
-                <div>{highlightText(post.content, query)}</div>
+                <div>{highlightText(removeHtmlTags(post.content), query)}</div>
                 <div className="flex mt-2 gap-2 flex-wrap">
                   {post.files.map((file, index) => (
                     <Image

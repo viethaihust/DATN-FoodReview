@@ -27,6 +27,8 @@ export default function VietBaiReview({
   const [selectedFiles, setSelectedFiles] = useState<RcFile[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const { data: session } = useSession();
+  const [searchValue] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   const fetchPostDetails = async () => {
     try {
@@ -104,8 +106,10 @@ export default function VietBaiReview({
   const fetchLocations = useMemo(
     () =>
       debounce(async (searchQuery: string) => {
+        setIsSearching(true);
         if (!searchQuery) {
           setLocations([]);
+          setIsSearching(false);
           return;
         }
 
@@ -120,6 +124,8 @@ export default function VietBaiReview({
           setLocations(data);
         } catch (error) {
           console.error("Error fetching locations:", error);
+        } finally {
+          setIsSearching(false);
         }
       }, 500),
     []
@@ -283,7 +289,13 @@ export default function VietBaiReview({
               showSearch
               placeholder="Tìm kiếm địa điểm"
               onSearch={handleSearch}
-              notFoundContent={"Không tìm thấy địa điểm"}
+              notFoundContent={
+                isSearching
+                  ? null
+                  : searchValue.trim() && locations.length === 0
+                  ? "Không tìm thấy địa điểm"
+                  : null
+              }
               filterOption={false}
               options={locations?.map((location: ILocation) => ({
                 value: location._id,
