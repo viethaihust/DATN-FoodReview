@@ -6,13 +6,14 @@ import { BACKEND_URL } from "@/lib/constants";
 import { formatDate } from "@/utils/formatDate";
 import LikeButton from "../../components/LikeButton";
 import BookmarkButton from "../../components/BookmarkButton";
-import MapModal from "../../components/MapModal";
+import MapModal from "../../components/MapModalButton";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import FollowButton from "../../components/FollowButton";
+import MapModalButton from "../../components/MapModalButton";
 
 export default async function BaiVietReview({
   params,
@@ -84,15 +85,16 @@ export default async function BaiVietReview({
                   </div>
                 )}
               </div>
-              <div className="mt-1">
-                <span>{formatDate(post?.createdAt)} tại&nbsp;</span>
-                <span className="text-orange-600 hover:cursor-pointer">
-                  <MapModal
-                    destination={post?.locationId?.latLong}
-                    locationName={post?.locationId?.name}
-                    locationAddress={post?.locationId?.address}
-                  />
-                </span>
+              <div className="flex mt-1 items-center gap-2">
+                <div>
+                  <span>{formatDate(post?.createdAt)} tại&nbsp;</span>
+                  <Link href={`/dia-diem-review/${post.locationId._id}`}>
+                    <span className="text-orange-600">
+                      {post.locationId.name} - {post.locationId.address}
+                    </span>
+                  </Link>
+                </div>
+                <MapModalButton destination={post?.locationId?.latLong} />
               </div>
             </div>
           </div>

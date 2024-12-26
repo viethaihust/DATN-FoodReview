@@ -62,6 +62,11 @@ export default function CreateLocationButton() {
         return;
       }
 
+      if (!selectedAddress) {
+        toast.error("Vui lòng chọn địa chỉ trên bản đồ!");
+        return;
+      }
+
       const response = await fetchWithAuth(
         `${BACKEND_URL}/api/location`,
         {

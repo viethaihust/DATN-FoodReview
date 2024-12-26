@@ -5,8 +5,9 @@ import { List, Rate } from "antd";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import MapModal from "../../components/MapModal";
+import MapModal from "../../components/MapModalButton";
 import { removeHtmlTags } from "@/utils/removeHtmlTags";
+import MapModalButton from "../../components/MapModalButton";
 
 export default function DiaDiemReview({ params }: { params: { id: string } }) {
   const [reviewPosts, setReviewPosts] = useState<IReviewPost[]>([]);
@@ -53,7 +54,12 @@ export default function DiaDiemReview({ params }: { params: { id: string } }) {
         </div>
         <div className="flex items-center gap-2 mt-2">
           <span className="font-semibold">Địa chỉ: </span>
-          <span>{location?.address}</span>
+          <span className="flex items-center gap-2">
+            <span>{location?.address}</span>
+            <MapModalButton
+              destination={location?.latLong || { lat: 0, lng: 0 }}
+            />
+          </span>
         </div>
       </div>
       <List
@@ -64,23 +70,21 @@ export default function DiaDiemReview({ params }: { params: { id: string } }) {
           <List.Item key={post._id}>
             <div className="w-full">
               <div className="flex items-center gap-6">
-                <Image
-                  className="cursor-pointer hover:shadow-sm hover:shadow-slate-400 rounded-full"
-                  height={60}
-                  width={60}
-                  src={post.userId.image || "/profile.jpg"}
-                  alt="profile-pic"
-                />
+                <Link href={`/nguoi-dung/${post.userId._id}`}>
+                  <Image
+                    className="cursor-pointer hover:shadow-sm hover:shadow-slate-400 rounded-full"
+                    height={60}
+                    width={60}
+                    src={post.userId.image || "/profile.jpg"}
+                    alt="profile-pic"
+                  />
+                </Link>
                 <div>
                   <div className="font-bold">{post.userId.name}</div>
                   <div>
                     <span>{formatDate(post.createdAt)} tại&nbsp;</span>
-                    <span className="text-orange-600 hover:cursor-pointer">
-                      <MapModal
-                        destination={post.locationId.latLong}
-                        locationName={post.locationId.name}
-                        locationAddress={post.locationId.address}
-                      />
+                    <span className="text-orange-600">
+                      {post.locationId.name} - {post.locationId.address}
                     </span>
                   </div>
                 </div>

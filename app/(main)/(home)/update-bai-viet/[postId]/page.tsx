@@ -135,10 +135,62 @@ export default function VietBaiReview({
     fetchLocations(value);
   };
 
-  const handleFileSelect = (file: RcFile) => {
-    file.thumbUrl = URL.createObjectURL(file);
-    setSelectedFiles((prev) => [...prev, file]);
-    return false;
+  const handleFileSelect = async (file: RcFile) => {
+    const allowedTypes = ["image/jpeg", "image/png", "video/mp4", "video/mpeg"];
+    const maxImageSize = 10 * 1024 * 1024; // 10 MB for images
+    const maxVideoSize = 20 * 1024 * 1024; // 20 MB for videos
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Chỉ chấp nhận file ảnh JPG, PNG hoặc video MP4, MPEG.");
+      return Upload.LIST_IGNORE;
+    }
+
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+
+    if (isImage && file.size > maxImageSize) {
+      toast.error("Kích thước file ảnh phải nhỏ hơn 10 MB.");
+      return Upload.LIST_IGNORE;
+    }
+
+    if (isVideo && file.size > maxVideoSize) {
+      toast.error("Kích thước file video phải nhỏ hơn 20 MB.");
+      return Upload.LIST_IGNORE;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetchWithAuth(
+        `${BACKEND_URL}/api/image-moderation/analyze`,
+        {
+          method: "POST",
+          body: formData,
+        },
+        session
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to analyze the file.");
+      }
+
+      const { isSafe } = await response.json();
+
+      if (!isSafe) {
+        toast.error(`Tệp ${file.name} chứa nội dung không an toàn.`);
+        return Upload.LIST_IGNORE;
+      }
+
+      file.thumbUrl = URL.createObjectURL(file);
+
+      setSelectedFiles((prev) => [...prev, file]);
+      return false;
+    } catch (error: any) {
+      toast.error(`Lỗi khi kiểm tra file: ${error.message}`);
+      return Upload.LIST_IGNORE;
+    }
   };
 
   const handleFileRemove = (file: UploadFile<any>) => {
@@ -241,7 +293,8 @@ export default function VietBaiReview({
         <Form.Item
           label={
             <span className="text-lg font-medium">
-              Hình ảnh và Video (tối đa 10 file, mỗi file dưới 10MB)
+              Hình ảnh và Video (tối đa 5 file, hình ảnh dưới 10MB, video dưới
+              20MB)
             </span>
           }
           rules={[

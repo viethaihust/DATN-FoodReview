@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { List, Typography, Rate } from "antd";
 import Image from "next/image";
-import MapModal from "../components/MapModal";
+import MapModal from "../components/MapModalButton";
 import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
 import { BACKEND_URL } from "@/lib/constants";
@@ -123,13 +123,11 @@ const SearchResultsPage = () => {
                     </div>
                     <div>
                       <span>{formatDate(post.createdAt)} tại&nbsp;</span>
-                      <span className="text-orange-600 hover:cursor-pointer">
-                        <MapModal
-                          destination={post?.locationId?.latLong}
-                          locationName={post?.locationId?.name}
-                          locationAddress={post?.locationId?.address}
-                        />
-                      </span>
+                      <Link href={`/dia-diem-review/${post.locationId._id}`}>
+                        <span className="text-orange-600">
+                          {post.locationId.name} - {post.locationId.address}
+                        </span>
+                      </Link>
                     </div>
                   </div>
                 </div>

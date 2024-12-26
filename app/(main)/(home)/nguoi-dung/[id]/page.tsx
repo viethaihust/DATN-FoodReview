@@ -4,7 +4,7 @@ import { formatDate } from "@/utils/formatDate";
 import { List, Rate } from "antd";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import MapModal from "../../components/MapModal";
+import MapModal from "../../components/MapModalButton";
 import Link from "next/link";
 import FollowButton from "../../components/FollowButton";
 import { removeHtmlTags } from "@/utils/removeHtmlTags";
@@ -102,13 +102,11 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
                   <div className="font-bold">{post.userId.name}</div>
                   <div>
                     <span>{formatDate(post.createdAt)} tại&nbsp;</span>
-                    <span className="text-orange-600 hover:cursor-pointer">
-                      <MapModal
-                        destination={post.locationId.latLong}
-                        locationName={post.locationId.name}
-                        locationAddress={post.locationId.address}
-                      />
-                    </span>
+                    <Link href={`/dia-diem-review/${post.locationId._id}`}>
+                      <span className="text-orange-600">
+                        {post.locationId.name} - {post.locationId.address}
+                      </span>
+                    </Link>
                   </div>
                 </div>
               </div>

@@ -7,7 +7,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
-import { title } from "process";
 
 interface Pagination {
   current: number;

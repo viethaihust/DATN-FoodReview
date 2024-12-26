@@ -16,7 +16,7 @@ export const getPosts = async (
   if (categoryId) {
     params.append("categoryId", categoryId);
   }
-  if (province && province !== "Tất cả") {
+  if (province && province !== "Toàn quốc") {
     params.append("province", province);
   }
 

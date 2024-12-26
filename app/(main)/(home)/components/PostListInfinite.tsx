@@ -6,9 +6,10 @@ import { BACKEND_URL, POSTS_PER_PAGE } from "@/lib/constants";
 import PostCardInfinite from "./PostCardInfinite";
 import { Spin, Button, Tooltip, Select } from "antd";
 import Masonry from "react-masonry-css";
+import SavedLocationsMap from "./SavedLocationsMap";
 
 const provinces = [
-  { name: "Tất cả" },
+  { name: "Toàn quốc" },
   { name: "An Giang" },
   { name: "Kon Tum" },
   { name: "Đắk Nông" },
@@ -86,7 +87,7 @@ export default function PostListInfinite({
   const [hasMoreData, setHasMoreData] = useState(true);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedProvince, setSelectedProvince] = useState<string>("Tất cả");
+  const [selectedProvince, setSelectedProvince] = useState<string>("Toàn quốc");
   const [scrollTrigger, isInView] = useInView();
 
   const fetchCategories = useCallback(async () => {
@@ -147,7 +148,7 @@ export default function PostListInfinite({
         ? post.categoryId._id === selectedCategory
         : true;
       const matchesProvince =
-        selectedProvince === "Tất cả" ||
+        selectedProvince === "Toàn quốc" ||
         post.locationId?.province === selectedProvince;
       return matchesCategory && matchesProvince;
     });
@@ -190,17 +191,20 @@ export default function PostListInfinite({
             </Tooltip>
           ))}
         </div>
-        <Select
-          value={selectedProvince}
-          onChange={handleProvinceChange}
-          placeholder="Chọn tỉnh/thành"
-          showSearch
-          options={provinces.map((province) => ({
-            value: province.name,
-            label: province.name,
-          }))}
-          className="w-full md:w-40"
-        />
+        <div className="flex gap-2">
+          <SavedLocationsMap />
+          <Select
+            value={selectedProvince}
+            onChange={handleProvinceChange}
+            placeholder="Chọn tỉnh/thành"
+            showSearch
+            options={provinces.map((province) => ({
+              value: province.name,
+              label: province.name,
+            }))}
+            className="w-full md:w-40"
+          />
+        </div>
       </div>
       <Masonry
         breakpointCols={breakpointColumns}
