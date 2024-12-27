@@ -49,7 +49,7 @@ export default async function BaiVietReview({
   }
 
   const randomPosts = await fetch(
-    `${BACKEND_URL}/api/review-posts/random?excludedPostId=${params.id}`,
+    `${BACKEND_URL}/api/recommendation/similar-posts/${params.id}`,
     {
       cache: "no-store",
     }
@@ -177,7 +177,7 @@ export default async function BaiVietReview({
         <div className="mt-5">
           <div className="text-3xl font-semibold">{post.title}</div>
           <div
-            className="text-gray-800 text-xl font-sans mt-5"
+            className="text-gray-800 text-xl font-sans mt-5 ql-editor"
             dangerouslySetInnerHTML={{ __html: post.content }}
           ></div>
         </div>

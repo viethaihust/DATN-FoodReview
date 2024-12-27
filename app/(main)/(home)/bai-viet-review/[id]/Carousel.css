@@ -45,3 +45,10 @@
     display: block !important;
   }
 }
+
+.ql-editor img {
+  display: inline;
+  vertical-align: middle;
+  width: auto;
+  height: auto;
+}

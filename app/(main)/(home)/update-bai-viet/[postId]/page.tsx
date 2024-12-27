@@ -12,6 +12,8 @@ import IconSlider from "@/(main)/(home)/components/IconSlider";
 import { useRouter } from "next/navigation";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
 import dynamic from "next/dynamic";
+import "../../viet-bai-review/Editor.css";
+
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 import "react-quill-new/dist/quill.snow.css";
 
@@ -20,6 +22,15 @@ export default function VietBaiReview({
 }: {
   params: { postId: string };
 }) {
+  const modules = {
+    toolbar: [
+      [{ header: "1" }, { header: "2" }, { font: [] }],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["bold", "italic", "underline"],
+      [{ align: [] }],
+    ],
+  };
+
   const router = useRouter();
   const [form] = Form.useForm();
   const [value, setValue] = useState("");
@@ -287,6 +298,7 @@ export default function VietBaiReview({
             value={value}
             onChange={setValue}
             placeholder="Viết nội dung bài review..."
+            modules={modules}
           />
         </Form.Item>
 

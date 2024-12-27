@@ -101,7 +101,7 @@ const NotificationComponent = ({ userId }: { userId: string }) => {
                 />
               </Link>
               <Link
-                href={`/bai-viet-review/${notif?.postId._id}`}
+                href={`/bai-viet-review/${notif?.postId?._id}`}
                 className="hover:text-black flex-1"
               >
                 <span>{notif.sender.name}</span> <span>{notif.message}</span>{" "}

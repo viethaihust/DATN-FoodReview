@@ -1,0 +1,10 @@
+.ql-snow .ql-editor img {
+  display: inline;
+  vertical-align: middle;
+  width: auto;
+  height: auto;
+}
+
+.ql-snow .ql-editor {
+  line-height: 1.4;
+}

@@ -11,7 +11,7 @@ import CreateLocationButton from "../components/CreateLocationButton";
 import IconSlider from "../components/IconSlider";
 import { useRouter } from "next/navigation";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
-
+import "./Editor.css";
 import dynamic from "next/dynamic";
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 import "react-quill-new/dist/quill.snow.css";
