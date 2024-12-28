@@ -30,7 +30,7 @@ const ChangePasswordPage = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/auth/change-password`, {
+      const response = await fetch(`${BACKEND_URL}/api/auth/forgot-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -105,7 +105,7 @@ const ChangePasswordPage = () => {
             type="primary"
             htmlType="submit"
             disabled={loading}
-            className={`w-full h-[3rem] p-[2px] bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-lg ${
+            className={`w-full mt-5 h-[3rem] p-[2px] bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-lg ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >

@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { List, Typography, Rate } from "antd";
 import Image from "next/image";
-import MapModal from "../components/MapModalButton";
 import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
 import { BACKEND_URL } from "@/lib/constants";

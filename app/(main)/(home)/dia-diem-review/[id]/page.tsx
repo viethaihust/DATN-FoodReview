@@ -5,7 +5,6 @@ import { List, Rate } from "antd";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import MapModal from "../../components/MapModalButton";
 import { removeHtmlTags } from "@/utils/removeHtmlTags";
 import MapModalButton from "../../components/MapModalButton";
 

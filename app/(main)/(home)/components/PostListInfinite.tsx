@@ -168,7 +168,7 @@ export default function PostListInfinite({
 
   return (
     <>
-      <div className="flex flex-wrap px-5 mt-10 justify-between gap-5">
+      <div className="flex flex-wrap px-5 mt-5 justify-between gap-5">
         <div className="flex flex-wrap gap-2 md:gap-5 w-full md:w-auto">
           <Button
             onClick={() => setSelectedCategory(null)}

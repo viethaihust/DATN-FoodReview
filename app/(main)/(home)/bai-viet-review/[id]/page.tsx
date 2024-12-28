@@ -6,7 +6,6 @@ import { BACKEND_URL } from "@/lib/constants";
 import { formatDate } from "@/utils/formatDate";
 import LikeButton from "../../components/LikeButton";
 import BookmarkButton from "../../components/BookmarkButton";
-import MapModal from "../../components/MapModalButton";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
@@ -14,6 +13,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import FollowButton from "../../components/FollowButton";
 import MapModalButton from "../../components/MapModalButton";
+import SimilarPosts from "../../components/SimilarPosts";
 
 export default async function BaiVietReview({
   params,
@@ -47,13 +47,6 @@ export default async function BaiVietReview({
       session
     );
   }
-
-  const randomPosts = await fetch(
-    `${BACKEND_URL}/api/recommendation/similar-posts/${params.id}`,
-    {
-      cache: "no-store",
-    }
-  ).then((res) => res.json());
 
   const comments = await fetch(
     `${BACKEND_URL}/api/comments?postId=${params.id}`,
@@ -185,74 +178,7 @@ export default async function BaiVietReview({
           <CommentSection comments={comments} postId={post._id} />
         </div>
       </div>
-      {randomPosts && randomPosts.length > 0 ? (
-        <div className="md:max-w-[20rem]">
-          <div className="text-xl font-semibold underline decoration-orange-500 underline-offset-8">
-            Các bài viết khác
-          </div>
-          <div className="flex flex-col mt-5 gap-6">
-            {randomPosts.map((randomPost: IReviewPost) => (
-              <div key={randomPost._id} className="rounded-md border">
-                <Link
-                  href={`/bai-viet-review/${randomPost._id}`}
-                  className="group hover:text-black"
-                >
-                  <div className="rounded-md border">
-                    <Image
-                      height={100}
-                      width={100}
-                      src={
-                        randomPost?.files[0].replace(".mp4", ".jpg") ||
-                        "/fallback-video.jpg"
-                      }
-                      alt="random-post-pic"
-                      className="w-full max-h-52 rounded-t-md object-cover"
-                    />
-                    <div className="flex flex-col gap-1 p-4">
-                      <div className="flex flex-wrap">
-                        <div className="opacity-80">
-                          {formatDate(randomPost.createdAt)}
-                        </div>
-                        <div className="flex items-center">
-                          <Rate
-                            allowHalf
-                            disabled
-                            value={randomPost.ratings.overall}
-                            style={{ color: "orange" }}
-                          />
-                          <span className="ml-5">
-                            <strong className="text-xl">
-                              {randomPost.ratings.overall}{" "}
-                            </strong>
-                            /5 điểm
-                          </span>
-                        </div>
-                      </div>
-                      <div className="group-hover:text-orange-600">
-                        <span className="text-lg font-semibold">
-                          {randomPost.title}
-                        </span>
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 hover:text-black">
-                          <Image
-                            className="rounded-full h-12 w-12"
-                            height={60}
-                            width={60}
-                            src={randomPost?.userId.image || "/profile.jpg"}
-                            alt="profile-pic"
-                          />
-                          <span>{randomPost?.userId.name}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
+      <SimilarPosts postId={post._id} />
     </div>
   );
 }

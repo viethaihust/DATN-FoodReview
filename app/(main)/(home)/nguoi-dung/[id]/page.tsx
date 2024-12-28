@@ -4,7 +4,6 @@ import { formatDate } from "@/utils/formatDate";
 import { List, Rate } from "antd";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import MapModal from "../../components/MapModalButton";
 import Link from "next/link";
 import FollowButton from "../../components/FollowButton";
 import { removeHtmlTags } from "@/utils/removeHtmlTags";
