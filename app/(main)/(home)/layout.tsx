@@ -115,6 +115,7 @@ export default function HomeLayout({
                   arrow={{ pointAtCenter: true }}
                   autoAdjustOverflow
                   placement="bottomRight"
+                  className="ml-2"
                 >
                   <button
                     className="rounded-full"

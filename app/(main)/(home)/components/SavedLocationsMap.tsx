@@ -141,13 +141,13 @@ export default function SavedLocationsMap() {
   };
 
   return (
-    <div className="w-12 md:w-auto">
+    <div>
       <Button
         icon={<IoLocationOutline className="text-lg" />}
         className="rounded-md bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold px-4 py-1 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center"
         onClick={handleShowModal}
       >
-        <span className="!hidden md:!block">Xem tất cả địa điểm</span>
+        <span>Xem tất cả địa điểm</span>
       </Button>
       <Modal
         title={

@@ -22,7 +22,7 @@ export default function HomeBanner() {
   }, [target]);
 
   return (
-    <div className="max-h-[25rem] overflow-hidden relative">
+    <div className="h-[10rem] md:h-[25rem] overflow-hidden relative">
       <Image
         src="/home-banner.jpg"
         alt="home-banner"
@@ -31,7 +31,7 @@ export default function HomeBanner() {
         style={{ width: "100%", objectFit: "cover" }}
       ></Image>
       <div className="absolute inset-0 flex items-center left-10 md:left-40 mr-10">
-        <div className="text-sm flex flex-col text-white gap-6 font-bold">
+        <div className="text-sm flex flex-col text-white gap-2 md:gap-6 font-bold">
           <div className="text-sm md:text-8xl">Review Ẩm Thực</div>
           <div ref={target} className="md:text-4xl italic">
             Khám Phá Và Đánh Giá Các Địa Điểm Ăn Uống

@@ -1,13 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { Spin } from "antd";
-import Masonry from "react-masonry-css";
-import { removeHtmlTags } from "@/utils/removeHtmlTags";
-import LikeButton from "./LikeButton";
 import { useSession } from "next-auth/react";
 import { BACKEND_URL } from "@/lib/constants";
+import PostCardInfinite from "./PostCardInfinite";
+import Masonry from "react-masonry-css";
 
 export default function RecommendedPosts() {
   const { data: session } = useSession();
@@ -52,7 +49,6 @@ export default function RecommendedPosts() {
     default: 4,
     1100: 3,
     700: 2,
-    500: 1,
   };
 
   return (
@@ -62,60 +58,11 @@ export default function RecommendedPosts() {
       </div>
       <Masonry
         breakpointCols={breakpointColumns}
-        className="flex w-auto gap-4 p-5"
+        className="flex w-auto mt-5 md:mt-0 -mx-4 gap-2 md:gap-4 md:p-5"
         columnClassName="bg-clip-padding"
       >
         {recommendedPosts.map((post) => (
-          <div
-            key={post?._id}
-            className="mb-4 h-min break-inside-avoid relative bg-white rounded-lg shadow-md hover:shadow-lg border border-gray-100 overflow-hidden"
-          >
-            <Link href={`/bai-viet-review/${post?._id}`}>
-              <Image
-                src={
-                  post?.files[0].replace(".mp4", ".jpg") ||
-                  "/fallback-video.jpg"
-                }
-                alt={post?.title}
-                width={350}
-                height={350}
-                className="w-full h-auto object-cover"
-              />
-              <div className="pb-0 p-4">
-                <h2 className="text-lg font-bold text-gray-800">
-                  {post?.title}
-                </h2>
-                <p className="text-gray-600 mt-1">
-                  {post.content.length > 100 ? (
-                    <>
-                      <span>{removeHtmlTags(post.content.slice(0, 100))}</span>
-                      ...
-                    </>
-                  ) : (
-                    <span>{removeHtmlTags(post.content)}</span>
-                  )}
-                </p>
-              </div>
-            </Link>
-            <div className="flex items-center justify-between p-5">
-              <div className="flex items-center gap-5">
-                <Link
-                  href={`/nguoi-dung/${post?.userId._id}`}
-                  className="flex items-center gap-2 hover:text-orange-600"
-                >
-                  <Image
-                    src={post.userId.image || "/profile.jpg"}
-                    width={40}
-                    height={40}
-                    alt="user-profile"
-                    className="rounded-full w-8 h-8"
-                  />
-                  <span>{post?.userId.name}</span>
-                </Link>
-              </div>
-              <LikeButton postId={post?._id} />
-            </div>
-          </div>
+          <PostCardInfinite key={post._id} post={post} />
         ))}
       </Masonry>
     </div>

@@ -163,16 +163,15 @@ export default function PostListInfinite({
     default: 4,
     1100: 3,
     700: 2,
-    500: 1,
   };
 
   return (
     <>
-      <div className="flex flex-wrap px-5 mt-5 justify-between gap-5">
-        <div className="flex flex-wrap gap-2 md:gap-5 w-full md:w-auto">
+      <div className="-mx-2 md:mx-0 md:p-5 flex flex-wrap mt-5 justify-between gap-5">
+        <div className="overflow-x-auto whitespace-nowrap flex gap-2 md:gap-4">
           <Button
             onClick={() => setSelectedCategory(null)}
-            className="border-2 text-black font-semibold bg-clip-text hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white transition-all duration-300"
+            className="border-2 text-black font-semibold bg-clip-text hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white transition-all duration-300 flex-shrink-0"
           >
             Tất cả
           </Button>
@@ -184,7 +183,7 @@ export default function PostListInfinite({
             >
               <Button
                 onClick={() => setSelectedCategory(category._id)}
-                className="border-2 text-black font-semibold bg-clip-text hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white transition-all duration-300"
+                className="border-2 text-black font-semibold bg-clip-text hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white transition-all duration-300 flex-shrink-0"
               >
                 {category.name}
               </Button>
@@ -208,7 +207,7 @@ export default function PostListInfinite({
       </div>
       <Masonry
         breakpointCols={breakpointColumns}
-        className="flex w-auto gap-4 p-5"
+        className="flex w-auto -mx-4 md:mx-0 gap-2 md:gap-4 md:px-5 mt-5 md:mt-0"
         columnClassName="bg-clip-padding"
       >
         {filteredPosts.length > 0 ? (

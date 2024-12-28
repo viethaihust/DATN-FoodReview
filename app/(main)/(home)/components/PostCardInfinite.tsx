@@ -13,7 +13,7 @@ export default function PostCardInfinite({
   onPostDelete,
 }: {
   post: IReviewPost;
-  onPostDelete: (postId: string) => void;
+  onPostDelete?: (postId: string) => void;
 }) {
   const { data: session } = useSession();
 
@@ -53,7 +53,9 @@ export default function PostCardInfinite({
                   );
 
                   if (response.ok) {
-                    onPostDelete(post._id);
+                    if (onPostDelete) {
+                      onPostDelete(post._id);
+                    }
                     toast.success("Xóa bài viết thành công");
                   } else {
                     toast.error("Lỗi khi xóa bài viết");
@@ -94,9 +96,11 @@ export default function PostCardInfinite({
           height={350}
           className="w-full h-auto object-cover"
         />
-        <div className="pb-0 p-4">
-          <h2 className="text-lg font-bold text-gray-800">{post?.title}</h2>
-          <p className="text-gray-600 mt-1">
+        <div className="pb-0 p-2 md:p-4">
+          <h2 className="text-sm md:text-lg font-bold text-gray-800">
+            {post?.title}
+          </h2>
+          <p className="text-gray-600 mt-1 hidden md:block">
             {post.content.length > 100 ? (
               <>
                 <span>{removeHtmlTags(post.content.slice(0, 100))}</span>
@@ -108,7 +112,7 @@ export default function PostCardInfinite({
           </p>
         </div>
       </Link>
-      <div className="flex items-center justify-between p-5">
+      <div className="flex items-center justify-between p-2 md:p-5">
         <div className="flex items-center gap-5">
           <Link
             href={`/nguoi-dung/${post?.userId._id}`}

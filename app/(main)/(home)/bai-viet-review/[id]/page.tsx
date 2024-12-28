@@ -83,7 +83,11 @@ export default async function BaiVietReview({
                   <span>{formatDate(post?.createdAt)} tại&nbsp;</span>
                   <Link href={`/dia-diem-review/${post.locationId._id}`}>
                     <span className="text-orange-600">
-                      {post.locationId.name} - {post.locationId.address}
+                      <span>{post.locationId.name}</span>
+                      <span className="hidden md:block">
+                        {" "}
+                        - {post.locationId.address}
+                      </span>
                     </span>
                   </Link>
                 </div>
