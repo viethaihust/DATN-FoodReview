@@ -58,7 +58,7 @@ export default function RecommendedPosts() {
   return (
     <div>
       <div className="text-xl mt-5 font-semibold underline decoration-orange-500 underline-offset-8">
-        Bài viết được đề xuất cho bạn
+        Bài viết có thể bạn sẽ thích
       </div>
       <Masonry
         breakpointCols={breakpointColumns}

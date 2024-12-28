@@ -7,8 +7,10 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import FollowButton from "../../components/FollowButton";
 import { removeHtmlTags } from "@/utils/removeHtmlTags";
+import { useSession } from "next-auth/react";
 
 export default function NguoiDung({ params }: { params: { id: string } }) {
+  const { data: session } = useSession();
   const [user, setUser] = useState<IUser | null>(null);
   const [followersCount, setFollowersCount] = useState<number>(0);
   const [followingsCount, setFollowingsCount] = useState<number>(0);
@@ -54,11 +56,15 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
     }
   }, [params.id]);
 
+  const handleFollowToggle = (isFollowing: boolean) => {
+    setFollowersCount((prev) => (isFollowing ? prev + 1 : prev - 1));
+  };
+
   return (
     <div>
       <div className="flex items-center gap-6 p-6 rounded-lg border shadow-md">
         <Image
-          className="rounded-full"
+          className="rounded-full object-cover h-20 w-20"
           height={100}
           width={100}
           src={user?.image || "/profile.jpg"}
@@ -67,7 +73,14 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
         <div>
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold">{user?.name}</h1>
-            <FollowButton userId={params.id} />
+            {session?.user?._id !== params.id && (
+              <div>
+                <FollowButton
+                  userId={params.id}
+                  onFollowToggle={handleFollowToggle}
+                />
+              </div>
+            )}
           </div>
           <div className="flex gap-6 mt-2 text-gray-600">
             <div>
@@ -77,7 +90,7 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
               <strong>{followersCount}</strong> Người theo dõi
             </div>
             <div>
-              <strong>{followersCount}</strong> Đang theo dõi
+              <strong>{followingsCount}</strong> Đang theo dõi
             </div>
           </div>
         </div>
@@ -91,7 +104,7 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
             <div className="w-full">
               <div className="flex items-center gap-6">
                 <Image
-                  className="cursor-pointer hover:shadow-sm hover:shadow-slate-400 rounded-full"
+                  className="cursor-pointer hover:shadow-sm hover:shadow-slate-400 rounded-full object-cover h-12 w-12"
                   height={60}
                   width={60}
                   src={post.userId.image || "/profile.jpg"}

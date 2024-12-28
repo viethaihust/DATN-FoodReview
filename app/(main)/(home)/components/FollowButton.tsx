@@ -5,7 +5,13 @@ import { BACKEND_URL } from "@/lib/constants";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
 import { useSession } from "next-auth/react";
 
-export default function FollowButton({ userId }: { userId: string }) {
+export default function FollowButton({
+  userId,
+  onFollowToggle,
+}: {
+  userId: string;
+  onFollowToggle?: (isFollowing: boolean) => void;
+}) {
   const { data: session } = useSession();
   const [isFollowing, setIsFollowing] = useState(false);
 
@@ -33,7 +39,7 @@ export default function FollowButton({ userId }: { userId: string }) {
     }
   }, [userId, session]);
 
-  const onFollowToggle = async () => {
+  const handleFollowToggle = async () => {
     try {
       const response = await fetchWithAuth(
         `${BACKEND_URL}/api/follows`,
@@ -49,12 +55,17 @@ export default function FollowButton({ userId }: { userId: string }) {
 
       if (response.ok) {
         const updatedStatus = await response.json();
-        setIsFollowing(updatedStatus.isFollowing);
+        const newStatus = updatedStatus.isFollowing;
+        setIsFollowing(newStatus);
         toast.success(
-          isFollowing
-            ? "Bạn đã bỏ theo dõi người dùng này."
-            : "Bạn đã theo dõi người dùng này."
+          newStatus
+            ? "Bạn đã theo dõi người dùng này."
+            : "Bạn đã bỏ theo dõi người dùng này."
         );
+
+        if (onFollowToggle) {
+          onFollowToggle(newStatus);
+        }
       } else {
         toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
       }
@@ -66,7 +77,7 @@ export default function FollowButton({ userId }: { userId: string }) {
   return (
     <button
       className="py-1 px-4 rounded-sm text-sm border border-solid border-pink-600 text-pink-600 cursor-pointer font-semibold text-center shadow-xs transition-all duration-500 hover:bg-red-600 hover:text-white"
-      onClick={onFollowToggle}
+      onClick={handleFollowToggle}
     >
       {isFollowing ? "Bỏ theo dõi" : "Theo dõi"}
     </button>
