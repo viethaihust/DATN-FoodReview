@@ -107,34 +107,36 @@ export default function VietBaiReview() {
     }
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetchWithAuth(
-        `${BACKEND_URL}/api/image-moderation/analyze`,
-        {
-          method: "POST",
-          body: formData,
-        },
-        session
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to analyze the file.");
+      if (isImage) {
+        const formData = new FormData();
+        formData.append("image", file);
+  
+        const response = await fetchWithAuth(
+          `${BACKEND_URL}/api/image-moderation/analyze`,
+          {
+            method: "POST",
+            body: formData,
+          },
+          session
+        );
+  
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Failed to analyze the file.");
+        }
+  
+        const { isSafe } = await response.json();
+  
+        if (!isSafe) {
+          toast.error(`Ảnh ${file.name} chứa nội dung không an toàn.`);
+          return Upload.LIST_IGNORE;
+        }
       }
-
-      const { isSafe } = await response.json();
-
-      if (!isSafe) {
-        toast.error(`Tệp ${file.name} chứa nội dung không an toàn.`);
-        return Upload.LIST_IGNORE;
-      }
-
+  
       setSelectedFiles((prev) => [...prev, file]);
       return false;
     } catch (error: any) {
-      toast.error(`Lỗi khi kiểm tra file: ${error.message}`);
+      toast.error(`Lỗi khi kiểm tra ảnh: ${error.message}`);
       return Upload.LIST_IGNORE;
     }
   };
