@@ -71,7 +71,7 @@ export default function DiaDiemReview({ params }: { params: { id: string } }) {
               <div className="flex items-center gap-6">
                 <Link href={`/nguoi-dung/${post.userId._id}`}>
                   <Image
-                    className="cursor-pointer hover:shadow-sm hover:shadow-slate-400 rounded-full"
+                    className="cursor-pointer hover:shadow-sm hover:shadow-slate-400 rounded-full object-cover w-12 h-12"
                     height={60}
                     width={60}
                     src={post.userId.image || "/profile.jpg"}
