@@ -18,12 +18,14 @@ import { useState } from "react";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
 import { toast } from "react-toastify";
 import { BACKEND_URL } from "@/lib/constants";
+import AddedLocationList from "../components/AddedLocationList";
 
 const ProfilePage = () => {
   const { data: session, update } = useSession();
 
   const [userPosts, setUserPosts] = useState<IReviewPost[]>([]);
   const [bookmarks, setBookmarks] = useState<IBookmark[]>([]);
+  const [userLocations, setUserLocations] = useState<ILocation[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -105,6 +107,20 @@ const ProfilePage = () => {
         />
       ) : (
         "Vui lòng đăng nhập để xem các bài viết đã lưu"
+      ),
+    },
+    {
+      key: "3",
+      label: "Địa điểm đã thêm",
+      children: session ? (
+        <AddedLocationList
+          userId={session?.user?._id}
+          accessToken={session.backendTokens.accessToken}
+          locations={userLocations}
+          setUserLocations={setUserLocations}
+        />
+      ) : (
+        "Vui lòng đăng nhập để xem địa điểm đã thêm"
       ),
     },
   ];

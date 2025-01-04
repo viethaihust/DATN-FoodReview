@@ -40,7 +40,7 @@ export default function SimilarPosts({ postId }: { postId: string }) {
   }
 
   return (
-    <div className="md:max-w-[20rem]">
+    <div className="md:max-w-[15rem] lg:max-w-[20rem]">
       <div className="text-xl font-semibold underline decoration-orange-500 underline-offset-8">
         Bài viết tương tự
       </div>
@@ -60,7 +60,7 @@ export default function SimilarPosts({ postId }: { postId: string }) {
                     "/fallback-video.jpg"
                   }
                   alt="similar-post-pic"
-                  className="w-full max-h-52 rounded-t-md object-cover"
+                  className="w-full rounded-t-md object-cover"
                 />
                 <div className="flex flex-col gap-1 p-4">
                   <div className="flex flex-wrap">
@@ -90,9 +90,9 @@ export default function SimilarPosts({ postId }: { postId: string }) {
                   <div>
                     <div className="flex items-center gap-2 hover:text-black">
                       <Image
-                        className="rounded-full h-12 w-12"
-                        height={60}
-                        width={60}
+                        className="rounded-full object-cover min-w-8 aspect-square"
+                        height={50}
+                        width={50}
                         src={similarPost?.userId.image || "/profile.jpg"}
                         alt="profile-pic"
                       />

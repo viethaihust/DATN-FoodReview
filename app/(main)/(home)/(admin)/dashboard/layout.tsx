@@ -1,7 +1,11 @@
 "use client";
 import React from "react";
 import { Layout, Menu } from "antd";
-import { ReadOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  EnvironmentOutlined,
+  ReadOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -28,6 +32,11 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({
       key: "/dashboard/danh-sach-bai-viet",
       icon: <ReadOutlined />,
       label: <Link href="/dashboard/danh-sach-bai-viet">Bài viết</Link>,
+    },
+    {
+      key: "/dashboard/danh-sach-dia-diem",
+      icon: <EnvironmentOutlined />,
+      label: <Link href="/dashboard/danh-sach-dia-diem">Địa điểm</Link>,
     },
   ];
 

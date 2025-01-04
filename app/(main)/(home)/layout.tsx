@@ -126,7 +126,7 @@ export default function HomeLayout({
                       width={40}
                       height={40}
                       alt="user-profile"
-                      className="rounded-full h-10 w-10"
+                      className="rounded-full object-cover min-w-10 aspect-square"
                     />
                   </button>
                 </Dropdown>

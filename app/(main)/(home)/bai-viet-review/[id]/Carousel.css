@@ -28,6 +28,7 @@
 }
 
 .ant-carousel .slick-dots {
+  z-index: 0;
   bottom: -15px;
 }
 

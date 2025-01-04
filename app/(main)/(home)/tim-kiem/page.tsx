@@ -87,7 +87,7 @@ const SearchResultsPage = () => {
                       alt="user-image"
                       width={32}
                       height={32}
-                      style={{ borderRadius: "50%" }}
+                      className="rounded-full min-w-8 object-cover aspect-square"
                     />
                   }
                   title={highlightText(user.name, query)}
@@ -109,9 +109,9 @@ const SearchResultsPage = () => {
                 <div className="flex items-center gap-6">
                   <Link href={`/nguoi-dung/${post.userId._id}`}>
                     <Image
-                      className="rounded-full"
-                      height={60}
-                      width={60}
+                      className="rounded-full min-w-8 object-cover aspect-square"
+                      height={40}
+                      width={40}
                       src={post.userId.image || "/profile.jpg"}
                       alt="profile-pic"
                     />

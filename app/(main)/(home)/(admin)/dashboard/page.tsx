@@ -115,7 +115,7 @@ const AdminDashboard: React.FC = () => {
           alt="User Avatar"
           width={50}
           height={50}
-          className="rounded-full w-12 h-12"
+          className="rounded-full min-w-12 object-cover aspect-square"
         />
       ),
     },

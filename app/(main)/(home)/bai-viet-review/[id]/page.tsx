@@ -62,7 +62,7 @@ export default async function BaiVietReview({
           <div className="flex items-center gap-2 sm:gap-6">
             <Link href={`/nguoi-dung/${post?.userId._id}`}>
               <Image
-                className="hover:shadow-sm hover:shadow-slate-400 rounded-full object-contain"
+                className="hover:shadow-sm hover:shadow-slate-400 rounded-full object-cover aspect-square"
                 height={60}
                 width={60}
                 src={post.userId.image || "/profile.jpg"}
@@ -78,11 +78,11 @@ export default async function BaiVietReview({
                   </div>
                 )}
               </div>
-              <div className="flex mt-1 items-center gap-2">
-                <div>
+              <div className="lg:flex mt-1 items-center gap-2">
+                <div className="lg:flex mb-1">
                   <span>{formatDate(post?.createdAt)} tại&nbsp;</span>
                   <Link href={`/dia-diem-review/${post.locationId._id}`}>
-                    <span className="text-orange-600">
+                    <span className="text-orange-600 lg:flex">
                       <span>{post.locationId.name}</span>
                       <span className="hidden md:block">
                         {" "}
@@ -97,7 +97,8 @@ export default async function BaiVietReview({
           </div>
           <div className="flex items-center gap-2 md:gap-5 ml-2 text-center">
             <div id={`like-count-${post._id}`}>
-              {post.likesCount} lượt thích
+              {post.likesCount}{" "}
+              <span className="hidden md:!block">lượt thích</span>
             </div>
             <LikeButton postId={post._id} />
             <BookmarkButton postId={post._id} />

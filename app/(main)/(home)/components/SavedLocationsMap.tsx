@@ -30,7 +30,7 @@ export default function SavedLocationsMap() {
       });
       if (response.ok) {
         const data = await response.json();
-        setLocations(data);
+        setLocations(data.locations);
       } else {
         toast.error("Không thể tải danh sách địa điểm!");
       }

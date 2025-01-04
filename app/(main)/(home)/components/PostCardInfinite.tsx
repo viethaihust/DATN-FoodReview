@@ -123,7 +123,7 @@ export default function PostCardInfinite({
               width={40}
               height={40}
               alt="user-profile"
-              className="rounded-full w-8 h-8"
+              className="rounded-full object-cover min-w-8 aspect-square"
             />
             <span>{post?.userId.name}</span>
           </Link>

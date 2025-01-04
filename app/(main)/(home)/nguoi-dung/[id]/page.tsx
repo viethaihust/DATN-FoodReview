@@ -64,7 +64,7 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
     <div>
       <div className="flex items-center gap-6 p-6 rounded-lg border shadow-md">
         <Image
-          className="rounded-full object-cover h-20 w-20"
+          className="rounded-full object-cover min-w-20 aspect-square"
           height={100}
           width={100}
           src={user?.image || "/profile.jpg"}
@@ -104,7 +104,7 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
             <div className="w-full">
               <div className="flex items-center gap-6">
                 <Image
-                  className="cursor-pointer hover:shadow-sm hover:shadow-slate-400 rounded-full object-cover h-12 w-12"
+                  className="cursor-pointer hover:shadow-sm hover:shadow-slate-400 rounded-full object-cover min-w-12 aspect-square"
                   height={60}
                   width={60}
                   src={post.userId.image || "/profile.jpg"}
@@ -122,32 +122,30 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-between items-center mt-2">
-                <div className="flex items-center">
-                  <Rate
-                    allowHalf
-                    disabled
-                    value={post.ratings.overall}
-                    style={{ color: "orange" }}
-                  />
-                  <span className="ml-5">
-                    <strong className="text-lg">{post.ratings.overall}</strong>
-                    /5 điểm
-                  </span>
-                </div>
-                <div className="flex flex-row gap-2 opacity-80">
-                  <div>Hương vị: {post.ratings.flavor}</div>
-                  <div>Không gian: {post.ratings.space}</div>
-                  <div>Vệ sinh: {post.ratings.hygiene}</div>
-                  <div>Giá cả: {post.ratings.price}</div>
-                  <div>Phục vụ: {post.ratings.serves}</div>
-                </div>
+              <div className="flex items-center">
+                <Rate
+                  allowHalf
+                  disabled
+                  value={post.ratings.overall}
+                  style={{ color: "orange" }}
+                />
+                <span className="ml-5">
+                  <strong className="text-lg">{post.ratings.overall}</strong>
+                  /5 điểm
+                </span>
+              </div>
+              <div className="flex flex-row gap-2 opacity-80 mb-2">
+                <div>Hương vị: {post.ratings.flavor}</div>
+                <div>Không gian: {post.ratings.space}</div>
+                <div>Vệ sinh: {post.ratings.hygiene}</div>
+                <div>Giá cả: {post.ratings.price}</div>
+                <div>Phục vụ: {post.ratings.serves}</div>
               </div>
               <Link
                 href={`/bai-viet-review/${post._id}`}
                 className="font-semibold text-xl mt-4 hover:text-orange-600"
               >
-                {post.title}
+                <span>{post.title}</span>
               </Link>
               <div>{removeHtmlTags(post.content)}</div>
               <div className="flex mt-2 gap-2 flex-wrap">

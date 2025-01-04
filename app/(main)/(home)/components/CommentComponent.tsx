@@ -133,59 +133,63 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
     }
   };
 
-  console.log(comment);
-
   return (
     <div className="border rounded-lg mb-4">
       <div className="flex justify-between items-center">
-        <div className="p-6">
-          <div className="flex items-center gap-2">
+        <div className="p-2 md:p-6">
+          <div className="flex items-start gap-2">
             <Link href={`/nguoi-dung/${comment.userId?._id}`}>
               <Image
                 src={comment.userId?.image || "/profile.jpg"}
                 width={40}
                 height={40}
-                className="rounded-full"
+                className="rounded-full object-cover min-w-8 aspect-square"
                 alt="user-avatar"
               />
             </Link>
-            <span className="font-bold">{comment.userId?.name} </span>
-            <span className="text-gray-500 text-sm">
-              {formatDate(comment.createdAt)}
-            </span>
-          </div>
-          <div className="ml-12 mt-1">
-            <div>
-              {showFullContent || comment.content.length <= contentPreviewLength
-                ? comment.content
-                : `${comment.content.slice(0, contentPreviewLength)}...`}
-              {comment.content.length > contentPreviewLength && (
+
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <span className="font-bold">{comment.userId?.name}</span>
+                <span className="text-gray-500 text-sm">
+                  {formatDate(comment.createdAt)}
+                </span>
+              </div>
+
+              <div className="mt-1">
+                {showFullContent ||
+                comment.content.length <= contentPreviewLength
+                  ? comment.content
+                  : `${comment.content.slice(0, contentPreviewLength)}...`}
+                {comment.content.length > contentPreviewLength && (
+                  <button
+                    onClick={() => setShowFullContent(!showFullContent)}
+                    className="text-blue-700 pl-2"
+                  >
+                    {showFullContent ? "Hiện ít hơn" : "Xem thêm"}
+                  </button>
+                )}
+              </div>
+
+              <div className="mt-1">
                 <button
-                  onClick={() => setShowFullContent(!showFullContent)}
-                  className="text-blue-700 pl-2"
+                  onClick={() => setReplying(!replying)}
+                  className="text-blue-700 font-semibold"
                 >
-                  {showFullContent ? "Hiện ít hơn" : "Xem thêm"}
+                  <CommentOutlined className="mr-1" />
+                  Trả lời
                 </button>
-              )}
-            </div>
-            <div className="mt-1">
-              <button
-                onClick={() => setReplying(!replying)}
-                className="text-blue-700 font-semibold"
-              >
-                <CommentOutlined className="mr-1" />
-                Trả lời
-              </button>
-              {comment.replies > 0 && (
-                <button
-                  onClick={() => setShowReplies(!showReplies)}
-                  className="ml-4 text-blue-700 font-semibold"
-                >
-                  {showReplies
-                    ? `Ẩn ${comment.replies} trả lời`
-                    : `Hiện ${comment.replies} trả lời`}
-                </button>
-              )}
+                {comment.replies > 0 && (
+                  <button
+                    onClick={() => setShowReplies(!showReplies)}
+                    className="ml-4 text-blue-700 font-semibold"
+                  >
+                    {showReplies
+                      ? `Ẩn ${comment.replies} trả lời`
+                      : `Hiện ${comment.replies} trả lời`}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>

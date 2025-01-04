@@ -1,31 +1,80 @@
 import { BACKEND_URL } from "@/lib/constants";
-import { Loader } from "@googlemaps/js-api-loader";
-import { Button, Form, Input, Modal } from "antd";
-import React, { useRef, useState } from "react";
-import { toast } from "react-toastify";
-import { IoLocationOutline } from "react-icons/io5";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
-import { useSession } from "next-auth/react";
 import { CompassOutlined } from "@ant-design/icons";
+import { Loader } from "@googlemaps/js-api-loader";
+import { Button, Card, Form, Input, Modal, Space } from "antd";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 
 const mapContainerStyle = { width: "100%", height: "400px" };
 const defaultCenter = { lat: 21.0044, lng: 105.8441 };
 
-export default function CreateLocationButton() {
+export default function AddedLocationList({
+  userId,
+  accessToken,
+  locations,
+  setUserLocations,
+}: {
+  userId: string;
+  accessToken: string;
+  locations: ILocation[];
+  setUserLocations: React.Dispatch<React.SetStateAction<ILocation[]>>;
+}) {
+  const router = useRouter();
   const { data: session } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalId, setModalId] = useState(1);
+  const [modalId, setModalId] = useState(2);
+  const [form] = Form.useForm();
+  const [currentLocation, setCurrentLocation] = useState<ILocation | null>(
+    null
+  );
 
-  const showModal = (id: number) => {
-    setModalId(id);
-    setIsModalOpen(true);
-
-    setTimeout(() => {
-      initMap();
-    }, 300);
+  const fetchUserLocations = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/location/user`, {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUserLocations(data);
+      } else {
+        console.error("Lỗi khi lấy các địa điểm đã thêm.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy các địa điểm đã thêm:", error);
+    }
   };
 
-  const [form] = Form.useForm();
+  useEffect(() => {
+    if (userId) {
+      fetchUserLocations();
+    }
+  }, [userId, accessToken]);
+
+  const showModal = (id: number, location: ILocation) => {
+    setCurrentLocation(location);
+    form.setFieldsValue({
+      locationName: location.name,
+    });
+    setSelectedAddress(location.address);
+
+    setModalId(id);
+    setIsModalOpen(true);
+  };
+
+  useEffect(() => {
+    if (currentLocation) {
+      initMap();
+    }
+  }, [currentLocation]);
 
   const handleOk = async () => {
     try {
@@ -70,11 +119,10 @@ export default function CreateLocationButton() {
       }
 
       const response = await fetchWithAuth(
-        `${BACKEND_URL}/api/location`,
+        `${BACKEND_URL}/api/location/${currentLocation?._id}`,
         {
-          method: "POST",
+          method: "PATCH",
           body: JSON.stringify({
-            userId: session?.user?._id,
             name: locationName,
             address: selectedAddress,
             province: province,
@@ -85,11 +133,12 @@ export default function CreateLocationButton() {
       );
 
       if (response.ok) {
-        toast.success("Đã thêm địa điểm mới thành công!");
+        toast.success("Đã thay đổi địa điểm thành công!");
         setIsModalOpen(false);
         form.resetFields();
+        router.push(`/dia-diem-review/${currentLocation?._id}`);
       } else {
-        toast.error("Có lỗi xảy ra khi lưu địa điểm!");
+        toast.error("Có lỗi xảy ra khi thay đổi địa điểm!");
       }
     } catch (error) {
       console.error(error);
@@ -121,8 +170,15 @@ export default function CreateLocationButton() {
     )) as google.maps.GeocodingLibrary;
     const { Autocomplete } = await loader.importLibrary("places");
 
+    const center = currentLocation
+      ? {
+          lat: currentLocation?.latLong?.lat,
+          lng: currentLocation?.latLong?.lng,
+        }
+      : defaultCenter;
+
     const mapOptions: google.maps.MapOptions = {
-      center: defaultCenter,
+      center: center,
       zoom: 15,
       mapId: "bf3ef2c398be7c83",
       gestureHandling: "greedy",
@@ -131,14 +187,23 @@ export default function CreateLocationButton() {
     const map = new Map(mapRef.current!, mapOptions);
     mapInstance.current = map;
 
+    const markerPosition = currentLocation
+      ? {
+          lat: currentLocation?.latLong?.lat,
+          lng: currentLocation?.latLong?.lng,
+        }
+      : defaultCenter;
+
     const marker = new AdvancedMarkerElement({
       map: map,
-      position: defaultCenter,
+      position: markerPosition,
     });
     markerInstance.current = marker;
 
     const geocoder = new Geocoder();
-    const input = document.getElementById(`searchBoxModal${modalId}`) as HTMLInputElement;
+    const input = document.getElementById(
+      `searchBoxModal${modalId}`
+    ) as HTMLInputElement;
     const autocomplete = new Autocomplete(input, {
       componentRestrictions: { country: "VN" },
     });
@@ -148,6 +213,7 @@ export default function CreateLocationButton() {
       const place = autocomplete.getPlace();
       if (place.geometry?.location) {
         const position = place.geometry.location;
+        console.log(position);
         map.panTo(position);
         marker.position = position;
         setSelectedAddress(place.formatted_address || null);
@@ -225,67 +291,102 @@ export default function CreateLocationButton() {
   };
 
   return (
-    <div className="w-12 md:w-auto">
-      <Button
-        icon={<IoLocationOutline className="text-lg" />}
-        className="rounded-md bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold px-4 py-5 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center"
-        onClick={() => showModal(modalId)}
-      >
-        <span className="!hidden md:!block">Thêm địa điểm mới</span>
-      </Button>
-      <Modal
-        title={<span className="text-xl font-semibold">Thêm địa điểm mới</span>}
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText="Lưu địa điểm"
-        cancelText="Hủy"
-        width={1400}
-        okButtonProps={{
-          className:
-            "bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold rounded-md shadow-md hover:shadow-xl transition-all duration-300 px-6 py-3",
-        }}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item
-            name="locationName"
-            label={<span className="text-lg font-medium">Tên địa điểm</span>}
-            rules={[{ required: true, message: "Vui lòng điền tên địa điểm!" }]}
-          >
-            <Input name="locationName" placeholder="Nhập tên địa điểm" />
-          </Form.Item>
-          <Form.Item
-            name="address"
-            label={
-              <span className="text-lg font-medium">Tìm kiếm địa chỉ</span>
-            }
-          >
-            <div>
-              <div className="flex gap-1 md:gap-6">
-                <Input
-                  id={`searchBoxModal${modalId}`}
-                  placeholder="Nhập địa chỉ để tìm kiếm"
-                  className="mb-4"
-                />
-                <Button
-                  onClick={handleSelectMyLocation}
-                  className="mb-4 font-semibold"
-                >
-                  <CompassOutlined />
-                  <span className="!hidden md:!block">Chọn vị trí của tôi</span>
-                </Button>
-              </div>
-              <div ref={mapRef} style={mapContainerStyle}></div>
-              <Input
-                placeholder="Địa chỉ đã chọn"
-                value={selectedAddress || ""}
-                className="mt-2"
-                readOnly
-              />
-            </div>
-          </Form.Item>
-        </Form>
-      </Modal>
+    <div className="space-y-4">
+      {locations.map((location) => (
+        <Card
+          key={location._id}
+          title={
+            <Link href={`/dia-diem-review/${location._id}`}>
+              {location.name}
+            </Link>
+          }
+          bordered
+          className="shadow-sm"
+          extra={
+            <Space>
+              <Button
+                className="border-blue-500 text-blue-500"
+                onClick={() => showModal(modalId, location)}
+              >
+                Sửa
+              </Button>
+              <Modal
+                title={
+                  <span className="text-xl font-semibold">
+                    Thêm địa điểm mới
+                  </span>
+                }
+                open={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                okText="Lưu địa điểm"
+                cancelText="Hủy"
+                width={1400}
+                okButtonProps={{
+                  className:
+                    "bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold rounded-md shadow-md hover:shadow-xl transition-all duration-300 px-6 py-3",
+                }}
+              >
+                <Form form={form} layout="vertical">
+                  <Form.Item
+                    name="locationName"
+                    label={
+                      <span className="text-lg font-medium">Tên địa điểm</span>
+                    }
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng điền tên địa điểm!",
+                      },
+                    ]}
+                  >
+                    <Input
+                      name="locationName"
+                      placeholder="Nhập tên địa điểm"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="address"
+                    label={
+                      <span className="text-lg font-medium">
+                        Tìm kiếm địa chỉ
+                      </span>
+                    }
+                  >
+                    <div>
+                      <div className="flex gap-1 md:gap-6">
+                        <Input
+                          id={`searchBoxModal${modalId}`}
+                          placeholder="Nhập địa chỉ để tìm kiếm"
+                          className="mb-4"
+                        />
+                        <Button
+                          onClick={handleSelectMyLocation}
+                          className="mb-4 font-semibold"
+                        >
+                          <CompassOutlined />
+                          <span className="!hidden md:!block">
+                            Chọn vị trí của tôi
+                          </span>
+                        </Button>
+                      </div>
+                      <div ref={mapRef} style={mapContainerStyle}></div>
+                      <Input
+                        placeholder="Địa chỉ đã chọn"
+                        value={selectedAddress || ""}
+                        className="mt-2"
+                        readOnly
+                      />
+                    </div>
+                  </Form.Item>
+                </Form>
+              </Modal>
+            </Space>
+          }
+        >
+          <span>{location.address}</span>
+        </Card>
+      ))}
     </div>
   );
 }

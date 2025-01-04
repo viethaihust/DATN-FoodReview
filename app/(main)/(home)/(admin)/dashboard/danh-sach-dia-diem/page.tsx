@@ -1,31 +1,105 @@
+"use client";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { Table, TablePaginationConfig, Button, Modal, Form, Input } from "antd";
 import { BACKEND_URL } from "@/lib/constants";
-import { Loader } from "@googlemaps/js-api-loader";
-import { Button, Form, Input, Modal } from "antd";
-import React, { useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { IoLocationOutline } from "react-icons/io5";
-import { fetchWithAuth } from "@/utils/fetchWithAuth";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
+import { Loader } from "@googlemaps/js-api-loader";
 import { CompassOutlined } from "@ant-design/icons";
+
+interface Pagination {
+  current: number;
+  pageSize: number;
+  total: number;
+}
 
 const mapContainerStyle = { width: "100%", height: "400px" };
 const defaultCenter = { lat: 21.0044, lng: 105.8441 };
 
-export default function CreateLocationButton() {
-  const { data: session } = useSession();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalId, setModalId] = useState(1);
+const LocationList: React.FC = () => {
+  const { status, data: session } = useSession();
+  const [locations, setLocations] = useState<ILocation[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [pagination, setPagination] = useState<Pagination>({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
-  const showModal = (id: number) => {
-    setModalId(id);
-    setIsModalOpen(true);
+  const fetchLocations = useCallback(async (page: number, pageSize: number) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${BACKEND_URL}/api/location?page=${page}&pageSize=${pageSize}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    setTimeout(() => {
-      initMap();
-    }, 300);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch locations: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      setLocations(result.locations);
+      setPagination((prev) => ({
+        ...prev,
+        total: result.totalLocations,
+      }));
+    } catch (error) {
+      console.error("Failed to fetch locations:", error);
+      toast.error("Không thể tải danh sách địa điểm");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchLocations(pagination.current, pagination.pageSize);
+  }, [fetchLocations, pagination.current, pagination.pageSize]);
+
+  const handleTableChange = (newPagination: TablePaginationConfig) => {
+    setPagination((prev) => ({
+      ...prev,
+      current: newPagination.current || 1,
+      pageSize: newPagination.pageSize || prev.pageSize,
+    }));
+    fetchLocations(
+      newPagination.current || 1,
+      newPagination.pageSize || pagination.pageSize
+    );
   };
 
+  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalId, setModalId] = useState(3);
   const [form] = Form.useForm();
+  const [currentLocation, setCurrentLocation] = useState<ILocation | null>(
+    null
+  );
+
+  const showModal = (id: number, location: ILocation) => {
+    setCurrentLocation(location);
+    form.setFieldsValue({
+      locationName: location.name,
+    });
+    setSelectedAddress(location.address);
+
+    setModalId(id);
+    setIsModalOpen(true);
+  };
+
+  useEffect(() => {
+    if (currentLocation) {
+      initMap();
+    }
+  }, [currentLocation]);
 
   const handleOk = async () => {
     try {
@@ -70,11 +144,10 @@ export default function CreateLocationButton() {
       }
 
       const response = await fetchWithAuth(
-        `${BACKEND_URL}/api/location`,
+        `${BACKEND_URL}/api/location/${currentLocation?._id}`,
         {
-          method: "POST",
+          method: "PATCH",
           body: JSON.stringify({
-            userId: session?.user?._id,
             name: locationName,
             address: selectedAddress,
             province: province,
@@ -85,11 +158,12 @@ export default function CreateLocationButton() {
       );
 
       if (response.ok) {
-        toast.success("Đã thêm địa điểm mới thành công!");
+        toast.success("Đã thay đổi địa điểm thành công!");
         setIsModalOpen(false);
         form.resetFields();
+        router.push(`/dia-diem-review/${currentLocation?._id}`);
       } else {
-        toast.error("Có lỗi xảy ra khi lưu địa điểm!");
+        toast.error("Có lỗi xảy ra khi thay đổi địa điểm!");
       }
     } catch (error) {
       console.error(error);
@@ -121,8 +195,15 @@ export default function CreateLocationButton() {
     )) as google.maps.GeocodingLibrary;
     const { Autocomplete } = await loader.importLibrary("places");
 
+    const center = currentLocation
+      ? {
+          lat: currentLocation?.latLong?.lat,
+          lng: currentLocation?.latLong?.lng,
+        }
+      : defaultCenter;
+
     const mapOptions: google.maps.MapOptions = {
-      center: defaultCenter,
+      center: center,
       zoom: 15,
       mapId: "bf3ef2c398be7c83",
       gestureHandling: "greedy",
@@ -131,14 +212,23 @@ export default function CreateLocationButton() {
     const map = new Map(mapRef.current!, mapOptions);
     mapInstance.current = map;
 
+    const markerPosition = currentLocation
+      ? {
+          lat: currentLocation?.latLong?.lat,
+          lng: currentLocation?.latLong?.lng,
+        }
+      : defaultCenter;
+
     const marker = new AdvancedMarkerElement({
       map: map,
-      position: defaultCenter,
+      position: markerPosition,
     });
     markerInstance.current = marker;
 
     const geocoder = new Geocoder();
-    const input = document.getElementById(`searchBoxModal${modalId}`) as HTMLInputElement;
+    const input = document.getElementById(
+      `searchBoxModal${modalId}`
+    ) as HTMLInputElement;
     const autocomplete = new Autocomplete(input, {
       componentRestrictions: { country: "VN" },
     });
@@ -148,6 +238,7 @@ export default function CreateLocationButton() {
       const place = autocomplete.getPlace();
       if (place.geometry?.location) {
         const position = place.geometry.location;
+        console.log(position);
         map.panTo(position);
         marker.position = position;
         setSelectedAddress(place.formatted_address || null);
@@ -224,15 +315,51 @@ export default function CreateLocationButton() {
     }
   };
 
+  const columns = [
+    {
+      title: "ID",
+      dataIndex: "_id",
+      key: "_id",
+      render: (id: string) => <Link href={`/dia-diem-review/${id}`}>{id}</Link>,
+    },
+    {
+      title: "Tên địa điểm",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Địa chỉ",
+      dataIndex: "address",
+      key: "address",
+    },
+    {
+      title: "Hành động",
+      key: "actions",
+      render: (_: any, record: ILocation) => (
+        <Button
+          className="border-blue-500 text-blue-500"
+          onClick={() => showModal(modalId, record)}
+        >
+          Sửa
+        </Button>
+      ),
+    },
+  ];
+
   return (
-    <div className="w-12 md:w-auto">
-      <Button
-        icon={<IoLocationOutline className="text-lg" />}
-        className="rounded-md bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold px-4 py-5 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center"
-        onClick={() => showModal(modalId)}
-      >
-        <span className="!hidden md:!block">Thêm địa điểm mới</span>
-      </Button>
+    <div>
+      <Table
+        columns={columns}
+        dataSource={locations}
+        rowKey={(record) => record._id}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
+        }}
+        loading={loading}
+        onChange={handleTableChange}
+      />
       <Modal
         title={<span className="text-xl font-semibold">Thêm địa điểm mới</span>}
         open={isModalOpen}
@@ -250,7 +377,12 @@ export default function CreateLocationButton() {
           <Form.Item
             name="locationName"
             label={<span className="text-lg font-medium">Tên địa điểm</span>}
-            rules={[{ required: true, message: "Vui lòng điền tên địa điểm!" }]}
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng điền tên địa điểm!",
+              },
+            ]}
           >
             <Input name="locationName" placeholder="Nhập tên địa điểm" />
           </Form.Item>
@@ -288,4 +420,6 @@ export default function CreateLocationButton() {
       </Modal>
     </div>
   );
-}
+};
+
+export default LocationList;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { BACKEND_URL } from "@/lib/constants";
 import PostCardInfinite from "./PostCardInfinite";
 import Masonry from "react-masonry-css";
