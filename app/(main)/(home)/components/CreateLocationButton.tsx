@@ -14,10 +14,11 @@ const defaultCenter = { lat: 21.0044, lng: 105.8441 };
 export default function CreateLocationButton() {
   const { data: session } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalId, setModalId] = useState(1);
+  const uniqueId = useRef(
+    `searchBoxModal${Math.random().toString(36).slice(2, 11)}`
+  );
 
-  const showModal = (id: number) => {
-    setModalId(id);
+  const showModal = () => {
     setIsModalOpen(true);
 
     setTimeout(() => {
@@ -138,7 +139,7 @@ export default function CreateLocationButton() {
     markerInstance.current = marker;
 
     const geocoder = new Geocoder();
-    const input = document.getElementById(`searchBoxModal${modalId}`) as HTMLInputElement;
+    const input = document.getElementById(uniqueId.current) as HTMLInputElement;
     const autocomplete = new Autocomplete(input, {
       componentRestrictions: { country: "VN" },
     });
@@ -229,7 +230,7 @@ export default function CreateLocationButton() {
       <Button
         icon={<IoLocationOutline className="text-lg" />}
         className="rounded-md bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold px-4 py-5 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center"
-        onClick={() => showModal(modalId)}
+        onClick={() => showModal()}
       >
         <span className="!hidden md:!block">Thêm địa điểm mới</span>
       </Button>
@@ -263,7 +264,7 @@ export default function CreateLocationButton() {
             <div>
               <div className="flex gap-1 md:gap-6">
                 <Input
-                  id={`searchBoxModal${modalId}`}
+                  id={uniqueId.current}
                   placeholder="Nhập địa chỉ để tìm kiếm"
                   className="mb-4"
                 />

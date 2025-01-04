@@ -130,7 +130,7 @@ const SearchResultsPage = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex justify-between items-center mt-2">
+                <div className="md:flex justify-between items-center mt-2">
                   <div className="flex items-center">
                     <Rate
                       allowHalf

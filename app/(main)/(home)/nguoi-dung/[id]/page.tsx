@@ -122,24 +122,26 @@ export default function NguoiDung({ params }: { params: { id: string } }) {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center">
-                <Rate
-                  allowHalf
-                  disabled
-                  value={post.ratings.overall}
-                  style={{ color: "orange" }}
-                />
-                <span className="ml-5">
-                  <strong className="text-lg">{post.ratings.overall}</strong>
-                  /5 điểm
-                </span>
-              </div>
-              <div className="flex flex-row gap-2 opacity-80 mb-2">
-                <div>Hương vị: {post.ratings.flavor}</div>
-                <div>Không gian: {post.ratings.space}</div>
-                <div>Vệ sinh: {post.ratings.hygiene}</div>
-                <div>Giá cả: {post.ratings.price}</div>
-                <div>Phục vụ: {post.ratings.serves}</div>
+              <div className="md:flex justify-between items-center mt-2">
+                <div className="flex items-center">
+                  <Rate
+                    allowHalf
+                    disabled
+                    value={post.ratings.overall}
+                    style={{ color: "orange" }}
+                  />
+                  <span className="ml-5">
+                    <strong className="text-lg">{post.ratings.overall}</strong>
+                    /5 điểm
+                  </span>
+                </div>
+                <div className="flex flex-row gap-2 opacity-80">
+                  <div>Hương vị: {post.ratings.flavor}</div>
+                  <div>Không gian: {post.ratings.space}</div>
+                  <div>Vệ sinh: {post.ratings.hygiene}</div>
+                  <div>Giá cả: {post.ratings.price}</div>
+                  <div>Phục vụ: {post.ratings.serves}</div>
+                </div>
               </div>
               <Link
                 href={`/bai-viet-review/${post._id}`}

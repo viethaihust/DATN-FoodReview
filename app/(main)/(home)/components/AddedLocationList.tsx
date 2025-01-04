@@ -26,7 +26,9 @@ export default function AddedLocationList({
   const router = useRouter();
   const { data: session } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalId, setModalId] = useState(2);
+  const uniqueId = useRef(
+    `searchBoxModal${Math.random().toString(36).slice(2, 11)}`
+  );
   const [form] = Form.useForm();
   const [currentLocation, setCurrentLocation] = useState<ILocation | null>(
     null
@@ -59,14 +61,13 @@ export default function AddedLocationList({
     }
   }, [userId, accessToken]);
 
-  const showModal = (id: number, location: ILocation) => {
+  const showModal = (location: ILocation) => {
     setCurrentLocation(location);
     form.setFieldsValue({
       locationName: location.name,
     });
     setSelectedAddress(location.address);
 
-    setModalId(id);
     setIsModalOpen(true);
   };
 
@@ -201,9 +202,7 @@ export default function AddedLocationList({
     markerInstance.current = marker;
 
     const geocoder = new Geocoder();
-    const input = document.getElementById(
-      `searchBoxModal${modalId}`
-    ) as HTMLInputElement;
+    const input = document.getElementById(uniqueId.current) as HTMLInputElement;
     const autocomplete = new Autocomplete(input, {
       componentRestrictions: { country: "VN" },
     });
@@ -306,87 +305,74 @@ export default function AddedLocationList({
             <Space>
               <Button
                 className="border-blue-500 text-blue-500"
-                onClick={() => showModal(modalId, location)}
+                onClick={() => showModal(location)}
               >
                 Sửa
               </Button>
-              <Modal
-                title={
-                  <span className="text-xl font-semibold">
-                    Thêm địa điểm mới
-                  </span>
-                }
-                open={isModalOpen}
-                onOk={handleOk}
-                onCancel={handleCancel}
-                okText="Lưu địa điểm"
-                cancelText="Hủy"
-                width={1400}
-                okButtonProps={{
-                  className:
-                    "bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold rounded-md shadow-md hover:shadow-xl transition-all duration-300 px-6 py-3",
-                }}
-              >
-                <Form form={form} layout="vertical">
-                  <Form.Item
-                    name="locationName"
-                    label={
-                      <span className="text-lg font-medium">Tên địa điểm</span>
-                    }
-                    rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng điền tên địa điểm!",
-                      },
-                    ]}
-                  >
-                    <Input
-                      name="locationName"
-                      placeholder="Nhập tên địa điểm"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="address"
-                    label={
-                      <span className="text-lg font-medium">
-                        Tìm kiếm địa chỉ
-                      </span>
-                    }
-                  >
-                    <div>
-                      <div className="flex gap-1 md:gap-6">
-                        <Input
-                          id={`searchBoxModal${modalId}`}
-                          placeholder="Nhập địa chỉ để tìm kiếm"
-                          className="mb-4"
-                        />
-                        <Button
-                          onClick={handleSelectMyLocation}
-                          className="mb-4 font-semibold"
-                        >
-                          <CompassOutlined />
-                          <span className="!hidden md:!block">
-                            Chọn vị trí của tôi
-                          </span>
-                        </Button>
-                      </div>
-                      <div ref={mapRef} style={mapContainerStyle}></div>
-                      <Input
-                        placeholder="Địa chỉ đã chọn"
-                        value={selectedAddress || ""}
-                        className="mt-2"
-                        readOnly
-                      />
-                    </div>
-                  </Form.Item>
-                </Form>
-              </Modal>
             </Space>
           }
         >
           <span>{location.address}</span>
         </Card>
       ))}
+      <Modal
+        title={<span className="text-xl font-semibold">Thêm địa điểm mới</span>}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Lưu địa điểm"
+        cancelText="Hủy"
+        width={1400}
+        okButtonProps={{
+          className:
+            "bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold rounded-md shadow-md hover:shadow-xl transition-all duration-300 px-6 py-3",
+        }}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            name="locationName"
+            label={<span className="text-lg font-medium">Tên địa điểm</span>}
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng điền tên địa điểm!",
+              },
+            ]}
+          >
+            <Input name="locationName" placeholder="Nhập tên địa điểm" />
+          </Form.Item>
+          <Form.Item
+            name="address"
+            label={
+              <span className="text-lg font-medium">Tìm kiếm địa chỉ</span>
+            }
+          >
+            <div>
+              <div className="flex gap-1 md:gap-6">
+                <Input
+                  id={uniqueId.current}
+                  placeholder="Nhập địa chỉ để tìm kiếm"
+                  className="mb-4"
+                />
+                <Button
+                  onClick={handleSelectMyLocation}
+                  className="mb-4 font-semibold"
+                >
+                  <CompassOutlined />
+                  <span className="!hidden md:!block">Chọn vị trí của tôi</span>
+                </Button>
+              </div>
+              <div ref={mapRef} style={mapContainerStyle}></div>
+              <Input
+                placeholder="Địa chỉ đã chọn"
+                value={selectedAddress || ""}
+                className="mt-2"
+                readOnly
+              />
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

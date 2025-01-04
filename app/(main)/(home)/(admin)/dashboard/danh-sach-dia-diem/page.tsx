@@ -20,7 +20,7 @@ const mapContainerStyle = { width: "100%", height: "400px" };
 const defaultCenter = { lat: 21.0044, lng: 105.8441 };
 
 const LocationList: React.FC = () => {
-  const { status, data: session } = useSession();
+  const { data: session } = useSession();
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [pagination, setPagination] = useState<Pagination>({
@@ -78,20 +78,21 @@ const LocationList: React.FC = () => {
 
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalId, setModalId] = useState(3);
+  const uniqueId = useRef(
+    `searchBoxModal${Math.random().toString(36).slice(2, 11)}`
+  );
   const [form] = Form.useForm();
   const [currentLocation, setCurrentLocation] = useState<ILocation | null>(
     null
   );
 
-  const showModal = (id: number, location: ILocation) => {
+  const showModal = (location: ILocation) => {
     setCurrentLocation(location);
     form.setFieldsValue({
       locationName: location.name,
     });
     setSelectedAddress(location.address);
 
-    setModalId(id);
     setIsModalOpen(true);
   };
 
@@ -226,9 +227,7 @@ const LocationList: React.FC = () => {
     markerInstance.current = marker;
 
     const geocoder = new Geocoder();
-    const input = document.getElementById(
-      `searchBoxModal${modalId}`
-    ) as HTMLInputElement;
+    const input = document.getElementById(uniqueId.current) as HTMLInputElement;
     const autocomplete = new Autocomplete(input, {
       componentRestrictions: { country: "VN" },
     });
@@ -338,7 +337,7 @@ const LocationList: React.FC = () => {
       render: (_: any, record: ILocation) => (
         <Button
           className="border-blue-500 text-blue-500"
-          onClick={() => showModal(modalId, record)}
+          onClick={() => showModal(record)}
         >
           Sửa
         </Button>
@@ -395,7 +394,7 @@ const LocationList: React.FC = () => {
             <div>
               <div className="flex gap-1 md:gap-6">
                 <Input
-                  id={`searchBoxModal${modalId}`}
+                  id={uniqueId.current}
                   placeholder="Nhập địa chỉ để tìm kiếm"
                   className="mb-4"
                 />
