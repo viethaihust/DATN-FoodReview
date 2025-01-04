@@ -316,7 +316,7 @@ export default function AddedLocationList({
         </Card>
       ))}
       <Modal
-        title={<span className="text-xl font-semibold">Thêm địa điểm mới</span>}
+        title={<span className="text-xl font-semibold">Sửa địa điểm</span>}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
