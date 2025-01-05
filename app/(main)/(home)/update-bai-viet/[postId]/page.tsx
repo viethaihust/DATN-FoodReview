@@ -190,6 +190,7 @@ export default function VietBaiReview({
         }
       }
 
+      file.thumbUrl = URL.createObjectURL(file);
       setSelectedFiles((prev) => [...prev, file]);
       return false;
     } catch (error: any) {
@@ -204,6 +205,12 @@ export default function VietBaiReview({
       return prev.filter((f) => f.uid !== file.uid);
     });
   };
+
+  useEffect(() => {
+    return () => {
+      selectedFiles.forEach((file) => URL.revokeObjectURL(file.thumbUrl || ""));
+    };
+  }, [selectedFiles]);
 
   const onFinish = async (values: any) => {
     setLoading(true);

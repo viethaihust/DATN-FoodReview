@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 import { BACKEND_URL } from "@/lib/constants";
 import { useSession } from "next-auth/react";
 import { debounce } from "lodash";
-import CreateLocationButton from "../components/CreateLocationButton";
 import IconSlider from "../components/IconSlider";
 import { useRouter } from "next/navigation";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
@@ -296,7 +295,6 @@ export default function VietBaiReview() {
               }))}
             />
           </Form.Item>
-          {/* <CreateLocationButton /> */}
         </div>
 
         <Form.Item
