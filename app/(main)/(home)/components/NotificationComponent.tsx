@@ -93,7 +93,7 @@ const NotificationComponent = ({ userId }: { userId: string }) => {
             <div className="flex items-center gap-2">
               <Link href={`/nguoi-dung/${notif?.sender._id}`}>
                 <Image
-                  className="rounded-full h-10 w-10"
+                  className="rounded-full min-w-10 object-cover aspect-square"
                   height={60}
                   width={60}
                   src={notif.sender?.image || "/profile.jpg"}

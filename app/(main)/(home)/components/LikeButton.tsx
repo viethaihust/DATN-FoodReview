@@ -67,7 +67,7 @@ export default function LikeButton({ postId }: { postId: string }) {
             liked
               ? parseInt(likeCountElement.innerText) - 1
               : parseInt(likeCountElement.innerText) + 1
-          } lượt thích`;
+          }`;
         }
       } else {
         toast.error("Thích bài viết thất bại.");

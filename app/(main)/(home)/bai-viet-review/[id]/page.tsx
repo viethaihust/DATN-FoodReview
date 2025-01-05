@@ -96,8 +96,8 @@ export default async function BaiVietReview({
             </div>
           </div>
           <div className="flex items-center gap-2 md:gap-5 ml-2 text-center">
-            <div id={`like-count-${post._id}`}>
-              {post.likesCount}{" "}
+            <div>
+              <span id={`like-count-${post._id}`}>{post.likesCount} </span>
               <span className="hidden md:!block">lượt thích</span>
             </div>
             <LikeButton postId={post._id} />
