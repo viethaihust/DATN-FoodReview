@@ -173,7 +173,7 @@ const ProfilePage = () => {
             src={session?.user?.image || "/profile.jpg"}
             alt="profile-pic"
           />
-          <Upload {...uploadProps}>
+          <Upload accept="image/*" {...uploadProps}>
             <button className="absolute bottom-4 md:right-2 right-0 bg-gray-400 px-2 py-1 rounded-full">
               <CameraOutlined />
             </button>

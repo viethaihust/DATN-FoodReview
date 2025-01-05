@@ -32,6 +32,7 @@ export default function VietBaiReview() {
   const [selectedFiles, setSelectedFiles] = useState<RcFile[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const { data: session } = useSession();
+  const [loading, setLoading] = useState(false);
 
   const fetchLocations = useMemo(
     () =>
@@ -146,6 +147,7 @@ export default function VietBaiReview() {
   }, [selectedFiles]);
 
   const onFinish = async (values: any) => {
+    setLoading(true);
     const { title, content, categoryId, locationId, ratings } = values;
 
     const formData = new FormData();
@@ -169,6 +171,7 @@ export default function VietBaiReview() {
         } else {
           toast.error("Có lỗi khi tải lên file!");
         }
+        setLoading(false);
         return;
       }
 
@@ -201,6 +204,8 @@ export default function VietBaiReview() {
       }
     } catch (error: any) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -341,12 +346,13 @@ export default function VietBaiReview() {
         </div>
 
         <Form.Item className="text-center">
-          <button
-            type="submit"
-            className="w-full md:w-auto bg-transparent hover:bg-blue-600 text-blue-800 font-semibold hover:text-white py-2 px-4 border border-blue-600 hover:border-transparent rounded-md"
+          <Button
+            htmlType="submit"
+            loading={loading}
+            className="w-full md:w-auto bg-transparent hover:bg-blue-600 text-blue-800 font-semibold hover:text-white py-5 px-4 border border-blue-600 hover:border-transparent rounded-md"
           >
             Đăng bài review
-          </button>
+          </Button>
         </Form.Item>
       </Form>
     </div>

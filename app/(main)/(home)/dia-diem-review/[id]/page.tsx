@@ -120,11 +120,15 @@ export default function DiaDiemReview({ params }: { params: { id: string } }) {
                 {post.files.map((file, index) => (
                   <Image
                     key={index}
-                    src={file}
-                    alt={`${post.title} - Image ${index + 1}`}
+                    src={
+                      file?.includes("video")
+                        ? file.replace(".mp4", ".jpg")
+                        : file
+                    }
+                    alt={`${post.title} - File ${index + 1}`}
                     width={100}
                     height={100}
-                    className="object-cover rounded-md"
+                    className="rounded-md object-cover"
                   />
                 ))}
               </div>
