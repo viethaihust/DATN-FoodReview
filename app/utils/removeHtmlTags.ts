@@ -1,3 +1,5 @@
 export const removeHtmlTags = (str: string) => {
-  return str.replace(/<\/?[^>]+(>|$)/g, "");
+  return str
+    .replace(/<img[^>]*alt="([^"]+)"[^>]*>/g, "$1")
+    .replace(/<\/?[^>]+(>|$)/g, "");
 };

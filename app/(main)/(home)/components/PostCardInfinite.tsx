@@ -101,9 +101,9 @@ export default function PostCardInfinite({
             {post?.title}
           </h2>
           <p className="text-gray-600 mt-1 hidden md:block">
-            {post.content.length > 100 ? (
+            {removeHtmlTags(post.content).length > 100 ? (
               <>
-                <span>{removeHtmlTags(post.content.slice(0, 100))}</span>
+                <span>{removeHtmlTags(post.content).slice(0, 100)}</span>
                 ...
               </>
             ) : (
