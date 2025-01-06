@@ -1,12 +1,13 @@
 import { BACKEND_URL } from "@/lib/constants";
 import { Loader } from "@googlemaps/js-api-loader";
 import { Button, Modal } from "antd";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { IoLocationOutline } from "react-icons/io5";
 import { CompassOutlined } from "@ant-design/icons";
 
 const mapContainerStyle = { width: "100%", height: "600px" };
+const defaultCenter = { lat: 21.0044, lng: 105.8441 };
 
 export default function SavedLocationsMap() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,12 +17,16 @@ export default function SavedLocationsMap() {
   const [userLocation, setUserLocation] =
     useState<google.maps.LatLngLiteral | null>(null);
 
-  const loader = new Loader({
-    apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-    version: "weekly",
-    language: "vi",
-    region: "VN",
-  });
+  const loader = useMemo(
+    () =>
+      new Loader({
+        apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+        version: "weekly",
+        language: "vi",
+        region: "VN",
+      }),
+    []
+  );
 
   const fetchLocations = async () => {
     try {
@@ -87,54 +92,53 @@ export default function SavedLocationsMap() {
     }
   };
 
-  const initMap = async () => {
-    const { Map } = await loader.importLibrary("maps");
-    const { AdvancedMarkerElement } = await loader.importLibrary("marker");
+  useEffect(() => {
+    const initMap = async () => {
+      const { Map } = await loader.importLibrary("maps");
+      const { AdvancedMarkerElement } = await loader.importLibrary("marker");
 
-    const mapOptions: google.maps.MapOptions = {
-      center: userLocation || { lat: 21.0044, lng: 105.8441 },
-      zoom: 15,
-      mapId: "bf3ef2c398be7c83",
-      gestureHandling: "greedy",
-    };
+      const mapOptions: google.maps.MapOptions = {
+        center: defaultCenter,
+        zoom: 15,
+        mapId: "bf3ef2c398be7c83",
+        gestureHandling: "greedy",
+      };
 
-    const map = new Map(mapRef.current!, mapOptions);
-    mapInstance.current = map;
+      const map = new Map(mapRef.current!, mapOptions);
+      mapInstance.current = map;
 
-    google.maps.event.addListenerOnce(map, "idle", () => {
-      locations.forEach((location) => {
-        const marker = new AdvancedMarkerElement({
-          map: map,
-          position: location.latLong,
-          title: location.name,
-        });
+      google.maps.event.addListenerOnce(map, "idle", () => {
+        locations.forEach((location) => {
+          const marker = new AdvancedMarkerElement({
+            map: map,
+            position: location.latLong,
+            title: location.name,
+          });
 
-        const infoWindow = new google.maps.InfoWindow({
-          headerContent: location.name,
-          content: `
+          const infoWindow = new google.maps.InfoWindow({
+            headerContent: location.name,
+            content: `
               <a href="/dia-diem-review/${location._id}" style="font-weight: bold;">${location.address}</a>
           `,
-        });
+          });
 
-        marker.addListener("click", () => {
+          marker.addListener("click", () => {
+            infoWindow.open(map, marker);
+          });
+
           infoWindow.open(map, marker);
         });
-
-        infoWindow.open(map, marker);
       });
-    });
-  };
+    };
+    if (isModalOpen) {
+      initMap();
+    }
+  }, [locations, loader, isModalOpen]);
 
   const handleShowModal = async () => {
     await fetchLocations();
     setIsModalOpen(true);
   };
-
-  useEffect(() => {
-    if (isModalOpen) {
-      initMap();
-    }
-  }, [isModalOpen]);
 
   const handleCancel = () => {
     setIsModalOpen(false);

@@ -10,7 +10,6 @@ import { fetchWithAuth } from "@/utils/fetchWithAuth";
 interface Pagination {
   current: number;
   pageSize: number;
-  total: number;
 }
 
 const AdminDashboard: React.FC = () => {
@@ -19,9 +18,9 @@ const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [pagination, setPagination] = useState<Pagination>({
     current: 1,
-    pageSize: 10,
-    total: 0,
+    pageSize: 5,
   });
+  const [total, setTotal] = useState<number>(0);
 
   const fetchUsers = useCallback(
     async (page: number, pageSize: number) => {
@@ -35,11 +34,8 @@ const AdminDashboard: React.FC = () => {
           session
         );
         const data = await response.json();
+        setTotal(data.total);
         setUsers(data.users);
-        setPagination((prev) => ({
-          ...prev,
-          total: data.total,
-        }));
       } catch (error) {
         console.error("Failed to fetch users", error);
       } finally {
@@ -53,18 +49,17 @@ const AdminDashboard: React.FC = () => {
     if (status === "authenticated") {
       fetchUsers(pagination.current, pagination.pageSize);
     }
-  }, [status, fetchUsers, pagination.current, pagination.pageSize]);
+  }, [pagination, status, fetchUsers]);
 
   const handleTableChange = (newPagination: TablePaginationConfig) => {
+    const current = newPagination.current || 1;
+    const pageSize = newPagination.pageSize || pagination.pageSize;
+
     setPagination((prev) => ({
       ...prev,
-      current: newPagination.current || 1,
-      pageSize: newPagination.pageSize || prev.pageSize,
+      current,
+      pageSize,
     }));
-    fetchUsers(
-      newPagination.current || 1,
-      newPagination.pageSize || pagination.pageSize
-    );
   };
 
   const handleBan = async (userId: string, action: "ban" | "unban") => {
@@ -145,7 +140,7 @@ const AdminDashboard: React.FC = () => {
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,
-          total: pagination.total,
+          total: total,
         }}
         loading={loading}
         onChange={handleTableChange}

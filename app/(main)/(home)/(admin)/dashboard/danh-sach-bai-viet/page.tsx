@@ -11,7 +11,6 @@ import { fetchWithAuth } from "@/utils/fetchWithAuth";
 interface Pagination {
   current: number;
   pageSize: number;
-  total: number;
 }
 
 const ReviewPostList: React.FC = () => {
@@ -21,47 +20,41 @@ const ReviewPostList: React.FC = () => {
   const [pagination, setPagination] = useState<Pagination>({
     current: 1,
     pageSize: 10,
-    total: 0,
   });
+  const [total, setTotal] = useState<number>(0);
 
-  const fetchPosts = useCallback(
-    async (page: number, pageSize: number) => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `${BACKEND_URL}/api/review-posts?page=${page}&pageSize=${pageSize}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch posts: ${response.statusText}`);
+  const fetchPosts = useCallback(async (page: number, pageSize: number) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${BACKEND_URL}/api/review-posts?page=${page}&pageSize=${pageSize}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
+      );
 
-        const result = await response.json();
-        setPosts(result.data.posts);
-        setPagination((prev) => ({
-          ...prev,
-          total: result.data.totalPosts,
-        }));
-      } catch (error) {
-        console.error("Failed to fetch posts:", error);
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch posts: ${response.statusText}`);
       }
-    },
-    [session]
-  );
+
+      const result = await response.json();
+      setTotal(result.data.total);
+      setPosts(result.data.posts);
+    } catch (error) {
+      console.error("Failed to fetch posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (status === "authenticated") {
       fetchPosts(pagination.current, pagination.pageSize);
     }
-  }, [status, fetchPosts, pagination.current, pagination.pageSize]);
+  }, [status, fetchPosts, pagination]);
 
   const handleTableChange = (newPagination: TablePaginationConfig) => {
     setPagination((prev) => ({
@@ -69,10 +62,6 @@ const ReviewPostList: React.FC = () => {
       current: newPagination.current || 1,
       pageSize: newPagination.pageSize || prev.pageSize,
     }));
-    fetchPosts(
-      newPagination.current || 1,
-      newPagination.pageSize || pagination.pageSize
-    );
   };
 
   const handleDelete = async (postId: string) => {
@@ -188,7 +177,7 @@ const ReviewPostList: React.FC = () => {
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,
-          total: pagination.total,
+          total: total,
         }}
         loading={loading}
         onChange={handleTableChange}

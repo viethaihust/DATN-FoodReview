@@ -64,7 +64,7 @@ const UserPostList = ({
             </div>
           ))
         ) : (
-          <p>Không có bài viết nào</p>
+          <p>Không có bài viết nào, hãy viết bài review để hiển thị</p>
         )}
       </Masonry>
     </div>

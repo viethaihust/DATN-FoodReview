@@ -100,6 +100,7 @@ interface ILocation {
   };
   averageRating?: number;
   totalRatingsCount?: number;
+  associatedPostsCount?: number;
 }
 
 interface INotification {

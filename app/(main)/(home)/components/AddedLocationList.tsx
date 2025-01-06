@@ -6,7 +6,7 @@ import { Button, Card, Form, Input, Modal, Space } from "antd";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 const mapContainerStyle = { width: "100%", height: "400px" };
@@ -34,32 +34,33 @@ export default function AddedLocationList({
     null
   );
 
-  const fetchUserLocations = async () => {
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/location/user`, {
-        method: "GET",
-        headers: {
-          authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        cache: "no-store",
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUserLocations(data);
-      } else {
-        console.error("Lỗi khi lấy các địa điểm đã thêm.");
-      }
-    } catch (error) {
-      console.error("Lỗi khi lấy các địa điểm đã thêm:", error);
-    }
-  };
-
   useEffect(() => {
+    const fetchUserLocations = async () => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/location/user`, {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          cache: "no-store",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserLocations(data);
+        } else {
+          console.error("Lỗi khi lấy các địa điểm đã thêm.");
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy các địa điểm đã thêm:", error);
+      }
+    };
+
     if (userId) {
       fetchUserLocations();
     }
-  }, [userId, accessToken]);
+  }, [userId, accessToken, setUserLocations]);
 
   const showModal = (location: ILocation) => {
     setCurrentLocation(location);
@@ -70,12 +71,6 @@ export default function AddedLocationList({
 
     setIsModalOpen(true);
   };
-
-  useEffect(() => {
-    if (currentLocation) {
-      initMap();
-    }
-  }, [currentLocation]);
 
   const handleOk = async () => {
     try {
@@ -156,88 +151,100 @@ export default function AddedLocationList({
     useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
 
-  const loader = new Loader({
-    apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-    version: "weekly",
-    language: "vi",
-    region: "VN",
-  });
+  const loader = useMemo(
+    () =>
+      new Loader({
+        apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+        version: "weekly",
+        language: "vi",
+        region: "VN",
+      }),
+    []
+  );
 
-  const initMap = async () => {
-    const { Map } = await loader.importLibrary("maps");
-    const { AdvancedMarkerElement } = await loader.importLibrary("marker");
-    const { Geocoder } = (await loader.importLibrary(
-      "geocoding"
-    )) as google.maps.GeocodingLibrary;
-    const { Autocomplete } = await loader.importLibrary("places");
+  useEffect(() => {
+    const initMap = async () => {
+      const { Map } = await loader.importLibrary("maps");
+      const { AdvancedMarkerElement } = await loader.importLibrary("marker");
+      const { Geocoder } = (await loader.importLibrary(
+        "geocoding"
+      )) as google.maps.GeocodingLibrary;
+      const { Autocomplete } = await loader.importLibrary("places");
 
-    const center = currentLocation
-      ? {
-          lat: currentLocation?.latLong?.lat,
-          lng: currentLocation?.latLong?.lng,
+      const center = currentLocation
+        ? {
+            lat: currentLocation?.latLong?.lat,
+            lng: currentLocation?.latLong?.lng,
+          }
+        : defaultCenter;
+
+      const mapOptions: google.maps.MapOptions = {
+        center: center,
+        zoom: 15,
+        mapId: "bf3ef2c398be7c83",
+        gestureHandling: "greedy",
+      };
+
+      const map = new Map(mapRef.current!, mapOptions);
+      mapInstance.current = map;
+
+      const markerPosition = currentLocation
+        ? {
+            lat: currentLocation?.latLong?.lat,
+            lng: currentLocation?.latLong?.lng,
+          }
+        : defaultCenter;
+
+      const marker = new AdvancedMarkerElement({
+        map: map,
+        position: markerPosition,
+      });
+      markerInstance.current = marker;
+
+      const geocoder = new Geocoder();
+      const input = document.getElementById(
+        uniqueId.current
+      ) as HTMLInputElement;
+      const autocomplete = new Autocomplete(input, {
+        componentRestrictions: { country: "VN" },
+      });
+      autocomplete.bindTo("bounds", map);
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry?.location) {
+          const position = place.geometry.location;
+          console.log(position);
+          map.panTo(position);
+          marker.position = position;
+          setSelectedAddress(place.formatted_address || null);
         }
-      : defaultCenter;
+      });
 
-    const mapOptions: google.maps.MapOptions = {
-      center: center,
-      zoom: 15,
-      mapId: "bf3ef2c398be7c83",
-      gestureHandling: "greedy",
+      map.addListener("click", async (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+          const position = e.latLng;
+          marker.position = position;
+
+          try {
+            const response = await geocoder.geocode({ location: position });
+            if (response.results && response.results[0]) {
+              const address = response.results[0].formatted_address;
+              setSelectedAddress(address);
+            } else {
+              toast.error("Không thể tìm địa chỉ!");
+            }
+          } catch (error) {
+            console.error("Geocoding error:", error);
+          }
+        }
+      });
     };
 
-    const map = new Map(mapRef.current!, mapOptions);
-    mapInstance.current = map;
-
-    const markerPosition = currentLocation
-      ? {
-          lat: currentLocation?.latLong?.lat,
-          lng: currentLocation?.latLong?.lng,
-        }
-      : defaultCenter;
-
-    const marker = new AdvancedMarkerElement({
-      map: map,
-      position: markerPosition,
-    });
-    markerInstance.current = marker;
-
-    const geocoder = new Geocoder();
-    const input = document.getElementById(uniqueId.current) as HTMLInputElement;
-    const autocomplete = new Autocomplete(input, {
-      componentRestrictions: { country: "VN" },
-    });
-    autocomplete.bindTo("bounds", map);
-
-    autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-      if (place.geometry?.location) {
-        const position = place.geometry.location;
-        console.log(position);
-        map.panTo(position);
-        marker.position = position;
-        setSelectedAddress(place.formatted_address || null);
-      }
-    });
-
-    map.addListener("click", async (e: google.maps.MapMouseEvent) => {
-      if (e.latLng) {
-        const position = e.latLng;
-        marker.position = position;
-
-        try {
-          const response = await geocoder.geocode({ location: position });
-          if (response.results && response.results[0]) {
-            const address = response.results[0].formatted_address;
-            setSelectedAddress(address);
-          } else {
-            toast.error("Không thể tìm địa chỉ!");
-          }
-        } catch (error) {
-          console.error("Geocoding error:", error);
-        }
-      }
-    });
-  };
+    if (currentLocation) {
+      initMap();
+    }
+  }, [loader, currentLocation]);
 
   const handleSelectMyLocation = () => {
     if (navigator.geolocation) {
@@ -289,90 +296,139 @@ export default function AddedLocationList({
     }
   };
 
+  const handleDeleteLocation = async (location: ILocation) => {
+    Modal.confirm({
+      title: "Xác nhận xóa địa điểm",
+      content: "Bạn có chắc chắn muốn xóa địa điểm này không?",
+      okText: "Xóa",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          const response = await fetchWithAuth(
+            `${BACKEND_URL}/api/location/${location?._id}`,
+            {
+              method: "DELETE",
+            },
+            session
+          );
+
+          if (response.ok) {
+            toast.success("Đã xóa địa điểm thành công!");
+            setIsModalOpen(false);
+            form.resetFields();
+            setUserLocations((prev) =>
+              prev.filter((loc) => loc._id !== location._id)
+            );
+          } else {
+            const errorData = await response.json();
+            toast.error(
+              errorData.message || "Đã xảy ra lỗi. Vui lòng thử lại sau."
+            );
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    });
+  };
+
   return (
     <div className="space-y-4">
-      {locations.map((location) => (
-        <Card
-          key={location._id}
-          title={
-            <Link href={`/dia-diem-review/${location._id}`}>
-              {location.name}
-            </Link>
-          }
-          bordered
-          className="shadow-sm"
-          extra={
-            <Space>
-              <Button
-                className="border-blue-500 text-blue-500"
-                onClick={() => showModal(location)}
+      {Array.isArray(locations) && locations.length > 0 ? (
+        <>
+          {locations.map((location) => (
+            <Card
+              key={location._id}
+              title={
+                <Link href={`/dia-diem-review/${location._id}`}>
+                  {location.name}
+                </Link>
+              }
+              bordered
+              className="shadow-sm"
+              extra={
+                <Space>
+                  <Button
+                    className="border-blue-500 text-blue-500"
+                    onClick={() => showModal(location)}
+                  >
+                    Sửa
+                  </Button>
+                  <Button danger onClick={() => handleDeleteLocation(location)}>
+                    Xóa
+                  </Button>
+                </Space>
+              }
+            >
+              <span>{location.address}</span>
+            </Card>
+          ))}
+          <Modal
+            title={<span className="text-xl font-semibold">Sửa địa điểm</span>}
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            okText="Lưu địa điểm"
+            cancelText="Hủy"
+            width={1400}
+            okButtonProps={{
+              className:
+                "bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold rounded-md shadow-md hover:shadow-xl transition-all duration-300 px-6 py-3",
+            }}
+          >
+            <Form form={form} layout="vertical">
+              <Form.Item
+                name="locationName"
+                label={
+                  <span className="text-lg font-medium">Tên địa điểm</span>
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng điền tên địa điểm!",
+                  },
+                ]}
               >
-                Sửa
-              </Button>
-            </Space>
-          }
-        >
-          <span>{location.address}</span>
-        </Card>
-      ))}
-      <Modal
-        title={<span className="text-xl font-semibold">Sửa địa điểm</span>}
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText="Lưu địa điểm"
-        cancelText="Hủy"
-        width={1400}
-        okButtonProps={{
-          className:
-            "bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold rounded-md shadow-md hover:shadow-xl transition-all duration-300 px-6 py-3",
-        }}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item
-            name="locationName"
-            label={<span className="text-lg font-medium">Tên địa điểm</span>}
-            rules={[
-              {
-                required: true,
-                message: "Vui lòng điền tên địa điểm!",
-              },
-            ]}
-          >
-            <Input name="locationName" placeholder="Nhập tên địa điểm" />
-          </Form.Item>
-          <Form.Item
-            name="address"
-            label={
-              <span className="text-lg font-medium">Tìm kiếm địa chỉ</span>
-            }
-          >
-            <div>
-              <div className="flex gap-1 md:gap-6">
-                <Input
-                  id={uniqueId.current}
-                  placeholder="Nhập địa chỉ để tìm kiếm"
-                  className="mb-4"
-                />
-                <Button
-                  onClick={handleSelectMyLocation}
-                  className="mb-4 font-semibold"
-                >
-                  <CompassOutlined />
-                  <span className="!hidden md:!block">Chọn vị trí của tôi</span>
-                </Button>
-              </div>
-              <div ref={mapRef} style={mapContainerStyle}></div>
-              <Input
-                placeholder="Địa chỉ đã chọn"
-                value={selectedAddress || ""}
-                className="mt-2"
-                readOnly
-              />
-            </div>
-          </Form.Item>
-        </Form>
-      </Modal>
+                <Input name="locationName" placeholder="Nhập tên địa điểm" />
+              </Form.Item>
+              <Form.Item
+                name="address"
+                label={
+                  <span className="text-lg font-medium">Tìm kiếm địa chỉ</span>
+                }
+              >
+                <div>
+                  <div className="flex gap-1 md:gap-6">
+                    <Input
+                      id={uniqueId.current}
+                      placeholder="Nhập địa chỉ để tìm kiếm"
+                      className="mb-4"
+                    />
+                    <Button
+                      onClick={handleSelectMyLocation}
+                      className="mb-4 font-semibold"
+                    >
+                      <CompassOutlined />
+                      <span className="!hidden md:!block">
+                        Chọn vị trí của tôi
+                      </span>
+                    </Button>
+                  </div>
+                  <div ref={mapRef} style={mapContainerStyle}></div>
+                  <Input
+                    placeholder="Địa chỉ đã chọn"
+                    value={selectedAddress || ""}
+                    className="mt-2"
+                    readOnly
+                  />
+                </div>
+              </Form.Item>
+            </Form>
+          </Modal>
+        </>
+      ) : (
+        <p>Không có địa điểm nào, hãy thêm địa điểm để hiển thị</p>
+      )}
     </div>
   );
 }

@@ -39,59 +39,6 @@ export default function VietBaiReview({
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
 
-  const fetchPostDetails = async () => {
-    try {
-      const response = await fetch(
-        `${BACKEND_URL}/api/review-posts/${params.postId}`
-      );
-      const result = await response.json();
-      const data = result.data;
-
-      const locationResponse = await fetch(
-        `${BACKEND_URL}/api/location/${data.locationId._id}`
-      );
-      const locationData = await locationResponse.json();
-
-      setLocations((prev) => [
-        ...prev,
-        {
-          _id: locationData._id,
-          name: locationData.name,
-          address: locationData.address,
-          province: locationData.province,
-          latLong: locationData.latLong,
-        },
-      ]);
-
-      form.setFieldsValue({
-        title: data.title,
-        content: data.content,
-        categoryId: data.categoryId._id,
-        locationId: data.locationId._id,
-        ratings: data.ratings,
-      });
-
-      const initialFiles: RcFile[] = await Promise.all(
-        data.files.map(async (url: string, index: number) => {
-          const response = await fetch(url);
-          const blob = await response.blob();
-          const file = new File(
-            [blob],
-            url.split("/").pop() || `file-${index}`,
-            { type: blob.type }
-          ) as RcFile;
-          return Object.assign(file, {
-            uid: `${index}`,
-            url,
-          });
-        })
-      );
-      setSelectedFiles(initialFiles);
-    } catch (error) {
-      console.error("Error fetching post details:", error);
-    }
-  };
-
   useEffect(() => {
     async function fetchCategories() {
       try {
@@ -109,8 +56,61 @@ export default function VietBaiReview({
   }, []);
 
   useEffect(() => {
+    const fetchPostDetails = async () => {
+      try {
+        const response = await fetch(
+          `${BACKEND_URL}/api/review-posts/${params.postId}`
+        );
+        const result = await response.json();
+        const data = result.data;
+
+        const locationResponse = await fetch(
+          `${BACKEND_URL}/api/location/${data.locationId._id}`
+        );
+        const locationData = await locationResponse.json();
+
+        setLocations((prev) => [
+          ...prev,
+          {
+            _id: locationData._id,
+            name: locationData.name,
+            address: locationData.address,
+            province: locationData.province,
+            latLong: locationData.latLong,
+          },
+        ]);
+
+        form.setFieldsValue({
+          title: data.title,
+          content: data.content,
+          categoryId: data.categoryId._id,
+          locationId: data.locationId._id,
+          ratings: data.ratings,
+        });
+
+        const initialFiles: RcFile[] = await Promise.all(
+          data.files.map(async (url: string, index: number) => {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const file = new File(
+              [blob],
+              url.split("/").pop() || `file-${index}`,
+              { type: blob.type }
+            ) as RcFile;
+            return Object.assign(file, {
+              uid: `${index}`,
+              url,
+            });
+          })
+        );
+        setSelectedFiles(initialFiles);
+      } catch (error) {
+        console.error("Error fetching post details:", error);
+      }
+    };
+
     fetchPostDetails();
-  }, [params.postId]);
+  }, [form, params.postId]);
 
   const fetchLocations = useMemo(
     () =>

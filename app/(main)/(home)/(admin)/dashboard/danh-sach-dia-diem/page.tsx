@@ -1,5 +1,11 @@
 "use client";
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import { Table, TablePaginationConfig, Button, Modal, Form, Input } from "antd";
 import { BACKEND_URL } from "@/lib/constants";
 import { toast } from "react-toastify";
@@ -13,7 +19,6 @@ import { CompassOutlined } from "@ant-design/icons";
 interface Pagination {
   current: number;
   pageSize: number;
-  total: number;
 }
 
 const mapContainerStyle = { width: "100%", height: "400px" };
@@ -26,8 +31,8 @@ const LocationList: React.FC = () => {
   const [pagination, setPagination] = useState<Pagination>({
     current: 1,
     pageSize: 10,
-    total: 0,
   });
+  const [total, setTotal] = useState<number>(0);
 
   const fetchLocations = useCallback(async (page: number, pageSize: number) => {
     setLoading(true);
@@ -47,11 +52,8 @@ const LocationList: React.FC = () => {
       }
 
       const result = await response.json();
+      setTotal(result.total);
       setLocations(result.locations);
-      setPagination((prev) => ({
-        ...prev,
-        total: result.totalLocations,
-      }));
     } catch (error) {
       console.error("Failed to fetch locations:", error);
       toast.error("Không thể tải danh sách địa điểm");
@@ -62,7 +64,7 @@ const LocationList: React.FC = () => {
 
   useEffect(() => {
     fetchLocations(pagination.current, pagination.pageSize);
-  }, [fetchLocations, pagination.current, pagination.pageSize]);
+  }, [fetchLocations, pagination]);
 
   const handleTableChange = (newPagination: TablePaginationConfig) => {
     setPagination((prev) => ({
@@ -70,10 +72,6 @@ const LocationList: React.FC = () => {
       current: newPagination.current || 1,
       pageSize: newPagination.pageSize || prev.pageSize,
     }));
-    fetchLocations(
-      newPagination.current || 1,
-      newPagination.pageSize || pagination.pageSize
-    );
   };
 
   const router = useRouter();
@@ -95,12 +93,6 @@ const LocationList: React.FC = () => {
 
     setIsModalOpen(true);
   };
-
-  useEffect(() => {
-    if (currentLocation) {
-      initMap();
-    }
-  }, [currentLocation]);
 
   const handleOk = async () => {
     try {
@@ -181,88 +173,100 @@ const LocationList: React.FC = () => {
     useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
 
-  const loader = new Loader({
-    apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-    version: "weekly",
-    language: "vi",
-    region: "VN",
-  });
+  const loader = useMemo(
+    () =>
+      new Loader({
+        apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+        version: "weekly",
+        language: "vi",
+        region: "VN",
+      }),
+    []
+  );
 
-  const initMap = async () => {
-    const { Map } = await loader.importLibrary("maps");
-    const { AdvancedMarkerElement } = await loader.importLibrary("marker");
-    const { Geocoder } = (await loader.importLibrary(
-      "geocoding"
-    )) as google.maps.GeocodingLibrary;
-    const { Autocomplete } = await loader.importLibrary("places");
+  useEffect(() => {
+    const initMap = async () => {
+      const { Map } = await loader.importLibrary("maps");
+      const { AdvancedMarkerElement } = await loader.importLibrary("marker");
+      const { Geocoder } = (await loader.importLibrary(
+        "geocoding"
+      )) as google.maps.GeocodingLibrary;
+      const { Autocomplete } = await loader.importLibrary("places");
 
-    const center = currentLocation
-      ? {
-          lat: currentLocation?.latLong?.lat,
-          lng: currentLocation?.latLong?.lng,
+      const center = currentLocation
+        ? {
+            lat: currentLocation?.latLong?.lat,
+            lng: currentLocation?.latLong?.lng,
+          }
+        : defaultCenter;
+
+      const mapOptions: google.maps.MapOptions = {
+        center: center,
+        zoom: 15,
+        mapId: "bf3ef2c398be7c83",
+        gestureHandling: "greedy",
+      };
+
+      const map = new Map(mapRef.current!, mapOptions);
+      mapInstance.current = map;
+
+      const markerPosition = currentLocation
+        ? {
+            lat: currentLocation?.latLong?.lat,
+            lng: currentLocation?.latLong?.lng,
+          }
+        : defaultCenter;
+
+      const marker = new AdvancedMarkerElement({
+        map: map,
+        position: markerPosition,
+      });
+      markerInstance.current = marker;
+
+      const geocoder = new Geocoder();
+      const input = document.getElementById(
+        uniqueId.current
+      ) as HTMLInputElement;
+      const autocomplete = new Autocomplete(input, {
+        componentRestrictions: { country: "VN" },
+      });
+      autocomplete.bindTo("bounds", map);
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry?.location) {
+          const position = place.geometry.location;
+          console.log(position);
+          map.panTo(position);
+          marker.position = position;
+          setSelectedAddress(place.formatted_address || null);
         }
-      : defaultCenter;
+      });
 
-    const mapOptions: google.maps.MapOptions = {
-      center: center,
-      zoom: 15,
-      mapId: "bf3ef2c398be7c83",
-      gestureHandling: "greedy",
+      map.addListener("click", async (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+          const position = e.latLng;
+          marker.position = position;
+
+          try {
+            const response = await geocoder.geocode({ location: position });
+            if (response.results && response.results[0]) {
+              const address = response.results[0].formatted_address;
+              setSelectedAddress(address);
+            } else {
+              toast.error("Không thể tìm địa chỉ!");
+            }
+          } catch (error) {
+            console.error("Geocoding error:", error);
+          }
+        }
+      });
     };
 
-    const map = new Map(mapRef.current!, mapOptions);
-    mapInstance.current = map;
-
-    const markerPosition = currentLocation
-      ? {
-          lat: currentLocation?.latLong?.lat,
-          lng: currentLocation?.latLong?.lng,
-        }
-      : defaultCenter;
-
-    const marker = new AdvancedMarkerElement({
-      map: map,
-      position: markerPosition,
-    });
-    markerInstance.current = marker;
-
-    const geocoder = new Geocoder();
-    const input = document.getElementById(uniqueId.current) as HTMLInputElement;
-    const autocomplete = new Autocomplete(input, {
-      componentRestrictions: { country: "VN" },
-    });
-    autocomplete.bindTo("bounds", map);
-
-    autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-      if (place.geometry?.location) {
-        const position = place.geometry.location;
-        console.log(position);
-        map.panTo(position);
-        marker.position = position;
-        setSelectedAddress(place.formatted_address || null);
-      }
-    });
-
-    map.addListener("click", async (e: google.maps.MapMouseEvent) => {
-      if (e.latLng) {
-        const position = e.latLng;
-        marker.position = position;
-
-        try {
-          const response = await geocoder.geocode({ location: position });
-          if (response.results && response.results[0]) {
-            const address = response.results[0].formatted_address;
-            setSelectedAddress(address);
-          } else {
-            toast.error("Không thể tìm địa chỉ!");
-          }
-        } catch (error) {
-          console.error("Geocoding error:", error);
-        }
-      }
-    });
-  };
+    if (currentLocation) {
+      initMap();
+    }
+  }, [loader, currentLocation]);
 
   const handleSelectMyLocation = () => {
     if (navigator.geolocation) {
@@ -335,12 +339,53 @@ const LocationList: React.FC = () => {
       title: "Hành động",
       key: "actions",
       render: (_: any, record: ILocation) => (
-        <Button
-          className="border-blue-500 text-blue-500"
-          onClick={() => showModal(record)}
-        >
-          Sửa
-        </Button>
+        <>
+          <Button
+            className="border-blue-500 text-blue-500 mr-5"
+            onClick={() => showModal(record)}
+          >
+            Sửa
+          </Button>
+          <Button
+            danger
+            onClick={() =>
+              Modal.confirm({
+                title: "Xác nhận xóa địa điểm",
+                content:
+                  (record?.associatedPostsCount ?? 0) > 0
+                    ? `Bạn có chắc chắn muốn xóa địa điểm này không? Nếu xóa địa điểm này, ${record?.associatedPostsCount} bài viết liên quan sẽ bị xóa.`
+                    : "Bạn có chắc chắn muốn xóa địa điểm này không?",
+                okText: "Xóa",
+                cancelText: "Hủy",
+                onOk: async () => {
+                  try {
+                    const response = await fetchWithAuth(
+                      `${BACKEND_URL}/api/location/${record._id}`,
+                      {
+                        method: "DELETE",
+                      },
+                      session
+                    );
+
+                    if (response.ok) {
+                      fetchLocations(pagination.current, pagination.pageSize);
+                      toast.success("Xóa địa điểm thành công");
+                    } else {
+                      toast.error("Lỗi khi xóa địa điểm");
+                    }
+                  } catch (error) {
+                    console.error(
+                      `Failed to delete location with ID ${record._id}:`,
+                      error
+                    );
+                  }
+                },
+              })
+            }
+          >
+            Xóa
+          </Button>
+        </>
       ),
     },
   ];
@@ -354,7 +399,7 @@ const LocationList: React.FC = () => {
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,
-          total: pagination.total,
+          total: total,
         }}
         loading={loading}
         onChange={handleTableChange}

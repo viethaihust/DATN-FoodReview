@@ -73,7 +73,7 @@ const BookmarkList = ({
             )
           )
         ) : (
-          <p>Không có bài viết nào</p>
+          <p>Không có bài viết nào đã lưu</p>
         )}
       </Masonry>
     </div>
