@@ -102,7 +102,7 @@ export default function VietBaiReview() {
         } catch (error) {
           console.error("Error fetching locations:", error);
         }
-      }, 500),
+      }, 300),
     []
   );
 
