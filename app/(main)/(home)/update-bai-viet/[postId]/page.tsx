@@ -239,13 +239,8 @@ export default function VietBaiReview({
         }
       }
 
-      setSelectedFiles((prev) => [
-        ...prev,
-        {
-          ...file,
-          thumbUrl: URL.createObjectURL(file),
-        },
-      ]);
+      file.thumbUrl = URL.createObjectURL(file);
+      setSelectedFiles((prev) => [...prev, file]);
       return false;
     } catch (error: any) {
       toast.error(`Lỗi khi kiểm tra ảnh: ${error.message}`);
