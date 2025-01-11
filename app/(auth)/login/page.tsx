@@ -150,15 +150,16 @@ export default function Login() {
                 rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
               >
                 <Input.Password />
-                <div className="flex justify-end mt-1">
-                  <button
-                    className="text-sm text-white underline"
-                    onClick={() => setIsForgotPassword(true)}
-                  >
-                    Quên mật khẩu?
-                  </button>
-                </div>
               </Form.Item>
+
+              <div className="flex justify-end">
+                <button
+                  className="text-sm text-white underline -mt-3"
+                  onClick={() => setIsForgotPassword(true)}
+                >
+                  Quên mật khẩu?
+                </button>
+              </div>
 
               <Form.Item>
                 <Button
