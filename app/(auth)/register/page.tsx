@@ -9,6 +9,7 @@ import React from "react";
 import { toast } from "react-toastify";
 
 export default function Register() {
+  const [form] = Form.useForm();
   const router = useRouter();
   const onFinish = async (values: any) => {
     try {
@@ -41,11 +42,18 @@ export default function Register() {
       <div className="w-full shadow-md p-10 rounded-[10px] bg-gradient-to-r from-zinc-900 to-gray-600 text-white">
         <h2 className="text-2xl font-bold text-center">Đăng ký</h2>
         <Form
+          form={form}
           name="login"
           initialValues={{ remember: true }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           layout="vertical"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              form.submit();
+            }
+          }}
         >
           <Form.Item
             label={
@@ -106,7 +114,7 @@ export default function Register() {
             <Button
               type="primary"
               htmlType="submit"
-              className="w-full h-[3rem] p-[2px] bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-lg"
+              className="mt-5 w-full h-[3rem] p-[2px] bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-lg"
             >
               <div className="bg-gray-700 flex h-full w-full items-center justify-center rounded-md">
                 Đăng ký
@@ -129,7 +137,7 @@ export default function Register() {
               alt="google-logo"
             />
             <span className="bg-blue-500 text-white px-4 py-3 rounded-r-lg">
-              Đăng nhập bằng Google
+              Đăng ký bằng Google
             </span>
           </button>
         </div>

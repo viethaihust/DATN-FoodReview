@@ -10,6 +10,7 @@ interface IReviewPost {
     name: string;
     address: string;
     province: string;
+    description?: string;
     latLong: { lat: number; lng: number };
     averageRating?: number;
     totalRatingsCount?: number;
@@ -72,6 +73,7 @@ interface IBookmark {
       name: string;
       address: string;
       province: string;
+      description?: string;
       latLong: { lat: number; lng: number };
       averageRating?: number;
       totalRatingsCount?: number;
@@ -91,9 +93,11 @@ interface IBookmark {
 
 interface ILocation {
   _id: string;
+  userId?: { _id: string; name: string; image?: string };
   name: string;
   address: string;
   province: string;
+  description?: string;
   latLong: {
     lat: number;
     lng: number;

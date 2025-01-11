@@ -77,6 +77,7 @@ const ForgotPasswordForm = ({ onClose }: { onClose: () => void }) => {
 };
 
 export default function Login() {
+  const [form] = Form.useForm();
   const router = useRouter();
   const [isForgotPassword, setIsForgotPassword] = useState(false);
 
@@ -110,11 +111,18 @@ export default function Login() {
           <>
             <h2 className="text-2xl font-bold text-center">Đăng nhập</h2>
             <Form
+              form={form}
               name="login"
               initialValues={{ remember: true }}
               onFinish={onFinish}
               onFinishFailed={onFinishFailed}
               layout="vertical"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  form.submit();
+                }
+              }}
             >
               <Form.Item
                 label={

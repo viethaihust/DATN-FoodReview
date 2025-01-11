@@ -8,3 +8,7 @@
 .ql-snow .ql-editor {
   line-height: 1.4;
 }
+
+.is-dragging a {
+  pointer-events: none;
+}

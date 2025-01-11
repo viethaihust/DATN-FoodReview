@@ -97,7 +97,7 @@ const LocationList: React.FC = () => {
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      const { locationName } = values;
+      const { locationName, description } = values;
 
       const latLong = markerInstance.current?.position
         ? {
@@ -144,6 +144,7 @@ const LocationList: React.FC = () => {
             name: locationName,
             address: selectedAddress,
             province: province,
+            description: description,
             latLong: latLong,
           }),
         },
@@ -236,7 +237,6 @@ const LocationList: React.FC = () => {
         const place = autocomplete.getPlace();
         if (place.geometry?.location) {
           const position = place.geometry.location;
-          console.log(position);
           map.panTo(position);
           marker.position = position;
           setSelectedAddress(place.formatted_address || null);
@@ -336,6 +336,14 @@ const LocationList: React.FC = () => {
       key: "address",
     },
     {
+      title: "Người tạo",
+      dataIndex: ["userId", "email"],
+      key: "userId.email",
+      render: (userEmail: string, record: ILocation) => (
+        <Link href={`/nguoi-dung/${record.userId?._id}`}>{userEmail}</Link>
+      ),
+    },
+    {
       title: "Hành động",
       key: "actions",
       render: (_: any, record: ILocation) => (
@@ -390,6 +398,8 @@ const LocationList: React.FC = () => {
     },
   ];
 
+  console.log("locations", locations);
+
   return (
     <div>
       <Table
@@ -416,6 +426,7 @@ const LocationList: React.FC = () => {
           className:
             "bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold rounded-md shadow-md hover:shadow-xl transition-all duration-300 px-6 py-3",
         }}
+        centered
       >
         <Form form={form} layout="vertical">
           <Form.Item
@@ -427,6 +438,7 @@ const LocationList: React.FC = () => {
                 message: "Vui lòng điền tên địa điểm!",
               },
             ]}
+            className="mb-0"
           >
             <Input name="locationName" placeholder="Nhập tên địa điểm" />
           </Form.Item>
@@ -435,6 +447,7 @@ const LocationList: React.FC = () => {
             label={
               <span className="text-lg font-medium">Tìm kiếm địa chỉ</span>
             }
+            className="mb-0"
           >
             <div>
               <div className="flex gap-1 md:gap-6">
@@ -459,6 +472,17 @@ const LocationList: React.FC = () => {
                 readOnly
               />
             </div>
+          </Form.Item>
+          <Form.Item
+            name="description"
+            label={
+              <span className="text-lg font-medium">
+                Mô tả địa điểm (nếu có)
+              </span>
+            }
+            className="mb-0"
+          >
+            <Input name="description" placeholder="Mô tả địa điểm" />
           </Form.Item>
         </Form>
       </Modal>

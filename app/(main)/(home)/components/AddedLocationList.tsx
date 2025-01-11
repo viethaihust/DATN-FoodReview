@@ -66,6 +66,7 @@ export default function AddedLocationList({
     setCurrentLocation(location);
     form.setFieldsValue({
       locationName: location.name,
+      description: location.description,
     });
     setSelectedAddress(location.address);
 
@@ -75,7 +76,7 @@ export default function AddedLocationList({
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      const { locationName } = values;
+      const { locationName, description } = values;
 
       const latLong = markerInstance.current?.position
         ? {
@@ -122,6 +123,7 @@ export default function AddedLocationList({
             name: locationName,
             address: selectedAddress,
             province: province,
+            description: description,
             latLong: latLong,
           }),
         },
@@ -214,7 +216,6 @@ export default function AddedLocationList({
         const place = autocomplete.getPlace();
         if (place.geometry?.location) {
           const position = place.geometry.location;
-          console.log(position);
           map.panTo(position);
           marker.position = position;
           setSelectedAddress(place.formatted_address || null);
@@ -375,6 +376,7 @@ export default function AddedLocationList({
               className:
                 "bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold rounded-md shadow-md hover:shadow-xl transition-all duration-300 px-6 py-3",
             }}
+            centered
           >
             <Form form={form} layout="vertical">
               <Form.Item
@@ -422,6 +424,16 @@ export default function AddedLocationList({
                     readOnly
                   />
                 </div>
+              </Form.Item>
+              <Form.Item
+                name="description"
+                label={
+                  <span className="text-lg font-medium">
+                    Mô tả địa điểm (nếu có)
+                  </span>
+                }
+              >
+                <Input name="description" placeholder="Mô tả địa điểm" />
               </Form.Item>
             </Form>
           </Modal>

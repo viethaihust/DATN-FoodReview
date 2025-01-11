@@ -90,14 +90,18 @@ export default function PostListInfinite({
   const [selectedProvince, setSelectedProvince] = useState<string>("Toàn quốc");
   const [scrollTrigger, isInView] = useInView();
 
-  const fetchCategories = useCallback(async () => {
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/categories`);
-      const data = await response.json();
-      if (response.ok) setCategories(data.result);
-    } catch (error) {
-      console.error("Failed to fetch categories:", error);
-    }
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/categories`);
+        const data = await response.json();
+        if (response.ok) setCategories(data.result);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+
+    fetchCategories();
   }, []);
 
   const loadMorePosts = useCallback(async () => {
@@ -117,10 +121,6 @@ export default function PostListInfinite({
       }
     }
   }, [hasMoreData, page, selectedCategory, selectedProvince]);
-
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
 
   useEffect(() => {
     (async () => {
@@ -224,7 +224,7 @@ export default function PostListInfinite({
             </div>
           ))
         ) : (
-          <p>Không có bài viết nào</p>
+          <p className="min-h-[40rem]">Không có bài viết nào</p>
         )}
       </Masonry>
       <div className="text-center text-slate-600 mt-5">

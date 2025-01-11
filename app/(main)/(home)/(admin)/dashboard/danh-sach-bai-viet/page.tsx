@@ -161,9 +161,16 @@ const ReviewPostList: React.FC = () => {
       title: "Hành động",
       key: "actions",
       render: (_: any, record: IReviewPost) => (
-        <Button size="middle" danger onClick={() => handleDelete(record._id)}>
-          Xóa bài viết
-        </Button>
+        <>
+          <Link href={`/update-bai-viet/${record._id}`}>
+            <Button className="border-blue-500 text-blue-500 mr-2">
+              Sửa bài viết
+            </Button>
+          </Link>
+          <Button size="middle" danger onClick={() => handleDelete(record._id)}>
+            Xóa bài viết
+          </Button>
+        </>
       ),
     },
   ];

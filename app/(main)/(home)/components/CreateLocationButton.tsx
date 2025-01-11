@@ -31,7 +31,7 @@ export default function CreateLocationButton() {
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      const { locationName } = values;
+      const { locationName, description } = values;
 
       const latLong = markerInstance.current?.position
         ? {
@@ -79,6 +79,7 @@ export default function CreateLocationButton() {
             name: locationName,
             address: selectedAddress,
             province: province,
+            description: description,
             latLong: latLong,
           }),
         },
@@ -246,6 +247,7 @@ export default function CreateLocationButton() {
           className:
             "bg-gradient-to-r from-[#ff6700] to-[#ff9d00] text-white font-semibold rounded-md shadow-md hover:shadow-xl transition-all duration-300 px-6 py-3",
         }}
+        centered
       >
         <Form form={form} layout="vertical">
           <Form.Item
@@ -284,6 +286,16 @@ export default function CreateLocationButton() {
                 readOnly
               />
             </div>
+          </Form.Item>
+          <Form.Item
+            name="description"
+            label={
+              <span className="text-lg font-medium">
+                Mô tả địa điểm (nếu có)
+              </span>
+            }
+          >
+            <Input name="description" placeholder="Mô tả địa điểm" />
           </Form.Item>
         </Form>
       </Modal>

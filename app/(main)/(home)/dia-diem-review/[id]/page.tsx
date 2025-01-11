@@ -60,6 +60,12 @@ export default function DiaDiemReview({ params }: { params: { id: string } }) {
             />
           </span>
         </div>
+        {location?.description && (
+          <div>
+            <span className="font-semibold">Mô tả địa điểm: </span>
+            <span>{location?.description}</span>
+          </div>
+        )}
       </div>
       <List
         header={<div>Bài viết</div>}

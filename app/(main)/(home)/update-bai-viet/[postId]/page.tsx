@@ -12,9 +12,58 @@ import { useRouter } from "next/navigation";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
 import dynamic from "next/dynamic";
 import "../../viet-bai-review/Editor.css";
-
+import {
+  DndContext,
+  useSensor,
+  PointerSensor,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  arrayMove,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import "./Dragging.css";
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 import "react-quill-new/dist/quill.snow.css";
+
+const DraggableUploadListItem = ({
+  originNode,
+  file,
+}: {
+  originNode: React.ReactElement;
+  file: UploadFile;
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: file.uid });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+    cursor: "move",
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={isDragging ? "is-dragging" : ""}
+    >
+      {originNode}
+    </div>
+  );
+};
 
 export default function VietBaiReview({
   params,
@@ -190,8 +239,13 @@ export default function VietBaiReview({
         }
       }
 
-      file.thumbUrl = URL.createObjectURL(file);
-      setSelectedFiles((prev) => [...prev, file]);
+      setSelectedFiles((prev) => [
+        ...prev,
+        {
+          ...file,
+          thumbUrl: URL.createObjectURL(file),
+        },
+      ]);
       return false;
     } catch (error: any) {
       toast.error(`Lỗi khi kiểm tra ảnh: ${error.message}`);
@@ -204,6 +258,20 @@ export default function VietBaiReview({
       URL.revokeObjectURL(file.thumbUrl || "");
       return prev.filter((f) => f.uid !== file.uid);
     });
+  };
+
+  const sensor = useSensor(PointerSensor, {
+    activationConstraint: { distance: 10 },
+  });
+
+  const onDragEnd = ({ active, over }: DragEndEvent) => {
+    if (active.id !== over?.id) {
+      setSelectedFiles((prev) => {
+        const oldIndex = prev.findIndex((item) => item.uid === active.id);
+        const newIndex = prev.findIndex((item) => item.uid === over?.id);
+        return arrayMove(prev, oldIndex, newIndex);
+      });
+    }
   };
 
   useEffect(() => {
@@ -318,16 +386,29 @@ export default function VietBaiReview({
             { required: true, message: "Vui lòng tải lên ít nhất một tệp!" },
           ]}
         >
-          <Upload
-            accept="image/*,video/*"
-            beforeUpload={handleFileSelect}
-            onRemove={handleFileRemove}
-            multiple
-            listType="picture"
-            fileList={selectedFiles}
-          >
-            <Button icon={<UploadOutlined />}>Tải lên file</Button>
-          </Upload>
+          <DndContext sensors={[sensor]} onDragEnd={onDragEnd}>
+            <SortableContext
+              items={selectedFiles.map((file) => file.uid)}
+              strategy={verticalListSortingStrategy}
+            >
+              <Upload
+                accept="image/*,video/*"
+                beforeUpload={handleFileSelect}
+                onRemove={handleFileRemove}
+                multiple
+                listType="picture"
+                fileList={selectedFiles}
+                itemRender={(originNode, file) => (
+                  <DraggableUploadListItem
+                    originNode={originNode}
+                    file={file}
+                  />
+                )}
+              >
+                <Button icon={<UploadOutlined />}>Tải lên file</Button>
+              </Upload>
+            </SortableContext>
+          </DndContext>
         </Form.Item>
 
         <Form.Item

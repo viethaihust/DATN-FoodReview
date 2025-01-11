@@ -20,6 +20,9 @@ export const NextAuthProvider = ({
               dotWidth: 30,
               dotActiveWidth: 40,
             },
+            Form: {
+              itemMarginBottom: 5,
+            },
           },
         }}
       >

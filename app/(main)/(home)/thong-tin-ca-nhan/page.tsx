@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import BookmarkList from "../components/BookmarkList";
 import UserPostList from "../components/UserPostList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
 import { toast } from "react-toastify";
 import { BACKEND_URL } from "@/lib/constants";
@@ -28,6 +28,36 @@ const ProfilePage = () => {
   const [userLocations, setUserLocations] = useState<ILocation[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [followersCount, setFollowersCount] = useState<number>(0);
+  const [followingsCount, setFollowingsCount] = useState<number>(0);
+
+  useEffect(() => {
+    if (session?.user?._id) {
+      try {
+        fetch(
+          `${BACKEND_URL}/api/follows/followers-count/${session?.user?._id}`
+        )
+          .then((res) => res.json())
+          .then((data) => setFollowersCount(data));
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    }
+  }, [session?.user?._id]);
+
+  useEffect(() => {
+    if (session?.user?._id) {
+      try {
+        fetch(
+          `${BACKEND_URL}/api/follows/followings-count/${session?.user?._id}`
+        )
+          .then((res) => res.json())
+          .then((data) => setFollowingsCount(data));
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    }
+  }, [session?.user?._id]);
 
   const handlePostDelete = (postId: string) => {
     setUserPosts((prev) => prev.filter((post) => post._id !== postId));
@@ -180,16 +210,34 @@ const ProfilePage = () => {
           </Upload>
         </div>
         <div className="-mt-4">
-          <div className="text-xl font-semibold">{session?.user?.name}</div>
-          <div className="text-gray-500">{session?.user?.email}</div>
+          <div className="flex items-center gap-2 md:gap-4">
+            <div>
+              <div className="text-xl font-semibold">{session?.user?.name}</div>
+              <div className="text-gray-500">{session?.user?.email}</div>
+            </div>
+            <button
+              type="submit"
+              onClick={() => setIsModalVisible(true)}
+              className="bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white md:py-2 md:px-4 px-1 py-1 border border-red-500 hover:border-transparent rounded"
+            >
+              Đổi mật khẩu
+            </button>
+          </div>
+          <div className="flex gap-4">
+            <span>
+              <span className="text-lg font-semibold">{userPosts.length}</span>{" "}
+              <span className="text-gray-500">Bài viết</span>
+            </span>
+            <span>
+              <span className="text-lg font-semibold">{followersCount}</span>{" "}
+              <span className="text-gray-500">Người theo dõi</span>
+            </span>
+            <span>
+              <span className="text-lg font-semibold">{followingsCount}</span>{" "}
+              <span className="text-gray-500">Đang theo dõi</span>
+            </span>
+          </div>
         </div>
-        <button
-          type="submit"
-          onClick={() => setIsModalVisible(true)}
-          className="-mt-4 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white md:py-2 md:px-4 px-1 py-1 border border-red-500 hover:border-transparent rounded"
-        >
-          Đổi mật khẩu
-        </button>
       </div>
 
       <div className="mt-5">

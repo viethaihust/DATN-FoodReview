@@ -9,11 +9,12 @@ import Masonry from "react-masonry-css";
 export default function RecommendedPosts() {
   const { data: session } = useSession();
   const [recommendedPosts, setRecommendedPosts] = useState<IReviewPost[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchRecommendedPosts() {
       try {
+        setLoading(true);
         const res = await fetch(
           `${BACKEND_URL}/api/recommendation/for-user/${session?.user?._id}`,
           { cache: "no-store" }
@@ -26,7 +27,10 @@ export default function RecommendedPosts() {
         setLoading(false);
       }
     }
-    fetchRecommendedPosts();
+
+    if (session?.user?._id) {
+      fetchRecommendedPosts();
+    }
   }, [session?.user?._id]);
 
   if (loading) {
