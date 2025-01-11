@@ -39,7 +39,7 @@ const ForgotPasswordForm = ({ onClose }: { onClose: () => void }) => {
         name="forgot-password"
         onFinish={handleSubmit}
         layout="vertical"
-        className="mt-4"
+        className="mt-4 space-y-4"
       >
         <Form.Item
           label={
@@ -123,6 +123,7 @@ export default function Login() {
                   form.submit();
                 }
               }}
+              className="space-y-4"
             >
               <Form.Item
                 label={
@@ -149,16 +150,15 @@ export default function Login() {
                 rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
               >
                 <Input.Password />
+                <div className="flex justify-end mt-1">
+                  <button
+                    className="text-sm text-white underline"
+                    onClick={() => setIsForgotPassword(true)}
+                  >
+                    Quên mật khẩu?
+                  </button>
+                </div>
               </Form.Item>
-
-              <div className="flex justify-end -mt-4 mb-6">
-                <button
-                  className="text-sm text-white underline"
-                  onClick={() => setIsForgotPassword(true)}
-                >
-                  Quên mật khẩu?
-                </button>
-              </div>
 
               <Form.Item>
                 <Button

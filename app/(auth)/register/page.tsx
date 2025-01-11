@@ -54,6 +54,7 @@ export default function Register() {
               form.submit();
             }
           }}
+          className="space-y-4"
         >
           <Form.Item
             label={
