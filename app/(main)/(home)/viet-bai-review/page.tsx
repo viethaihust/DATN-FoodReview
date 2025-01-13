@@ -176,16 +176,8 @@ export default function VietBaiReview() {
         }
       }
 
-      const preview = isImage ? URL.createObjectURL(file) : undefined;
-
-      const newFile = {
-        ...file,
-        uid: file.uid,
-        name: file.name,
-        thumbUrl: preview,
-      };
-
-      setSelectedFiles((prev) => [...prev, newFile]);
+      file.thumbUrl = URL.createObjectURL(file);
+      setSelectedFiles((prev) => [...prev, file]);
       return false;
     } catch (error: any) {
       toast.error(`Lỗi khi kiểm tra ảnh: ${error.message}`);
@@ -195,6 +187,7 @@ export default function VietBaiReview() {
 
   const handleFileRemove = (file: UploadFile<any>) => {
     setSelectedFiles((prev) => {
+      URL.revokeObjectURL(file.thumbUrl || "");
       return prev.filter((f) => f.uid !== file.uid);
     });
   };
@@ -218,7 +211,10 @@ export default function VietBaiReview() {
     const { title, content, categoryId, locationId, ratings } = values;
 
     const formData = new FormData();
-    selectedFiles.forEach((file) => formData.append("files", file));
+    selectedFiles.forEach((file) => {
+      URL.revokeObjectURL(file.thumbUrl || "");
+      formData.append("files", file);
+    });
 
     try {
       const uploadRes = await fetchWithAuth(
