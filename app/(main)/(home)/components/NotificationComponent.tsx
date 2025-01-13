@@ -94,8 +94,8 @@ const NotificationComponent = ({ userId }: { userId: string }) => {
               <Link href={`/nguoi-dung/${notif?.sender._id}`}>
                 <Image
                   className="rounded-full min-w-10 object-cover aspect-square"
-                  height={60}
-                  width={60}
+                  height={40}
+                  width={40}
                   src={notif.sender?.image || "/profile.jpg"}
                   alt="profile-pic"
                 />
