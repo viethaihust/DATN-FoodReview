@@ -317,6 +317,13 @@ export default function VietBaiReview() {
                 onRemove={handleFileRemove}
                 multiple
                 listType="picture"
+                fileList={selectedFiles}
+                itemRender={(originNode, file) => (
+                  <DraggableUploadListItem
+                    originNode={originNode}
+                    file={file}
+                  />
+                )}
               >
                 <Button icon={<UploadOutlined />}>Tải lên file</Button>
               </Upload>
