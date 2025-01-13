@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import CommentComponent from "./CommentComponent";
 import { Input } from "antd";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
+import Image from "next/image";
 
 export default function CommentSection({
   comments,
@@ -114,21 +115,32 @@ export default function CommentSection({
   };
 
   return (
-    <div>
-      <div className="mb-4">
-        <Input
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-          className="border p-2 rounded w-full"
-          placeholder="Viết bình luận..."
-          onPressEnter={handleAddComment}
-        />
-        <button
-          onClick={handleAddComment}
-          className="mt-2 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
-        >
-          Bình luận
-        </button>
+    <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+      <div className="mb-5">
+        <div className="flex items-center gap-4">
+          <Image
+            src={session?.user?.image || "/default-avatar.png"}
+            width={60}
+            height={60}
+            className="rounded-full min-w-10 object-cover aspect-square"
+            alt="profile-pic"
+          />
+          <Input
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            className="border border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg p-3 w-full text-gray-800"
+            placeholder="Viết bình luận..."
+            onPressEnter={handleAddComment}
+          />
+        </div>
+        <div className="flex justify-end">
+          <button
+            onClick={handleAddComment}
+            className="mt-2 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+          >
+            Bình luận
+          </button>
+        </div>
       </div>
       {Array.isArray(commentList) &&
         commentList.map((comment) => (

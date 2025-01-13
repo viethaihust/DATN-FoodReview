@@ -134,9 +134,9 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
   };
 
   return (
-    <div className="border rounded-lg mb-4">
-      <div className="flex justify-between items-center">
-        <div className="p-2 md:p-6">
+    <div className="border rounded-md my-2 bg-white">
+      <div className="flex justify-between items-center relative">
+        <div className="p-2 md:px-5 md:py-4">
           <div className="flex items-start gap-2">
             <Link href={`/nguoi-dung/${comment.userId?._id}`}>
               <Image
@@ -231,10 +231,11 @@ const CommentComponent: React.FC<ICommentComponentProps> = ({
           </button>
         </div>
       )}
-      <div className="ml-4">
+      <div className="ml-16">
         {showReplies &&
           replies.map((reply) => (
-            <div key={reply._id} className="ml-8">
+            <div key={reply._id} className="relative">
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-gray-300"></div>
               <CommentComponent
                 comment={reply}
                 onLike={handleReplyLike}
