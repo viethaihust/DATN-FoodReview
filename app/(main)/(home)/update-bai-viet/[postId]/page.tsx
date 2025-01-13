@@ -239,7 +239,16 @@ export default function VietBaiReview({
         }
       }
 
-      setSelectedFiles((prev) => [...prev, file]);
+      const preview = isImage ? URL.createObjectURL(file) : undefined;
+
+      const newFile = {
+        ...file,
+        uid: file.uid,
+        name: file.name,
+        thumbUrl: preview,
+      };
+
+      setSelectedFiles((prev) => [...prev, newFile]);
       return false;
     } catch (error: any) {
       toast.error(`Lỗi khi kiểm tra ảnh: ${error.message}`);
