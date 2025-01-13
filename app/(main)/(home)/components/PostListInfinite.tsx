@@ -82,8 +82,6 @@ export default function PostListInfinite({
 }) {
   const [page, setPage] = useState(2);
   const [posts, setPosts] = useState<IReviewPost[]>(initialPosts);
-  const [filteredPosts, setFilteredPosts] =
-    useState<IReviewPost[]>(initialPosts);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -142,19 +140,6 @@ export default function PostListInfinite({
     }
   }, [isInView, hasMoreData, loadMorePosts]);
 
-  useEffect(() => {
-    const filtered = posts.filter((post) => {
-      const matchesCategory = selectedCategory
-        ? post.categoryId._id === selectedCategory
-        : true;
-      const matchesProvince =
-        selectedProvince === "Toàn quốc" ||
-        post.locationId?.province === selectedProvince;
-      return matchesCategory && matchesProvince;
-    });
-    setFilteredPosts(filtered);
-  }, [posts, selectedCategory, selectedProvince]);
-
   const handleProvinceChange = (value: string) => {
     setSelectedProvince(value);
   };
@@ -210,8 +195,8 @@ export default function PostListInfinite({
         className="flex w-auto -mx-4 md:mx-0 gap-2 md:gap-4 md:px-5 mt-5 md:mt-0"
         columnClassName="bg-clip-padding"
       >
-        {filteredPosts.length > 0 ? (
-          filteredPosts.map((post) => (
+        {posts.length > 0 ? (
+          posts.map((post) => (
             <div key={post._id} className="mb-4 break-inside-avoid">
               <PostCardInfinite
                 post={post}

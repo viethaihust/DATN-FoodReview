@@ -30,7 +30,7 @@ const LocationList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [pagination, setPagination] = useState<Pagination>({
     current: 1,
-    pageSize: 10,
+    pageSize: 5,
   });
   const [total, setTotal] = useState<number>(0);
 
@@ -52,7 +52,7 @@ const LocationList: React.FC = () => {
       }
 
       const result = await response.json();
-      setTotal(result.total);
+      setTotal(result.totalLocations);
       setLocations(result.locations);
     } catch (error) {
       console.error("Failed to fetch locations:", error);

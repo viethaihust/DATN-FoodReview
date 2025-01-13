@@ -19,7 +19,7 @@ const ReviewPostList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [pagination, setPagination] = useState<Pagination>({
     current: 1,
-    pageSize: 10,
+    pageSize: 5,
   });
   const [total, setTotal] = useState<number>(0);
 
@@ -41,7 +41,7 @@ const ReviewPostList: React.FC = () => {
       }
 
       const result = await response.json();
-      setTotal(result.data.total);
+      setTotal(result.data.totalPosts);
       setPosts(result.data.posts);
     } catch (error) {
       console.error("Failed to fetch posts:", error);
@@ -174,6 +174,8 @@ const ReviewPostList: React.FC = () => {
       ),
     },
   ];
+
+  console.log(total);
 
   return (
     <div>
