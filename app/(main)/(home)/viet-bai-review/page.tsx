@@ -176,7 +176,9 @@ export default function VietBaiReview() {
         }
       }
 
+      if (isImage) {
       file.thumbUrl = URL.createObjectURL(file);
+      }
       setSelectedFiles((prev) => [...prev, file]);
       return false;
     } catch (error: any) {
