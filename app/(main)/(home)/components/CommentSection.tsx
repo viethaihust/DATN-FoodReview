@@ -119,7 +119,7 @@ export default function CommentSection({
       <div className="mb-5">
         <div className="flex items-center gap-4">
           <Image
-            src={session?.user?.image || "/default-avatar.png"}
+            src={session?.user?.image || "/profile.jpg"}
             width={60}
             height={60}
             className="rounded-full min-w-10 object-cover aspect-square"
