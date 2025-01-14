@@ -192,7 +192,7 @@ export default function VietBaiReview({
   const handleFileSelect = async (file: RcFile) => {
     const allowedTypes = ["image/jpeg", "image/png", "video/mp4", "video/mpeg"];
     const maxImageSize = 10 * 1024 * 1024; // 10 MB for images
-    const maxVideoSize = 20 * 1024 * 1024; // 20 MB for videos
+    const maxVideoSize = 50 * 1024 * 1024; // 50 MB for videos
 
     if (!allowedTypes.includes(file.type)) {
       toast.error("Chỉ chấp nhận file ảnh JPG, PNG hoặc video MP4, MPEG.");
@@ -208,7 +208,7 @@ export default function VietBaiReview({
     }
 
     if (isVideo && file.size > maxVideoSize) {
-      toast.error("Kích thước file video phải nhỏ hơn 20 MB.");
+      toast.error("Kích thước file video phải nhỏ hơn 50 MB.");
       return Upload.LIST_IGNORE;
     }
 
@@ -371,7 +371,7 @@ export default function VietBaiReview({
           label={
             <span className="text-lg font-medium">
               Hình ảnh và Video (tối đa 5 file, hình ảnh dưới 10MB, video dưới
-              20MB)
+              50MB)
             </span>
           }
           rules={[
